@@ -1,7 +1,7 @@
 module reg_4 (input  logic Clk, Reset, Shift_In, Load, Shift_En,
-              input  logic [3:0]  D,
+              input  logic [7:0]  D,
               output logic Shift_Out,
-              output logic [3:0]  Data_Out);
+              output logic [7:0]  Data_Out);
 
     always_ff @ (posedge Clk)
     begin
@@ -13,7 +13,7 @@ module reg_4 (input  logic Clk, Reset, Shift_In, Load, Shift_En,
 		 begin
 			  //concatenate shifted in data to the previous left-most 3 bits
 			  //note this works because we are in always_ff procedure block
-			  Data_Out <= { Shift_In, Data_Out[3:1] }; 
+			  Data_Out <= { Shift_In, Data_Out[7:1] }; 
 	    end
     end
 	
