@@ -9,8 +9,8 @@ module carry_select_adder4
 
 	logic select, C0, C1;
 	logic [3:0] S0, S1;
-	adder4 A1 (.A (A), .B (B), .C_in (C_in), .S (S0), .C_out (C0));
-	adder4 A2 (.A (A), .B (B), .C_in (C_in), .S (S1), .C_out (C1));
+	adder4 A1 (.A (A), .B (B), .C_in (1'b0), .S (S0), .C_out (C0));
+	adder4 A2 (.A (A), .B (B), .C_in (1'b1), .S (S1), .C_out (C1));
 
 	always_comb
 	if (C_in)
