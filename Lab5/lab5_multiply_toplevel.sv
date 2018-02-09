@@ -88,6 +88,7 @@ module lab5_multiply_toplevel
                         .Execute(Run),
                         .M,
                         .ClearA_LoadB,
+                        .Clr_Ld,
                         .Shift,
                         .Add,
                         .Sub );

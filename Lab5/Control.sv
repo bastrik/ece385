@@ -2,11 +2,12 @@
 
 module control 
 (
-    input	logic		Clk(,
+    input	logic		Clk,
     input	logic       Reset,
     input	logic       Execute,
     input   logic       M,          // the least significant bit of regB
-    output  logic       ClearA_LoadB;
+    input   logic       ClearA_LoadB,
+    output  logic       Clr_Ld,
     output	logic       Shift,
     output  logic       Ld_A,
     output  logic       Ld_B,
