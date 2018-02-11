@@ -6,10 +6,10 @@
  *  generate timing information (fmax) and multiplex the DE115's 16 switches
  *  onto the inputs.
  *
- *	This is taken from Lab 4 template code. With necessary modifications for lab 5
+ *  This is adapted from Lab 4 template code with necessary modifications for lab 5
  
 
-/* Module declaration.  Everything within the parentheses()
+ * Module declaration.  Everything within the parentheses()
  * is a port between this module and the outside world */
  
 module lab5_multiply_toplevel
@@ -22,43 +22,50 @@ module lab5_multiply_toplevel
     
     // all outputs are registered
     output  logic           X,          // Carry-out.  Goes to the green LED to the left of the hex displays.
-    output  logic[6:0]      AhexL,      // Hex drivers display both inputs to the adder.
+    output  logic[6:0]      AhexL,      // Hex drivers to display the results of the computation.
     output  logic[6:0]      AhexU,
     output  logic[6:0]      BhexL,
     output  logic[6:0]      BhexU,
-    output  logic[7:0]      Aval,       // DEBUG
-    output  logic[7:0]      Bval        // DEBUG
+    output  logic[7:0]      Aval,       // Outputs included for simulation.
+    output  logic[7:0]      Bval        
 );
 
-    /* Declare Internal Registers */
-    logic[7:0]     A;  // use this as an input to regA
-    logic[7:0]     B;  // use this as an input to regB
-    
+    // Synchronized button inputs
+    logic Reset_SH, ClearA_LoadB_SH, Run_SH;
+
+    // Shift register I/O
+    logic X_in;
+    logic[7:0] A_in;
+
+    // Control unit outputs
+    logic ClrX, LdX, ShX, ClrA, LdA, ShA, ClrB, LdB, ShB, Sub;
+
+    // Adder I/O
+    logic[7:0] negS, fromS;
+
+    // Instantiate shift registers A and B 
+    reg_1 regX (.Clk(Clk), .Reset(ClrX), .Shift_In(X), .Load(LdX),
+	    .Shift_En(ShX), .D(X_in), .Data_Out(X));
+    reg_8 regA (.Clk(Clk), .Reset(ClrA), .Shift_In(X), .Load(LdA),
+	    .Shift_En(ShA), .D(A_in), .Data_Out(Aval));
+    reg_8 regB (.Clk(Clk), .Reset(ClrB), .Shift_In(Aval[0]), .Load(LdB),
+	    .Shift_En(ShB), .D(S), .Data_Out(Bval));
+
+    // Instantiate control unit
+    control control_unit (.Clk(Clk), .Reset(Reset_SH), .ClearA_LoadB(ClearA_LoadB_SH),
+	    .Run(Run_SH), .M(Bval[0]), .ClrX(ClrX), .LdX(LdX), .ShX(ShX), 
+	    .ClrA(ClrA), .LdA(LdA), .ShA(ShA), .ClrB(ClrB), .LdB(LdB), .ShB(ShB), .Sub(Sub));
+
+    // Instantiate 9-bit adder for addition and subtraction
+    adder9 adder_add (.A(Aval), .B(S^{8{Sub}}), .C_in(Sub), .S(A_in), .X(X_in));
+
     /* Declare Internal Wires
-     * Wheather an internal logic signal becomes a register or wire depends
+     * Whether an internal logic signal becomes a register or wire depends
      * on if it is written inside an always_ff or always_comb block respectivly */
     logic[6:0]      AhexL_comb;
     logic[6:0]      AhexU_comb;
     logic[6:0]      BhexL_comb;
     logic[6:0]      BhexU_comb;
-    
-    /* Behavior of registers A, B, _X */
-    always_ff @(posedge Clk) begin
-        
-        if (!Reset) begin
-            // if reset is pressed, reset everything to 0
-            A <= 16'h0000;
-            B <= 16'h0000;
-            X <= 1'b0;
-        end 
-        else if (!ClearA_LoadB) begin
-            // If ClearA_LoadB is pressed, reset A and X, and copy switches to register B
-            A <= 16'h0000;
-            X <= 1'b0;
-            B <= S;
-        end 
-                
-    end
     
     /* Decoders for HEX drivers and output registers
      * Note that the hex drivers are calculated one cycle after Sum so
@@ -79,62 +86,32 @@ module lab5_multiply_toplevel
      * The thing called HexDriver is like a class
      * Each time you instantate an "object", you consume physical hardware on the FPGA
      * in the same way that you'd place a 74-series hex driver chip on your protoboard */
-
-     // TODO: WORK IN PROGRESS!
-	  
-	control     control_unit (
-                        .Clk(Clk),
-                        .Reset,
-                        .Execute(Run),
-                        .M,
-                        .ClearA_LoadB,
-                        .Clr_Ld,
-                        .Shift,
-                        .Add,
-                        .Sub );
-    register_unit    reg_unit (
-                        .Clk(Clk),
-                        .Reset,
-                        .Ld_A, //note these are inferred assignments, because of the existence a logic variable of the same name
-                        .Ld_B,
-                        .Shift_En,
-                        .D(Din_S),
-                        .A_In(newA),
-                        .B_In(newB),
-                        .A_out(opA),
-                        .B_out(opB),
-                        .A(A),
-                        .B(B) );
-    ripple_adder8   adder (
-                        .A,
-                        .B,
-                        .Sum,
-                        .CO(X) );
-
-    
+ 
     HexDriver AhexL_inst
     (
-        .In0(A[3:0]),   // This connects the 4 least significant bits of 
-                        // register A to the input of a hex driver named Ahex0_inst
-        .Out0(AhexL_comb)
+        .In0(Aval[3:0]),   // This connects the 4 least significant bits of 
+        .Out0(AhexL_comb)  // register A to the input of a hex driver named AhexL_comb
     );
     
     HexDriver AhexU_inst
     (
-        .In0(A[7:4]),
+        .In0(Aval[7:4]),
         .Out0(AhexU_comb)
     );
     
     HexDriver BhexL_inst
     (
-        .In0(B[3:0]),
+        .In0(Bval[3:0]),
         .Out0(BhexL_comb)
     );
     
     HexDriver BhexU_inst
     (
-        .In0(B[7:4]),
+        .In0(Bval[7:4]),
         .Out0(BhexU_comb)
     );
+
+    // Input synchronizers for asynchronous inputs from the buttons
+    sync button_sync[2:0] (Clk, {~Reset, ~ClearA_LoadB, ~Run}, {Reset_SH, ClearA_LoadB_SH, Run_SH});
     
 endmodule
