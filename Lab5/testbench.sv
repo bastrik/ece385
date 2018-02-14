@@ -35,7 +35,7 @@ initial begin: TEST_VECTORS
 Reset = 1;	
 ClearA_LoadB = 1;
 Run = 1;
-S = 8'b11111111;
+S = 8'b00111011;
 
 #2 Reset = 0;
 #2 Reset = 1;
@@ -43,69 +43,33 @@ S = 8'b11111111;
 #2 ClearA_LoadB = 0;
 #2 ClearA_LoadB = 1;
 
-#2 S = 8'b11111111;
-
-#2 Run = 0;
+// 7 * 59
+#2 S = 8'b00000111;
+#8 Run = 0;
 #2 Run = 1;
 
-#50 Run = 0;
+// -7 * 59
+#60 S = 8'b00111011;
+#2 ClearA_LoadB = 0;
+#2 ClearA_LoadB = 1;
+#2 S = 8'b11111001;
+#8 Run = 0;
 #2 Run = 1;
 
-#50 Run = 0;
+// 59 * -7
+#60 S = 8'b11111001;
+#2 ClearA_LoadB = 0;
+#2 ClearA_LoadB = 1;
+#2 S = 8'b00111011;
+#8 Run = 0;
 #2 Run = 1;
 
-#50 Run = 0;
-#2 Run = 1;
-
-#50 Run = 0;
-#2 Run = 1;
-
-#50 Run = 0;
-#2 Run = 1;
-
-#50 Run = 0;
-#2 Run = 1;
-
-#50 Run = 0;
-#2 Run = 1;
-
-#50 Run = 0;
-#2 Run = 1;
-
-#50 Run = 0;
-#2 Run = 1;
-
-#50 Run = 0;
-#2 Run = 1;
-
-#50 Run = 0;
-#2 Run = 1;
-
-#50 Run = 0;
-#2 Run = 1;
-
-#50 Run = 0;
-#2 Run = 1;
-
-#50 Run = 0;
-#2 Run = 1;
-
-#50 Run = 0;
-#2 Run = 1;
-
-#50 Run = 0;
-#2 Run = 1;
-
-#50 Run = 0;
-#2 Run = 1;
-
-#50 Run = 0;
-#2 Run = 1;
-
-#50 Run = 0;
-#2 Run = 1;
-
-#50 Run = 0;
+// -59 * -7
+#60 S = 8'b11111001;
+#2 ClearA_LoadB = 0;
+#2 ClearA_LoadB = 1;
+#2 S = 8'b11000101;
+#8 Run = 0;
 #2 Run = 1;
 
 end
