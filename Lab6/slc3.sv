@@ -21,7 +21,11 @@ module slc3(
     input logic Clk, Reset, Run, Continue,
     output logic [11:0] LED,
     output logic [6:0] HEX0, HEX1, HEX2, HEX3, HEX4, HEX5, HEX6, HEX7,
-    output logic CE, UB, LB, OE, WE,
+    output logic CE,    // Chip enable
+                 UB,    // Upper byte enable
+                 LB,    // Lower byte enable
+                 OE,    // Output (read) enable
+                 WE,    // Write enable
     output logic [19:0] ADDR,
     inout wire [15:0] Data //tristate buffers need to be of type wire
 );
@@ -74,7 +78,25 @@ assign MIO_EN = ~OE;
 
 // You need to make your own datapath module and connect everything to the datapath
 // Be careful about whether Reset is active high or low
-datapath d0 (/* Please fill in the signals.... */);
+
+// TODO:: I think this is all that needs to be done for week 1??
+
+datapath d0 (.Clk(Clk), 
+             .Reset(Reset_ah), 
+             .Run(Run_ah),
+             .LD_MAR, 
+             .LD_MDR, 
+             .LD_IR, 
+             .LD_PC,
+             .MAR, 
+             .MDR, 
+             .IR, 
+             .PC, 
+             .Data,
+             .MAR_OUT(MAR), // Is it legal to have this inferred assigning?
+             .MDR_OUT(MDR), 
+             .IR_OUT(IR), 
+             .PC_OUT(PC) );
 
 // Our SRAM and I/O controller
 Mem2IO memory_subsystem(
