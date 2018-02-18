@@ -33,16 +33,18 @@ module slc3(
 // Declaration of push button active high signals
 logic Reset_ah, Continue_ah, Run_ah;
 
-assign Reset_ah = ~Reset;
-assign Continue_ah = ~Continue;
-assign Run_ah = ~Run;
+// Input synchronizers for asynchronous inputs from the buttons
+sync button_sync[2:0] (Clk, {~Reset, ~Continue, ~Run}, {Reset_ah, Continue_ah, Run_ah});
+// assign Reset_ah = ~Reset;
+// assign Continue_ah = ~Continue;
+// assign Run_ah = ~Run;
 
 // Internal connections
 logic BEN;
 logic LD_MAR, LD_MDR, LD_IR, LD_BEN, LD_CC, LD_REG, LD_PC, LD_LED;
 logic GatePC, GateMDR, GateALU, GateMARMUX;
-logic [1:0] PCMUX, ADDR2MUX, ALUK;
-logic DRMUX, SR1MUX, SR2MUX, ADDR1MUX;
+logic [1:0] PCMUX_SELECT, ADDR2MUX_SELECT, ALUK;
+logic DRMUX_SELECT, SR1MUX_SELECT, SR2MUX_SELECT, ADDR1MUX_SELECT;
 logic MIO_EN;
 
 logic [15:0] MDR_In;
@@ -73,30 +75,13 @@ HexDriver hex_driver4 (PC[3:0], HEX4);
 // Connect MAR to ADDR, which is also connected as an input into MEM2IO.
 // MEM2IO will determine what gets put onto Data_CPU (which serves as a potential
 // input into MDR)
-assign ADDR = { 4'b00, MAR }; //Note, our external SRAM chip is 1Mx16, but address space is only 64Kx16
+assign ADDR = { 4'b0000, MAR }; //Note, our external SRAM chip is 1Mx16, but address space is only 64Kx16
 assign MIO_EN = ~OE;
 
 // You need to make your own datapath module and connect everything to the datapath
 // Be careful about whether Reset is active high or low
-
-// TODO:: I think this is all that needs to be done for week 1??
-
-datapath d0 (.Clk(Clk), 
-             .Reset(Reset_ah), 
-             .Run(Run_ah),
-             .LD_MAR, 
-             .LD_MDR, 
-             .LD_IR, 
-             .LD_PC,
-             .MAR, 
-             .MDR, 
-             .IR, 
-             .PC, 
-             .Data,
-             .MAR_OUT(MAR), // Is it legal to have this inferred assigning?
-             .MDR_OUT(MDR), 
-             .IR_OUT(IR), 
-             .PC_OUT(PC) );
+datapath d0 (.Reset(Reset_ah), .BEN_OUT(BEN), .MAR_OUT(MAR), .MDR_OUT(MDR), .IR_OUT(IR), .PC_OUT(PC), .*
+     	    );
 
 // Our SRAM and I/O controller
 Mem2IO memory_subsystem(
@@ -115,7 +100,7 @@ tristate #(.N(16)) tr0(
 ISDU state_controller(
     .*, .Reset(Reset_ah), .Run(Run_ah), .Continue(Continue_ah),
     .Opcode(IR[15:12]), .IR_5(IR[5]), .IR_11(IR[11]),
-    .Mem_CE(CE), .Mem_UB(UB), .Mem_LB(LB), .Mem_OE(OE), .Mem_WE(WE)
+    .Mem_CE(CE), .Mem_UB(UB), .Mem_LB(LB), .Mem_OE_sync(OE), .Mem_WE_sync(WE)
 );
 
 endmodule

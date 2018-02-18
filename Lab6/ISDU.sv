@@ -16,17 +16,17 @@
 //------------------------------------------------------------------------------
 
 
-module ISDU (   input logic         Clk, 
+module ISDU (   input logic         					Clk, 
 									Reset,
 									Run,
 									Continue,
 									
-				input logic[3:0]    Opcode, 
-				input logic         IR_5,
-				input logic         IR_11,
-				input logic         BEN,
+				input logic[3:0]    			Opcode, 
+				input logic         			IR_5,
+				input logic         			IR_11,
+				input logic         			BEN,
 				  
-				output logic        LD_MAR,
+				output logic        			LD_MAR,
 									LD_MDR,
 									LD_IR,
 									LD_BEN,
@@ -35,36 +35,43 @@ module ISDU (   input logic         Clk,
 									LD_PC,
 									LD_LED, // for PAUSE instruction
 									
-				output logic        GatePC,
+				output logic        			GatePC,
 									GateMDR,
 									GateALU,
 									GateMARMUX,
 									
-				output logic [1:0]  PCMUX,
-				output logic        DRMUX,
-									SR1MUX,
-									SR2MUX,
-									ADDR1MUX,
-				output logic [1:0]  ADDR2MUX,
+				output logic [1:0]  			PCMUX_SELECT,
+				output logic        			DRMUX_SELECT,
+									SR1MUX_SELECT,
+									SR2MUX_SELECT,
+									ADDR1MUX_SELECT,
+				output logic [1:0]  			ADDR2MUX_SELECT,
 									ALUK,
 				  
-				output logic        Mem_CE,
+				output logic        			Mem_CE,
 									Mem_UB,
 									Mem_LB,
-									Mem_OE,
-									Mem_WE
+									Mem_OE_sync,
+									Mem_WE_sync
 				);
 
-	enum logic [3:0] {  Halted, 
+	enum logic [3:0] 		       {Halted, 
 						PauseIR1, 
 						PauseIR2, 
 						S_18, 
 						S_33_1, 
 						S_33_2, 
+						S_33_3,
 						S_35, 
 						S_32, 
 						S_01}   State, Next_state;   // Internal state logic
-		
+
+	// Declare asynchronous internal memory control signals
+	logic Mem_OE, Mem_WE;
+
+	// Synchronize critical asynchronous outputs to memory
+	sync output_sync[1:0] (Clk, {Mem_OE, Mem_WE}, {Mem_OE_sync, Mem_WE_sync});
+
 	always_ff @ (posedge Clk)
 	begin
 		if (Reset) 
@@ -78,7 +85,7 @@ module ISDU (   input logic         Clk,
 		// Default next state is staying at current state
 		Next_state = State;
 		
-		// Default controls signal values
+		// Default control signal values
 		LD_MAR = 1'b0;
 		LD_MDR = 1'b0;
 		LD_IR = 1'b0;
@@ -93,14 +100,15 @@ module ISDU (   input logic         Clk,
 		GateALU = 1'b0;
 		GateMARMUX = 1'b0;
 		 
+		LD_BEN = 1'b0;
 		ALUK = 2'b00;
 		 
-		PCMUX = 2'b00;
-		DRMUX = 1'b0;
-		SR1MUX = 1'b0;
-		SR2MUX = 1'b0;
-		ADDR1MUX = 1'b0;
-		ADDR2MUX = 2'b00;
+		PCMUX_SELECT = 2'b00;
+		DRMUX_SELECT = 1'b0;
+		SR1MUX_SELECT = 1'b0;
+		SR2MUX_SELECT = 1'b0;
+		ADDR1MUX_SELECT = 1'b0;
+		ADDR2MUX_SELECT = 2'b00;
 		 
 		Mem_OE = 1'b1;
 		Mem_WE = 1'b1;
@@ -117,6 +125,8 @@ module ISDU (   input logic         Clk,
 			S_33_1 : 
 				Next_state = S_33_2;
 			S_33_2 : 
+				Next_state = S_33_3;
+			S_33_3 :
 				Next_state = S_35;
 			S_35 : 
 				Next_state = PauseIR1;
@@ -158,12 +168,14 @@ module ISDU (   input logic         Clk,
 				begin 
 					GatePC = 1'b1;
 					LD_MAR = 1'b1;
-					PCMUX = 2'b00;
+					PCMUX_SELECT = 2'b10;
 					LD_PC = 1'b1;
 				end
-			S_33_1 : 
-				Mem_OE = 1'b0;
-			S_33_2 : 
+			S_33_1, S_33_2 : 
+				begin
+					Mem_OE = 1'b0;
+				end
+			S_33_3 : 
 				begin 
 					Mem_OE = 1'b0;
 					LD_MDR = 1'b1;
@@ -179,7 +191,7 @@ module ISDU (   input logic         Clk,
 				LD_BEN = 1'b1;
 			S_01 : 
 				begin 
-					SR2MUX = IR_5;
+					SR2MUX_SELECT = IR_5;
 					ALUK = 2'b00;
 					GateALU = 1'b1;
 					LD_REG = 1'b1;
