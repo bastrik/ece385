@@ -97,6 +97,7 @@ datapath d0 (.Clk(Clk),
              .MDR_OUT(MDR), 
              .IR_OUT(IR), 
              .PC_OUT(PC) );
+// END TODO
 
 // Our SRAM and I/O controller
 Mem2IO memory_subsystem(
