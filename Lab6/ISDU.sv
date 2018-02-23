@@ -55,7 +55,7 @@ module ISDU (   input logic         Clk,
 									Mem_WE_sync
 				);
 
-	enum logic [4:0] 	{Halted, 
+	enum logic [5:0] 	{Halted, 
 						PauseIR1, 
 						PauseIR2, 
 						S_18, 
@@ -130,7 +130,7 @@ module ISDU (   input logic         Clk,
 		ALUK = 2'b00;
 		 
 		// Default behavior is PC = PC + 1
-		PCMUX_SELECT = 2'b10;
+		PCMUX_SELECT = 2'b00;
 		DRMUX_SELECT = 1'b0;
 		SR1MUX_SELECT = 1'b0;
 		SR2MUX_SELECT = 1'b0;
@@ -336,9 +336,11 @@ module ISDU (   input logic         Clk,
 				GateALU = 1'b1;
 			end
 			S_09_1 :
+			begin
 				LD_REG = 1'b1;
 				DRMUX_SELECT = 1'b1;
 				LD_CC = 1'b1;
+			end
 
 			//JSR
 			S_04 : 
@@ -376,10 +378,10 @@ module ISDU (   input logic         Clk,
 				begin 
 					Mem_OE = 1'b0;
 					LD_MDR = 1'b1;
-					GateMDR = 1'b1;
 				end
 			S_27 : 
 				begin
+					GateMDR = 1'b1;
 					DRMUX_SELECT = 1'b1;
 					LD_REG = 1'b1;
 					LD_CC = 1'b1;
@@ -409,8 +411,7 @@ module ISDU (   input logic         Clk,
 			S_00 : ;
 			S_22 : 
 				begin
-					SR1MUX_SELECT = 1'b1;
-					ADDR1MUX_SELECT = 1'b0;
+					ADDR1MUX_SELECT = 1'b1;
 					ADDR2MUX_SELECT = 2'b01;
 					PCMUX_SELECT = 2'b01;
 				end
@@ -419,11 +420,12 @@ module ISDU (   input logic         Clk,
 					LD_PC = 1'b1;
 				end
 
+			// JMP
 			S_12 : 
 				begin
-					SR2MUX_SELECT = 1'b0;
-					PCMUX_SELECT = 2'b01;
+					SR1MUX_SELECT = 1'b1;
 					ADDR1MUX_SELECT = 1'b0;
+					PCMUX_SELECT = 2'b01;
 				end
 			S_12_1 :
 				LD_PC = 1'b1;

@@ -19,7 +19,7 @@ module reg_BEN (input logic Clk, Reset, Load,
 		// Default value
 		BEN_out = 1'b0;
 		// Check if any of the NZP codes match the condition codes
-		if ((IR_NZP[2] & CC[2] ) | (IR_NZP[1] & CC[1]) | (IR_NZP[0] & CC[0]))
+		if ((IR_NZP[2] & CC[2]) | (IR_NZP[1] & CC[1]) | (IR_NZP[0] & CC[0]))
 			BEN_out = 1'b1;
 		end
 
