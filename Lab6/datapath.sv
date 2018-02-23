@@ -12,6 +12,13 @@ module datapath(input logic Clk, Reset,
 		output logic [11:0] LED
 );
 
+// Set LEDs
+always_comb
+begin
+	if (LD_LED)
+		LED = IR_OUT[11:0];
+end
+
 // Global data bus
 logic [15:0] bus;
 
