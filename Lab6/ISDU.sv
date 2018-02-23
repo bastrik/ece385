@@ -287,19 +287,18 @@ module ISDU (   input logic         Clk,
 					begin 
 						SR1MUX_SELECT = 1'b1;
 						SR2MUX_SELECT = 1'b1;
-						ALUK = 2'b00;
-						GateALU = 1'b1;												
+						ALUK = 2'b00;											
 					end
 					1'b1:
 					begin
 						SR1MUX_SELECT = 1'b1;
 						SR2MUX_SELECT = 1'b0;
-						ALUK = 2'b00;
-						GateALU = 1'b1;
+						ALUK = 2'b00;						
 					end
 				endcase
 			S_01_1 : 
 			begin
+				GateALU = 1'b1;
 				DRMUX_SELECT = 1'b1;
 				LD_REG = 1'b1;
 				LD_CC = 1'b1;
@@ -311,19 +310,18 @@ module ISDU (   input logic         Clk,
 					begin 
 						SR1MUX_SELECT = 1'b1;
 						SR2MUX_SELECT = 1'b1;
-						ALUK = 2'b01;
-						GateALU = 1'b1;												
+						ALUK = 2'b01;												
 					end
 					1'b1:
 					begin
 						SR1MUX_SELECT = 1'b1;
 						SR2MUX_SELECT = 1'b0;
 						ALUK = 2'b01;
-						GateALU = 1'b1;
 					end
 				endcase
 			S_05_1 : 
 			begin
+				GateALU = 1'b1;
 				DRMUX_SELECT = 1'b1;
 				LD_REG = 1'b1;
 				LD_CC = 1'b1;
@@ -333,10 +331,10 @@ module ISDU (   input logic         Clk,
 			begin
 				ALUK = 2'b10;
 				SR1MUX_SELECT = 1'b1;
-				GateALU = 1'b1;
 			end
 			S_09_1 :
 			begin
+				GateALU = 1'b1;
 				LD_REG = 1'b1;
 				DRMUX_SELECT = 1'b1;
 				LD_CC = 1'b1;
@@ -345,10 +343,10 @@ module ISDU (   input logic         Clk,
 			//JSR
 			S_04 : 
 			begin
-				DRMUX_SELECT = 1'b1;
-				GatePC = 1'b1;
+				DRMUX_SELECT = 1'b1;				
 			end
 			S_04_1 :
+				GatePC = 1'b1;
 				LD_REG = 1'b1;
 			S_21 : 
 			begin
@@ -366,9 +364,9 @@ module ISDU (   input logic         Clk,
 				SR1MUX_SELECT = 1'b1;
 				ADDR1MUX_SELECT = 1'b0;
 				ADDR2MUX_SELECT = 2'b10;
-				GateMARMUX = 1'b1;
 			end
-			S_06_1 : 
+			S_06_1 :			
+				GateMARMUX = 1'b1; 
 				LD_MAR = 1'b1;
 			S_25_0, S_25_1 : 		
 				begin
@@ -392,10 +390,10 @@ module ISDU (   input logic         Clk,
 			begin				
 				SR1MUX_SELECT = 1'b1;
 				ADDR1MUX_SELECT = 1'b0;
-				ADDR2MUX_SELECT = 2'b10;
-				GateMARMUX = 1'b1;
+				ADDR2MUX_SELECT = 2'b10;				
 			end
 			S_07_1 : 
+				GateMARMUX = 1'b1;
 				LD_MAR = 1'b1;
 			S_23 : 
 				begin
