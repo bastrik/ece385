@@ -5,7 +5,7 @@ module reg_file (input logic Clk, Reset, LD_REG,
                  input logic [15:0]  D_in,
                  output logic [15:0]  SR1_OUT, SR2_OUT);
 
-logic[15:0] data [0:7];
+logic[15:0] data[8];
 	
 always_ff @ (posedge Clk)
 begin
