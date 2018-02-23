@@ -13,10 +13,10 @@ module datapath(input logic Clk, Reset,
 );
 
 // Set LEDs
-always_comb
+always_ff @ (posedge Clk)
 begin
 	if (LD_LED)
-		LED = IR_OUT[11:0];
+		LED <= IR_OUT[11:0];
 end
 
 // Global data bus
@@ -26,7 +26,7 @@ logic [15:0] bus;
 logic[15:0] ADDER_OUT, ADDR1MUX_OUT, ADDR2MUX_OUT, PCMUX_OUT, ALU_OUT;
 logic[15:0] SR1_OUT, SR2_OUT, SR2MUX_OUT, MDRMUX_OUT;
 logic[3:0] BUSMUX_SELECT;
-logic[2:0] DRMUX_OUT, SR1MUX_OUT;
+logic[2:0] DRMUX_OUT, SR1MUX_OUT, NZP;
 logic BEN;
 
 // Replaces 4 internal tri-state buffers

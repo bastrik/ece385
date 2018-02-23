@@ -180,9 +180,9 @@ module ISDU (   input logic         Clk,
 					4'b0100 : 	// JSR
 						Next_state = S_04;
 					4'b0110 : 	// LDR
-						Next_state = S_06;
+						Next_state = S_06_0;
 					4'b0111 : 	// STR
-						Next_state = S_07;
+						Next_state = S_07_0;
 					4'b1101 : 	// PAUSE
 						Next_state = PauseIR1;					
 
@@ -283,11 +283,14 @@ module ISDU (   input logic         Clk,
 						SR2MUX_SELECT = 1'b0;
 						ALUK = 2'b00;
 						GateALU = 1'b1;
+					end
 				endcase
 			S_01_1 : 
+			begin
 				DRMUX_SELECT = 1'b1;
 				LD_REG = 1'b1;
 				LD_CC = 1'b1;
+			end
 
 			S_05 : 					// and, andi
 				case (IR_5)
