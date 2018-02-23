@@ -1,20 +1,15 @@
-// Determines branch-enable signal
+// Calculates and holds condition codes
 
-module NZP (input logic [15:0] bus,
-	    input logic [2:0] instruction,
-            output logic BEN);
+module NZP (input logic Clk, Reset, Load, 
+	    input logic [15:0] bus,
+	    output logic [2:0] NZP);
 
-// Internal connections
-logic N, Z, P;
-
-always_comb
+always_ff @ (posedge Clk)
 begin
 	// Determine NZP
 	if (bus == 16'h0000)
 	begin
-		N = 1'b0;
-		Z = 1'b1;
-		P = 1'b0;
+		NZP = 3'b010;
 	end
 
 	else
@@ -22,26 +17,13 @@ begin
 		case (bus[15])
 			1'b0:
 			begin
-				N = 1'b0;
-				Z = 1'b0;
-				P = 1'b1;
+				NZP = 3'b001;
 			end
 			1'b1:
 			begin
-				N = 1'b1;
-				Z = 1'b0;
-				P = 1'b0;
+				NZP = 3'b100;
 			end
 	       endcase
-       end
-
-       // Default
-       BEN = 1'b0;
-
-       // Compare to IR[11:9]
-       if (((N == 1'b1) && (instruction[2] == 1'b1)) || ((Z == 1'b1) && (instruction[1] == 1'b1)) || ((P == 1'b1) && (instruction[0] == 1'b1)))
-       begin
-	       BEN = 1'b1;
        end
 end
 
