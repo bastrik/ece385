@@ -128,20 +128,23 @@ ALU ALU1(
 		.out(ALU_OUT)
 		);
 
-// Determine branch-enable
+// Calculate and hold condition codes
 NZP NZP1(
+		.Clk(Clk),
+		.Reset(Reset),
+		.Load(LD_CC),
 		.bus(bus), 
-		.instruction(IR_OUT[11:9]), 
-		.BEN(BEN)
+		.NZP(NZP)
 		);
 
 // Branch-enable register
-reg_1 regBEN(
+reg_BEN regBEN(
 		.Clk(Clk), 
 		.Reset(Reset),
 		.Load(LD_BEN), 
-		.D_in(BEN), 
-		.D_out(BEN_OUT)
+		.IR_NZP(IR_OUT[11:9]), 
+		.CC(NZP), 
+		.BEN(BEN_OUT)
 		);
 
 // MAR

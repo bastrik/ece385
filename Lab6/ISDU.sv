@@ -125,7 +125,8 @@ module ISDU (   input logic         Clk,
 		LD_BEN = 1'b0;
 		ALUK = 2'b00;
 		 
-		PCMUX_SELECT = 2'b00;
+		// Default behavior is PC = PC + 1
+		PCMUX_SELECT = 2'b10;
 		DRMUX_SELECT = 1'b0;
 		SR1MUX_SELECT = 1'b0;
 		SR2MUX_SELECT = 1'b0;
