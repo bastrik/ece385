@@ -69,6 +69,7 @@ module ISDU (   input logic         Clk,
 						S_05,
 						S_05_1,
 						S_09,
+						S_09_1,
 						S_06_0,
 						S_06_1,
 						S_25_0,
@@ -85,8 +86,11 @@ module ISDU (   input logic         Clk,
 						S_22,
 						S_22_1,
 						S_12,
+						S_12_1,
 						S_04,
-						S_21}   State, Next_state;   // Internal state logic
+						S_04_1,
+						S_21,
+						S_21_1}   State, Next_state;   // Internal state logic
 
 	// Declare asynchronous internal memory control signals
 	logic Mem_OE, Mem_WE;
@@ -206,6 +210,9 @@ module ISDU (   input logic         Clk,
 			S_25_2 :
 				Next_state = S_27;
 
+			S_09 :
+				Next_state = S_09_1;
+
 			S_07_0 : 
 				Next_state = S_07_1;
 			S_07_1 : 
@@ -229,8 +236,14 @@ module ISDU (   input logic         Clk,
 				endcase
 			S_22 :
 				Next_state = S_22_1;
+			S_12 :
+				Next_state = S_12_1;
 
-			S_04 : 
+			S_21 :
+				Next_state = S_21_1;
+			S_04 :
+				Next_state = S_04_1;
+			S_04_1 : 
 				Next_state = S_21;
 
 			default : 
@@ -316,6 +329,35 @@ module ISDU (   input logic         Clk,
 				LD_CC = 1'b1;
 			end
 
+			S_09 :					// NOT
+			begin
+				ALUK = 2'b10;
+				SR1MUX_SELECT = 1'b1;
+				GateALU = 1'b1;
+			end
+			S_09_1 :
+				LD_REG = 1'b1;
+				DRMUX_SELECT = 1'b1;
+				LD_CC = 1'b1;
+
+			//JSR
+			S_04 : 
+			begin
+				DRMUX_SELECT = 1'b1;
+				GatePC = 1'b1;
+			end
+			S_04_1 :
+				LD_REG = 1'b1;
+			S_21 : 
+			begin
+				ADDR2MUX_SELECT = 2'b00;
+				ADDR1MUX_SELECT = 1'b1;
+				PCMUX_SELECT = 2'b01;
+			end
+			S_21_1 : 
+				LD_PC = 1'b1;
+
+
 			// LDR
 			S_06_0 : 	
 			begin				
@@ -376,6 +418,16 @@ module ISDU (   input logic         Clk,
 				begin
 					LD_PC = 1'b1;
 				end
+
+			S_12 : 
+				begin
+					SR2MUX_SELECT = 1'b0;
+					PCMUX_SELECT = 2'b01;
+					ADDR1MUX_SELECT = 1'b0;
+				end
+			S_12_1 :
+				LD_PC = 1'b1;
+
 
 			default : ;
 		endcase
