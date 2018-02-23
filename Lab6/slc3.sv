@@ -82,6 +82,7 @@ assign MIO_EN = ~OE;
 // Be careful about whether Reset is active high or low
 datapath d0 (.Reset(Reset_ah), .BEN_OUT(BEN), .MAR_OUT(MAR), .MDR_OUT(MDR), .IR_OUT(IR), .PC_OUT(PC), .*
      	    );
+>>>>>>> 68cd1cc2b23af6f34cf67526b60259f13b070626
 
 // Our SRAM and I/O controller
 Mem2IO memory_subsystem(
