@@ -11,7 +11,7 @@ begin
 		// Determine NZP
 		if (bus == 16'h0000)
 		begin
-			NZP = 3'b010;
+			NZP <= 3'b010;
 		end
 
 		else
@@ -19,11 +19,11 @@ begin
 			case (bus[15])
 				1'b0:
 				begin
-					NZP = 3'b001;
+					NZP <= 3'b001;
 				end
 				1'b1:
 				begin
-					NZP = 3'b100;
+					NZP <= 3'b100;
 				end
 		       endcase
 	       end
