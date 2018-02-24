@@ -29,7 +29,6 @@ logic[15:0] ADDER_OUT, ADDR1MUX_OUT, ADDR2MUX_OUT, PCMUX_OUT, ALU_OUT;
 logic[15:0] SR1_OUT, SR2_OUT, SR2MUX_OUT, MDRMUX_OUT;
 logic[3:0] BUSMUX_SELECT;
 logic[2:0] DRMUX_OUT, SR1MUX_OUT, NZP;
-logic BEN;
 
 // Replaces 4 internal tri-state buffers
 // Determines which signal is set by the bus

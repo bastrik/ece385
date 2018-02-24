@@ -6,24 +6,27 @@ module NZP (input logic Clk, Reset, Load,
 
 always_ff @ (posedge Clk)
 begin
-	// Determine NZP
-	if (bus == 16'h0000)
+	if (Load)
 	begin
-		NZP = 3'b010;
-	end
+		// Determine NZP
+		if (bus == 16'h0000)
+		begin
+			NZP = 3'b010;
+		end
 
-	else
-	begin
-		case (bus[15])
-			1'b0:
-			begin
-				NZP = 3'b001;
-			end
-			1'b1:
-			begin
-				NZP = 3'b100;
-			end
-	       endcase
+		else
+		begin
+			case (bus[15])
+				1'b0:
+				begin
+					NZP = 3'b001;
+				end
+				1'b1:
+				begin
+					NZP = 3'b100;
+				end
+		       endcase
+	       end
        end
 end
 
