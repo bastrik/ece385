@@ -55,7 +55,7 @@ module ISDU (   input logic         Clk,
 									Mem_WE_sync
 				);
 
-	enum logic [5:0] 	{Halted, 
+	enum logic [4:0] 	{Halted, 
 						PauseIR1, 
 						PauseIR2, 
 						S_18, 
@@ -65,32 +65,23 @@ module ISDU (   input logic         Clk,
 						S_35, 
 						S_32, 
 						S_01,
-						S_01_1,
 						S_05,
-						S_05_1,
 						S_09,
-						S_09_1,
-						S_06_0,
-						S_06_1,
+						S_06,
 						S_25_0,
 						S_25_1,
 						S_25_2,
 						S_27,
-						S_07_0,
-						S_07_1,
+						S_07,
 						S_23,
 						S_16_0,
 						S_16_1,
 						S_16_2,						
 						S_00,
 						S_22,
-						S_22_1,
 						S_12,
-						S_12_1,
 						S_04,
-						S_04_1,
-						S_21,
-						S_21_1}   State, Next_state;   // Internal state logic
+						S_21}   State, Next_state;   // Internal state logic
 
 	// Declare asynchronous internal memory control signals
 	logic Mem_OE, Mem_WE;
@@ -184,9 +175,9 @@ module ISDU (   input logic         Clk,
 					4'b0100 : 	// JSR
 						Next_state = S_04;
 					4'b0110 : 	// LDR
-						Next_state = S_06_0;
+						Next_state = S_06;
 					4'b0111 : 	// STR
-						Next_state = S_07_0;
+						Next_state = S_07;
 					4'b1101 : 	// PAUSE
 						Next_state = PauseIR1;					
 
@@ -195,12 +186,10 @@ module ISDU (   input logic         Clk,
 				endcase
 
 			S_01 :
-				Next_state = S_01_1;
+				Next_state = S_18;
 			S_05 :
-				Next_state = S_05_1;
-			S_06_0 :
-				Next_state = S_06_1;
-			S_06_1 : 
+				Next_state = S_18;
+			S_06 :
 				Next_state = S_25_0;
 			// reading from SRAM takes 3 cycles to guarantee data retrival
 			S_25_0 : 
@@ -211,11 +200,9 @@ module ISDU (   input logic         Clk,
 				Next_state = S_27;
 
 			S_09 :
-				Next_state = S_09_1;
+				Next_state = S_18;
 
-			S_07_0 : 
-				Next_state = S_07_1;
-			S_07_1 : 
+			S_07 : 
 				Next_state = S_23;
 			S_23 : 
 				Next_state = S_16_0;
@@ -235,15 +222,13 @@ module ISDU (   input logic         Clk,
 						Next_state = S_18;
 				endcase
 			S_22 :
-				Next_state = S_22_1;
+				Next_state = S_18;
 			S_12 :
-				Next_state = S_12_1;
+				Next_state = S_18;
 
 			S_21 :
-				Next_state = S_21_1;
+				Next_state = S_18;
 			S_04 :
-				Next_state = S_04_1;
-			S_04_1 : 
 				Next_state = S_21;
 
 			default : 
@@ -288,21 +273,22 @@ module ISDU (   input logic         Clk,
 						SR1MUX_SELECT = 1'b1;
 						SR2MUX_SELECT = 1'b1;
 						ALUK = 2'b00;											
+						GateALU = 1'b1;
+						DRMUX_SELECT = 1'b1;
+						LD_REG = 1'b1;
+						LD_CC = 1'b1;
 					end
 					1'b1:
 					begin
 						SR1MUX_SELECT = 1'b1;
 						SR2MUX_SELECT = 1'b0;
-						ALUK = 2'b00;						
+						ALUK = 2'b00;											
+						GateALU = 1'b1;
+						DRMUX_SELECT = 1'b1;
+						LD_REG = 1'b1;
+						LD_CC = 1'b1;
 					end
 				endcase
-			S_01_1 : 
-			begin
-				GateALU = 1'b1;
-				DRMUX_SELECT = 1'b1;
-				LD_REG = 1'b1;
-				LD_CC = 1'b1;
-			end
 
 			S_05 : 					// and, andi
 				case (IR_5)
@@ -310,64 +296,58 @@ module ISDU (   input logic         Clk,
 					begin 
 						SR1MUX_SELECT = 1'b1;
 						SR2MUX_SELECT = 1'b1;
-						ALUK = 2'b01;												
+						ALUK = 2'b01;
+						GateALU = 1'b1;
+						DRMUX_SELECT = 1'b1;
+						LD_REG = 1'b1;
+						LD_CC = 1'b1;
 					end
 					1'b1:
 					begin
 						SR1MUX_SELECT = 1'b1;
 						SR2MUX_SELECT = 1'b0;
 						ALUK = 2'b01;
+						GateALU = 1'b1;
+						DRMUX_SELECT = 1'b1;
+						LD_REG = 1'b1;
+						LD_CC = 1'b1;
 					end
 				endcase
-			S_05_1 : 
-			begin
-				GateALU = 1'b1;
-				DRMUX_SELECT = 1'b1;
-				LD_REG = 1'b1;
-				LD_CC = 1'b1;
-			end
 
 			S_09 :					// NOT
 			begin
-				ALUK = 2'b10;
 				SR1MUX_SELECT = 1'b1;
-			end
-			S_09_1 :
-			begin
+				ALUK = 2'b10;
 				GateALU = 1'b1;
 				LD_REG = 1'b1;
 				DRMUX_SELECT = 1'b1;
 				LD_CC = 1'b1;
 			end
 
-			//JSR
+			// JSR
 			S_04 : 
 			begin
-				DRMUX_SELECT = 1'b1;				
-			end
-			S_04_1 :
+				DRMUX_SELECT = 1'b0;				
 				GatePC = 1'b1;
 				LD_REG = 1'b1;
+			end
 			S_21 : 
 			begin
 				ADDR2MUX_SELECT = 2'b00;
 				ADDR1MUX_SELECT = 1'b1;
 				PCMUX_SELECT = 2'b01;
-			end
-			S_21_1 : 
 				LD_PC = 1'b1;
-
+			end
 
 			// LDR
-			S_06_0 : 	
+			S_06 : 	
 			begin				
 				SR1MUX_SELECT = 1'b1;
 				ADDR1MUX_SELECT = 1'b0;
 				ADDR2MUX_SELECT = 2'b10;
-			end
-			S_06_1 :			
 				GateMARMUX = 1'b1; 
 				LD_MAR = 1'b1;
+			end
 			S_25_0, S_25_1 : 		
 				begin
 					Mem_OE = 1'b0;
@@ -386,18 +366,19 @@ module ISDU (   input logic         Clk,
 				end
 
 			// STR
-			S_07_0 : 	
+			S_07 : 	
 			begin				
 				SR1MUX_SELECT = 1'b1;
 				ADDR1MUX_SELECT = 1'b0;
 				ADDR2MUX_SELECT = 2'b10;				
-			end
-			S_07_1 : 
 				GateMARMUX = 1'b1;
 				LD_MAR = 1'b1;
+			end
 			S_23 : 
 				begin
 					SR1MUX_SELECT = 1'b0;
+					ALUK = 2'b11;
+					GateALU = 1'b1;
 					LD_MDR = 1'b1;
 				end
 			S_16_0, S_16_1, S_16_2 : 		
@@ -412,9 +393,6 @@ module ISDU (   input logic         Clk,
 					ADDR1MUX_SELECT = 1'b1;
 					ADDR2MUX_SELECT = 2'b01;
 					PCMUX_SELECT = 2'b01;
-				end
-			S_22_1 :
-				begin
 					LD_PC = 1'b1;
 				end
 
@@ -423,11 +401,10 @@ module ISDU (   input logic         Clk,
 				begin
 					SR1MUX_SELECT = 1'b1;
 					ADDR1MUX_SELECT = 1'b0;
+					ADDR2MUX_SELECT = 2'b11;
 					PCMUX_SELECT = 2'b01;
+					LD_PC = 1'b1;
 				end
-			S_12_1 :
-				LD_PC = 1'b1;
-
 
 			default : ;
 		endcase

@@ -15,7 +15,9 @@ module datapath(input logic Clk, Reset,
 // Set LEDs
 always_ff @ (posedge Clk)
 begin
-	if (LD_LED)
+	if (Reset)
+		LED <= {12{1'b0}};
+	else if (LD_LED)
 		LED <= IR_OUT[11:0];
 end
 
