@@ -21,7 +21,7 @@ module lab7_soc (
 		input  wire [17:0] switches_wire_export  // switches_wire.export
 	);
 
-	wire         altpll_0_c0_clk;                                            // altpll_0:c0 -> [mm_interconnect_0:altpll_0_c0_clk, rst_controller_001:clk, sdram:clk]
+	wire         sdram_pll_c0_clk;                                           // sdram_pll:c0 -> [mm_interconnect_0:sdram_pll_c0_clk, rst_controller_001:clk, sdram:clk]
 	wire  [31:0] nios2_gen2_0_data_master_readdata;                          // mm_interconnect_0:nios2_gen2_0_data_master_readdata -> nios2_gen2_0:d_readdata
 	wire         nios2_gen2_0_data_master_waitrequest;                       // mm_interconnect_0:nios2_gen2_0_data_master_waitrequest -> nios2_gen2_0:d_waitrequest
 	wire         nios2_gen2_0_data_master_debugaccess;                       // nios2_gen2_0:debug_mem_slave_debugaccess_to_roms -> mm_interconnect_0:nios2_gen2_0_data_master_debugaccess
@@ -44,11 +44,11 @@ module lab7_soc (
 	wire   [3:0] mm_interconnect_0_nios2_gen2_0_debug_mem_slave_byteenable;  // mm_interconnect_0:nios2_gen2_0_debug_mem_slave_byteenable -> nios2_gen2_0:debug_mem_slave_byteenable
 	wire         mm_interconnect_0_nios2_gen2_0_debug_mem_slave_write;       // mm_interconnect_0:nios2_gen2_0_debug_mem_slave_write -> nios2_gen2_0:debug_mem_slave_write
 	wire  [31:0] mm_interconnect_0_nios2_gen2_0_debug_mem_slave_writedata;   // mm_interconnect_0:nios2_gen2_0_debug_mem_slave_writedata -> nios2_gen2_0:debug_mem_slave_writedata
-	wire  [31:0] mm_interconnect_0_altpll_0_pll_slave_readdata;              // altpll_0:readdata -> mm_interconnect_0:altpll_0_pll_slave_readdata
-	wire   [1:0] mm_interconnect_0_altpll_0_pll_slave_address;               // mm_interconnect_0:altpll_0_pll_slave_address -> altpll_0:address
-	wire         mm_interconnect_0_altpll_0_pll_slave_read;                  // mm_interconnect_0:altpll_0_pll_slave_read -> altpll_0:read
-	wire         mm_interconnect_0_altpll_0_pll_slave_write;                 // mm_interconnect_0:altpll_0_pll_slave_write -> altpll_0:write
-	wire  [31:0] mm_interconnect_0_altpll_0_pll_slave_writedata;             // mm_interconnect_0:altpll_0_pll_slave_writedata -> altpll_0:writedata
+	wire  [31:0] mm_interconnect_0_sdram_pll_pll_slave_readdata;             // sdram_pll:readdata -> mm_interconnect_0:sdram_pll_pll_slave_readdata
+	wire   [1:0] mm_interconnect_0_sdram_pll_pll_slave_address;              // mm_interconnect_0:sdram_pll_pll_slave_address -> sdram_pll:address
+	wire         mm_interconnect_0_sdram_pll_pll_slave_read;                 // mm_interconnect_0:sdram_pll_pll_slave_read -> sdram_pll:read
+	wire         mm_interconnect_0_sdram_pll_pll_slave_write;                // mm_interconnect_0:sdram_pll_pll_slave_write -> sdram_pll:write
+	wire  [31:0] mm_interconnect_0_sdram_pll_pll_slave_writedata;            // mm_interconnect_0:sdram_pll_pll_slave_writedata -> sdram_pll:writedata
 	wire         mm_interconnect_0_onchip_memory2_0_s1_chipselect;           // mm_interconnect_0:onchip_memory2_0_s1_chipselect -> onchip_memory2_0:chipselect
 	wire  [31:0] mm_interconnect_0_onchip_memory2_0_s1_readdata;             // onchip_memory2_0:readdata -> mm_interconnect_0:onchip_memory2_0_s1_readdata
 	wire   [1:0] mm_interconnect_0_onchip_memory2_0_s1_address;              // mm_interconnect_0:onchip_memory2_0_s1_address -> onchip_memory2_0:address
@@ -75,24 +75,9 @@ module lab7_soc (
 	wire  [31:0] mm_interconnect_0_switches_s1_readdata;                     // switches:readdata -> mm_interconnect_0:switches_s1_readdata
 	wire   [1:0] mm_interconnect_0_switches_s1_address;                      // mm_interconnect_0:switches_s1_address -> switches:address
 	wire  [31:0] nios2_gen2_0_irq_irq;                                       // irq_mapper:sender_irq -> nios2_gen2_0:irq
-	wire         rst_controller_reset_out_reset;                             // rst_controller:reset_out -> [altpll_0:reset, buttons:reset_n, irq_mapper:reset, led:reset_n, mm_interconnect_0:nios2_gen2_0_reset_reset_bridge_in_reset_reset, nios2_gen2_0:reset_n, onchip_memory2_0:reset, rst_translator:in_reset, switches:reset_n, sysid_qsys_0:reset_n]
+	wire         rst_controller_reset_out_reset;                             // rst_controller:reset_out -> [buttons:reset_n, irq_mapper:reset, led:reset_n, mm_interconnect_0:nios2_gen2_0_reset_reset_bridge_in_reset_reset, nios2_gen2_0:reset_n, onchip_memory2_0:reset, rst_translator:in_reset, sdram_pll:reset, switches:reset_n, sysid_qsys_0:reset_n]
 	wire         rst_controller_reset_out_reset_req;                         // rst_controller:reset_req -> [nios2_gen2_0:reset_req, onchip_memory2_0:reset_req, rst_translator:reset_req_in]
 	wire         rst_controller_001_reset_out_reset;                         // rst_controller_001:reset_out -> [mm_interconnect_0:sdram_reset_reset_bridge_in_reset_reset, sdram:reset_n]
-
-	lab7_soc_altpll_0 altpll_0 (
-		.clk       (clk_clk),                                        //       inclk_interface.clk
-		.reset     (rst_controller_reset_out_reset),                 // inclk_interface_reset.reset
-		.read      (mm_interconnect_0_altpll_0_pll_slave_read),      //             pll_slave.read
-		.write     (mm_interconnect_0_altpll_0_pll_slave_write),     //                      .write
-		.address   (mm_interconnect_0_altpll_0_pll_slave_address),   //                      .address
-		.readdata  (mm_interconnect_0_altpll_0_pll_slave_readdata),  //                      .readdata
-		.writedata (mm_interconnect_0_altpll_0_pll_slave_writedata), //                      .writedata
-		.c0        (altpll_0_c0_clk),                                //                    c0.clk
-		.c1        (sdram_clk_clk),                                  //                    c1.clk
-		.areset    (),                                               //        areset_conduit.export
-		.locked    (),                                               //        locked_conduit.export
-		.phasedone ()                                                //     phasedone_conduit.export
-	);
 
 	lab7_soc_buttons buttons (
 		.clk      (clk_clk),                               //                 clk.clk
@@ -156,7 +141,7 @@ module lab7_soc (
 	);
 
 	lab7_soc_sdram sdram (
-		.clk            (altpll_0_c0_clk),                          //   clk.clk
+		.clk            (sdram_pll_c0_clk),                         //   clk.clk
 		.reset_n        (~rst_controller_001_reset_out_reset),      // reset.reset_n
 		.az_addr        (mm_interconnect_0_sdram_s1_address),       //    s1.address
 		.az_be_n        (~mm_interconnect_0_sdram_s1_byteenable),   //      .byteenable_n
@@ -178,6 +163,21 @@ module lab7_soc (
 		.zs_we_n        (sdram_wire_we_n)                           //      .export
 	);
 
+	lab7_soc_sdram_pll sdram_pll (
+		.clk       (clk_clk),                                         //       inclk_interface.clk
+		.reset     (rst_controller_reset_out_reset),                  // inclk_interface_reset.reset
+		.read      (mm_interconnect_0_sdram_pll_pll_slave_read),      //             pll_slave.read
+		.write     (mm_interconnect_0_sdram_pll_pll_slave_write),     //                      .write
+		.address   (mm_interconnect_0_sdram_pll_pll_slave_address),   //                      .address
+		.readdata  (mm_interconnect_0_sdram_pll_pll_slave_readdata),  //                      .readdata
+		.writedata (mm_interconnect_0_sdram_pll_pll_slave_writedata), //                      .writedata
+		.c0        (sdram_pll_c0_clk),                                //                    c0.clk
+		.c1        (sdram_clk_clk),                                   //                    c1.clk
+		.areset    (),                                                //        areset_conduit.export
+		.locked    (),                                                //        locked_conduit.export
+		.phasedone ()                                                 //     phasedone_conduit.export
+	);
+
 	lab7_soc_switches switches (
 		.clk      (clk_clk),                                //                 clk.clk
 		.reset_n  (~rst_controller_reset_out_reset),        //               reset.reset_n
@@ -194,8 +194,8 @@ module lab7_soc (
 	);
 
 	lab7_soc_mm_interconnect_0 mm_interconnect_0 (
-		.altpll_0_c0_clk                                (altpll_0_c0_clk),                                            //                              altpll_0_c0.clk
 		.clk_0_clk_clk                                  (clk_clk),                                                    //                                clk_0_clk.clk
+		.sdram_pll_c0_clk                               (sdram_pll_c0_clk),                                           //                             sdram_pll_c0.clk
 		.nios2_gen2_0_reset_reset_bridge_in_reset_reset (rst_controller_reset_out_reset),                             // nios2_gen2_0_reset_reset_bridge_in_reset.reset
 		.sdram_reset_reset_bridge_in_reset_reset        (rst_controller_001_reset_out_reset),                         //        sdram_reset_reset_bridge_in_reset.reset
 		.nios2_gen2_0_data_master_address               (nios2_gen2_0_data_master_address),                           //                 nios2_gen2_0_data_master.address
@@ -210,11 +210,6 @@ module lab7_soc (
 		.nios2_gen2_0_instruction_master_waitrequest    (nios2_gen2_0_instruction_master_waitrequest),                //                                         .waitrequest
 		.nios2_gen2_0_instruction_master_read           (nios2_gen2_0_instruction_master_read),                       //                                         .read
 		.nios2_gen2_0_instruction_master_readdata       (nios2_gen2_0_instruction_master_readdata),                   //                                         .readdata
-		.altpll_0_pll_slave_address                     (mm_interconnect_0_altpll_0_pll_slave_address),               //                       altpll_0_pll_slave.address
-		.altpll_0_pll_slave_write                       (mm_interconnect_0_altpll_0_pll_slave_write),                 //                                         .write
-		.altpll_0_pll_slave_read                        (mm_interconnect_0_altpll_0_pll_slave_read),                  //                                         .read
-		.altpll_0_pll_slave_readdata                    (mm_interconnect_0_altpll_0_pll_slave_readdata),              //                                         .readdata
-		.altpll_0_pll_slave_writedata                   (mm_interconnect_0_altpll_0_pll_slave_writedata),             //                                         .writedata
 		.buttons_s1_address                             (mm_interconnect_0_buttons_s1_address),                       //                               buttons_s1.address
 		.buttons_s1_readdata                            (mm_interconnect_0_buttons_s1_readdata),                      //                                         .readdata
 		.led_s1_address                                 (mm_interconnect_0_led_s1_address),                           //                                   led_s1.address
@@ -246,6 +241,11 @@ module lab7_soc (
 		.sdram_s1_readdatavalid                         (mm_interconnect_0_sdram_s1_readdatavalid),                   //                                         .readdatavalid
 		.sdram_s1_waitrequest                           (mm_interconnect_0_sdram_s1_waitrequest),                     //                                         .waitrequest
 		.sdram_s1_chipselect                            (mm_interconnect_0_sdram_s1_chipselect),                      //                                         .chipselect
+		.sdram_pll_pll_slave_address                    (mm_interconnect_0_sdram_pll_pll_slave_address),              //                      sdram_pll_pll_slave.address
+		.sdram_pll_pll_slave_write                      (mm_interconnect_0_sdram_pll_pll_slave_write),                //                                         .write
+		.sdram_pll_pll_slave_read                       (mm_interconnect_0_sdram_pll_pll_slave_read),                 //                                         .read
+		.sdram_pll_pll_slave_readdata                   (mm_interconnect_0_sdram_pll_pll_slave_readdata),             //                                         .readdata
+		.sdram_pll_pll_slave_writedata                  (mm_interconnect_0_sdram_pll_pll_slave_writedata),            //                                         .writedata
 		.switches_s1_address                            (mm_interconnect_0_switches_s1_address),                      //                              switches_s1.address
 		.switches_s1_readdata                           (mm_interconnect_0_switches_s1_readdata),                     //                                         .readdata
 		.sysid_qsys_0_control_slave_address             (mm_interconnect_0_sysid_qsys_0_control_slave_address),       //               sysid_qsys_0_control_slave.address
@@ -348,7 +348,7 @@ module lab7_soc (
 		.ADAPT_RESET_REQUEST       (0)
 	) rst_controller_001 (
 		.reset_in0      (~reset_reset_n),                     // reset_in0.reset
-		.clk            (altpll_0_c0_clk),                    //       clk.clk
+		.clk            (sdram_pll_c0_clk),                   //       clk.clk
 		.reset_out      (rst_controller_001_reset_out_reset), // reset_out.reset
 		.reset_req      (),                                   // (terminated)
 		.reset_req_in0  (1'b0),                               // (terminated)

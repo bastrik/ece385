@@ -17,7 +17,7 @@
 module  ball ( input         Clk,                // 50 MHz clock
                              Reset,              // Active-high reset signal
                              frame_clk,          // The clock indicating a new frame (~60Hz)
-               input [7:0]   keycode             // Keyboard input
+               input [7:0]   keycode,            // Keyboard input
                input [9:0]   DrawX, DrawY,       // Current pixel coordinates
                output logic  is_ball             // Whether current pixel belongs to ball or background
               );
@@ -93,22 +93,22 @@ module  ball ( input         Clk,                // 50 MHz clock
 
             // *************** KEY PRESS CONDITIONS ****************** //
             case (keycode)
-                8'h77:      // w
+                8'h1A:      // w
                 begin
                     Ball_Y_Motion_in = (~(Ball_Y_Step) + 1'b1);
                     Ball_X_Motion_in = 0;
                 end
-                8'h61:      // a
+                8'h04:      // a
                 begin
                     Ball_Y_Motion_in = 0;
                     Ball_X_Motion_in = (~(Ball_X_Step) + 1'b1);
                 end
-                8'h73:      // s
+                8'h16:      // s
                 begin
                     Ball_Y_Motion_in = Ball_Y_Step;
                     Ball_X_Motion_in = 0;
                 end
-                8'h64:      // d
+                8'h07:      // d
                 begin
                     Ball_Y_Motion_in = 0;
                     Ball_X_Motion_in = Ball_X_Step;

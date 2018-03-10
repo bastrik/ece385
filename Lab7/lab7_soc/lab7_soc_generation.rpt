@@ -2,8 +2,6 @@ Info: Starting: Create block symbol file (.bsf)
 Info: qsys-generate "C:\Users\Justin Song\Documents\ece385\Lab7\lab7_soc.qsys" --block-symbol-file --output-directory="C:\Users\Justin Song\Documents\ece385\Lab7\lab7_soc" --family="Cyclone IV E" --part=EP4CE115F29C7
 Progress: Loading Lab7/lab7_soc.qsys
 Progress: Reading input file
-Progress: Adding altpll_0 [altpll 15.0]
-Progress: Parameterizing module altpll_0
 Progress: Adding buttons [altera_avalon_pio 15.0]
 Progress: Parameterizing module buttons
 Progress: Adding clk_0 [clock_source 15.0]
@@ -16,6 +14,8 @@ Progress: Adding onchip_memory2_0 [altera_avalon_onchip_memory2 15.0]
 Progress: Parameterizing module onchip_memory2_0
 Progress: Adding sdram [altera_avalon_new_sdram_controller 15.0]
 Progress: Parameterizing module sdram
+Progress: Adding sdram_pll [altpll 15.0]
+Progress: Parameterizing module sdram_pll
 Progress: Adding switches [altera_avalon_pio 15.0]
 Progress: Parameterizing module switches
 Progress: Adding sysid_qsys_0 [altera_avalon_sysid_qsys 15.0]
@@ -28,9 +28,9 @@ Info: lab7_soc.buttons: PIO inputs are not hardwired in test bench. Undefined va
 Info: lab7_soc.switches: PIO inputs are not hardwired in test bench. Undefined values will be read from PIO inputs during simulation.
 Info: lab7_soc.sysid_qsys_0: System ID is not assigned automatically. Edit the System ID parameter to provide a unique ID
 Info: lab7_soc.sysid_qsys_0: Time stamp will be automatically updated when this component is generated.
-Warning: lab7_soc.altpll_0: altpll_0.areset_conduit must be exported, or connected to a matching conduit.
-Warning: lab7_soc.altpll_0: altpll_0.locked_conduit must be exported, or connected to a matching conduit.
-Warning: lab7_soc.altpll_0: altpll_0.phasedone_conduit must be exported, or connected to a matching conduit.
+Warning: lab7_soc.sdram_pll: sdram_pll.areset_conduit must be exported, or connected to a matching conduit.
+Warning: lab7_soc.sdram_pll: sdram_pll.locked_conduit must be exported, or connected to a matching conduit.
+Warning: lab7_soc.sdram_pll: sdram_pll.phasedone_conduit must be exported, or connected to a matching conduit.
 Info: ip-generate succeeded.
 Info: Finished: Create block symbol file (.bsf)
 Info: 
@@ -38,8 +38,6 @@ Info: Starting: Create HDL design files for synthesis
 Info: qsys-generate "C:\Users\Justin Song\Documents\ece385\Lab7\lab7_soc.qsys" --synthesis=VERILOG --output-directory="C:\Users\Justin Song\Documents\ece385\Lab7\lab7_soc\synthesis" --family="Cyclone IV E" --part=EP4CE115F29C7
 Progress: Loading Lab7/lab7_soc.qsys
 Progress: Reading input file
-Progress: Adding altpll_0 [altpll 15.0]
-Progress: Parameterizing module altpll_0
 Progress: Adding buttons [altera_avalon_pio 15.0]
 Progress: Parameterizing module buttons
 Progress: Adding clk_0 [clock_source 15.0]
@@ -52,6 +50,8 @@ Progress: Adding onchip_memory2_0 [altera_avalon_onchip_memory2 15.0]
 Progress: Parameterizing module onchip_memory2_0
 Progress: Adding sdram [altera_avalon_new_sdram_controller 15.0]
 Progress: Parameterizing module sdram
+Progress: Adding sdram_pll [altpll 15.0]
+Progress: Parameterizing module sdram_pll
 Progress: Adding switches [altera_avalon_pio 15.0]
 Progress: Parameterizing module switches
 Progress: Adding sysid_qsys_0 [altera_avalon_sysid_qsys 15.0]
@@ -64,34 +64,34 @@ Info: lab7_soc.buttons: PIO inputs are not hardwired in test bench. Undefined va
 Info: lab7_soc.switches: PIO inputs are not hardwired in test bench. Undefined values will be read from PIO inputs during simulation.
 Info: lab7_soc.sysid_qsys_0: System ID is not assigned automatically. Edit the System ID parameter to provide a unique ID
 Info: lab7_soc.sysid_qsys_0: Time stamp will be automatically updated when this component is generated.
-Warning: lab7_soc.altpll_0: altpll_0.areset_conduit must be exported, or connected to a matching conduit.
-Warning: lab7_soc.altpll_0: altpll_0.locked_conduit must be exported, or connected to a matching conduit.
-Warning: lab7_soc.altpll_0: altpll_0.phasedone_conduit must be exported, or connected to a matching conduit.
+Warning: lab7_soc.sdram_pll: sdram_pll.areset_conduit must be exported, or connected to a matching conduit.
+Warning: lab7_soc.sdram_pll: sdram_pll.locked_conduit must be exported, or connected to a matching conduit.
+Warning: lab7_soc.sdram_pll: sdram_pll.phasedone_conduit must be exported, or connected to a matching conduit.
 Info: lab7_soc: Generating lab7_soc "lab7_soc" for QUARTUS_SYNTH
 Info: Inserting clock-crossing logic between cmd_demux.src5 and cmd_mux_005.sink0
 Info: Inserting clock-crossing logic between cmd_demux_001.src4 and cmd_mux_005.sink1
 Info: Inserting clock-crossing logic between rsp_demux_005.src0 and rsp_mux.sink5
 Info: Inserting clock-crossing logic between rsp_demux_005.src1 and rsp_mux_001.sink4
-Info: altpll_0: "lab7_soc" instantiated altpll "altpll_0"
 Info: buttons: Starting RTL generation for module 'lab7_soc_buttons'
-Info: buttons:   Generation command is [exec C:/altera/15.0/quartus/bin64/perl/bin/perl.exe -I C:/altera/15.0/quartus/bin64/perl/lib -I C:/altera/15.0/quartus/sopc_builder/bin/europa -I C:/altera/15.0/quartus/sopc_builder/bin/perl_lib -I C:/altera/15.0/quartus/sopc_builder/bin -I C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/common -I C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio -- C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio/generate_rtl.pl --name=lab7_soc_buttons --dir=C:/Users/JUSTIN~1/AppData/Local/Temp/alt7593_1856843843189524073.dir/0059_buttons_gen/ --quartus_dir=C:/altera/15.0/quartus --verilog --config=C:/Users/JUSTIN~1/AppData/Local/Temp/alt7593_1856843843189524073.dir/0059_buttons_gen//lab7_soc_buttons_component_configuration.pl  --do_build_sim=0  ]
+Info: buttons:   Generation command is [exec C:/altera/15.0/quartus/bin64/perl/bin/perl.exe -I C:/altera/15.0/quartus/bin64/perl/lib -I C:/altera/15.0/quartus/sopc_builder/bin/europa -I C:/altera/15.0/quartus/sopc_builder/bin/perl_lib -I C:/altera/15.0/quartus/sopc_builder/bin -I C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/common -I C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio -- C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio/generate_rtl.pl --name=lab7_soc_buttons --dir=C:/Users/JUSTIN~1/AppData/Local/Temp/alt7596_1904904302482033192.dir/0001_buttons_gen/ --quartus_dir=C:/altera/15.0/quartus --verilog --config=C:/Users/JUSTIN~1/AppData/Local/Temp/alt7596_1904904302482033192.dir/0001_buttons_gen//lab7_soc_buttons_component_configuration.pl  --do_build_sim=0  ]
 Info: buttons: Done RTL generation for module 'lab7_soc_buttons'
 Info: buttons: "lab7_soc" instantiated altera_avalon_pio "buttons"
 Info: led: Starting RTL generation for module 'lab7_soc_led'
-Info: led:   Generation command is [exec C:/altera/15.0/quartus/bin64/perl/bin/perl.exe -I C:/altera/15.0/quartus/bin64/perl/lib -I C:/altera/15.0/quartus/sopc_builder/bin/europa -I C:/altera/15.0/quartus/sopc_builder/bin/perl_lib -I C:/altera/15.0/quartus/sopc_builder/bin -I C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/common -I C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio -- C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio/generate_rtl.pl --name=lab7_soc_led --dir=C:/Users/JUSTIN~1/AppData/Local/Temp/alt7593_1856843843189524073.dir/0060_led_gen/ --quartus_dir=C:/altera/15.0/quartus --verilog --config=C:/Users/JUSTIN~1/AppData/Local/Temp/alt7593_1856843843189524073.dir/0060_led_gen//lab7_soc_led_component_configuration.pl  --do_build_sim=0  ]
+Info: led:   Generation command is [exec C:/altera/15.0/quartus/bin64/perl/bin/perl.exe -I C:/altera/15.0/quartus/bin64/perl/lib -I C:/altera/15.0/quartus/sopc_builder/bin/europa -I C:/altera/15.0/quartus/sopc_builder/bin/perl_lib -I C:/altera/15.0/quartus/sopc_builder/bin -I C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/common -I C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio -- C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio/generate_rtl.pl --name=lab7_soc_led --dir=C:/Users/JUSTIN~1/AppData/Local/Temp/alt7596_1904904302482033192.dir/0002_led_gen/ --quartus_dir=C:/altera/15.0/quartus --verilog --config=C:/Users/JUSTIN~1/AppData/Local/Temp/alt7596_1904904302482033192.dir/0002_led_gen//lab7_soc_led_component_configuration.pl  --do_build_sim=0  ]
 Info: led: Done RTL generation for module 'lab7_soc_led'
 Info: led: "lab7_soc" instantiated altera_avalon_pio "led"
 Info: nios2_gen2_0: "lab7_soc" instantiated altera_nios2_gen2 "nios2_gen2_0"
 Info: onchip_memory2_0: Starting RTL generation for module 'lab7_soc_onchip_memory2_0'
-Info: onchip_memory2_0:   Generation command is [exec C:/altera/15.0/quartus/bin64/perl/bin/perl.exe -I C:/altera/15.0/quartus/bin64/perl/lib -I C:/altera/15.0/quartus/sopc_builder/bin/europa -I C:/altera/15.0/quartus/sopc_builder/bin/perl_lib -I C:/altera/15.0/quartus/sopc_builder/bin -I C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/common -I C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_onchip_memory2 -- C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_onchip_memory2/generate_rtl.pl --name=lab7_soc_onchip_memory2_0 --dir=C:/Users/JUSTIN~1/AppData/Local/Temp/alt7593_1856843843189524073.dir/0061_onchip_memory2_0_gen/ --quartus_dir=C:/altera/15.0/quartus --verilog --config=C:/Users/JUSTIN~1/AppData/Local/Temp/alt7593_1856843843189524073.dir/0061_onchip_memory2_0_gen//lab7_soc_onchip_memory2_0_component_configuration.pl  --do_build_sim=0  ]
+Info: onchip_memory2_0:   Generation command is [exec C:/altera/15.0/quartus/bin64/perl/bin/perl.exe -I C:/altera/15.0/quartus/bin64/perl/lib -I C:/altera/15.0/quartus/sopc_builder/bin/europa -I C:/altera/15.0/quartus/sopc_builder/bin/perl_lib -I C:/altera/15.0/quartus/sopc_builder/bin -I C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/common -I C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_onchip_memory2 -- C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_onchip_memory2/generate_rtl.pl --name=lab7_soc_onchip_memory2_0 --dir=C:/Users/JUSTIN~1/AppData/Local/Temp/alt7596_1904904302482033192.dir/0003_onchip_memory2_0_gen/ --quartus_dir=C:/altera/15.0/quartus --verilog --config=C:/Users/JUSTIN~1/AppData/Local/Temp/alt7596_1904904302482033192.dir/0003_onchip_memory2_0_gen//lab7_soc_onchip_memory2_0_component_configuration.pl  --do_build_sim=0  ]
 Info: onchip_memory2_0: Done RTL generation for module 'lab7_soc_onchip_memory2_0'
 Info: onchip_memory2_0: "lab7_soc" instantiated altera_avalon_onchip_memory2 "onchip_memory2_0"
 Info: sdram: Starting RTL generation for module 'lab7_soc_sdram'
-Info: sdram:   Generation command is [exec C:/altera/15.0/quartus/bin64/perl/bin/perl.exe -I C:/altera/15.0/quartus/bin64/perl/lib -I C:/altera/15.0/quartus/sopc_builder/bin/europa -I C:/altera/15.0/quartus/sopc_builder/bin/perl_lib -I C:/altera/15.0/quartus/sopc_builder/bin -I C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/common -I C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_new_sdram_controller -- C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_new_sdram_controller/generate_rtl.pl --name=lab7_soc_sdram --dir=C:/Users/JUSTIN~1/AppData/Local/Temp/alt7593_1856843843189524073.dir/0062_sdram_gen/ --quartus_dir=C:/altera/15.0/quartus --verilog --config=C:/Users/JUSTIN~1/AppData/Local/Temp/alt7593_1856843843189524073.dir/0062_sdram_gen//lab7_soc_sdram_component_configuration.pl  --do_build_sim=0  ]
+Info: sdram:   Generation command is [exec C:/altera/15.0/quartus/bin64/perl/bin/perl.exe -I C:/altera/15.0/quartus/bin64/perl/lib -I C:/altera/15.0/quartus/sopc_builder/bin/europa -I C:/altera/15.0/quartus/sopc_builder/bin/perl_lib -I C:/altera/15.0/quartus/sopc_builder/bin -I C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/common -I C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_new_sdram_controller -- C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_new_sdram_controller/generate_rtl.pl --name=lab7_soc_sdram --dir=C:/Users/JUSTIN~1/AppData/Local/Temp/alt7596_1904904302482033192.dir/0004_sdram_gen/ --quartus_dir=C:/altera/15.0/quartus --verilog --config=C:/Users/JUSTIN~1/AppData/Local/Temp/alt7596_1904904302482033192.dir/0004_sdram_gen//lab7_soc_sdram_component_configuration.pl  --do_build_sim=0  ]
 Info: sdram: Done RTL generation for module 'lab7_soc_sdram'
 Info: sdram: "lab7_soc" instantiated altera_avalon_new_sdram_controller "sdram"
+Info: sdram_pll: "lab7_soc" instantiated altpll "sdram_pll"
 Info: switches: Starting RTL generation for module 'lab7_soc_switches'
-Info: switches:   Generation command is [exec C:/altera/15.0/quartus/bin64/perl/bin/perl.exe -I C:/altera/15.0/quartus/bin64/perl/lib -I C:/altera/15.0/quartus/sopc_builder/bin/europa -I C:/altera/15.0/quartus/sopc_builder/bin/perl_lib -I C:/altera/15.0/quartus/sopc_builder/bin -I C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/common -I C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio -- C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio/generate_rtl.pl --name=lab7_soc_switches --dir=C:/Users/JUSTIN~1/AppData/Local/Temp/alt7593_1856843843189524073.dir/0063_switches_gen/ --quartus_dir=C:/altera/15.0/quartus --verilog --config=C:/Users/JUSTIN~1/AppData/Local/Temp/alt7593_1856843843189524073.dir/0063_switches_gen//lab7_soc_switches_component_configuration.pl  --do_build_sim=0  ]
+Info: switches:   Generation command is [exec C:/altera/15.0/quartus/bin64/perl/bin/perl.exe -I C:/altera/15.0/quartus/bin64/perl/lib -I C:/altera/15.0/quartus/sopc_builder/bin/europa -I C:/altera/15.0/quartus/sopc_builder/bin/perl_lib -I C:/altera/15.0/quartus/sopc_builder/bin -I C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/common -I C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio -- C:/altera/15.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio/generate_rtl.pl --name=lab7_soc_switches --dir=C:/Users/JUSTIN~1/AppData/Local/Temp/alt7596_1904904302482033192.dir/0007_switches_gen/ --quartus_dir=C:/altera/15.0/quartus --verilog --config=C:/Users/JUSTIN~1/AppData/Local/Temp/alt7596_1904904302482033192.dir/0007_switches_gen//lab7_soc_switches_component_configuration.pl  --do_build_sim=0  ]
 Info: switches: Done RTL generation for module 'lab7_soc_switches'
 Info: switches: "lab7_soc" instantiated altera_avalon_pio "switches"
 Info: sysid_qsys_0: "lab7_soc" instantiated altera_avalon_sysid_qsys "sysid_qsys_0"
@@ -107,19 +107,19 @@ Info: mm_interconnect_0: "lab7_soc" instantiated altera_mm_interconnect "mm_inte
 Info: irq_mapper: "lab7_soc" instantiated altera_irq_mapper "irq_mapper"
 Info: rst_controller: "lab7_soc" instantiated altera_reset_controller "rst_controller"
 Info: cpu: Starting RTL generation for module 'lab7_soc_nios2_gen2_0_cpu'
-Info: cpu:   Generation command is [exec C:/altera/15.0/quartus/bin64/eperlcmd.exe -I C:/altera/15.0/quartus/bin64/perl/lib -I C:/altera/15.0/quartus/sopc_builder/bin/europa -I C:/altera/15.0/quartus/sopc_builder/bin/perl_lib -I C:/altera/15.0/quartus/sopc_builder/bin -I C:/altera/15.0/quartus/../ip/altera/nios2_ip/altera_nios2_gen2/cpu_lib -I C:/altera/15.0/quartus/../ip/altera/nios2_ip/altera_nios2_gen2/nios_lib -I C:/altera/15.0/quartus/../ip/altera/nios2_ip/altera_nios2_gen2 -I C:/altera/15.0/quartus/../ip/altera/nios2_ip/altera_nios2_gen2 -- C:/altera/15.0/quartus/../ip/altera/nios2_ip/altera_nios2_gen2/generate_rtl.epl --name=lab7_soc_nios2_gen2_0_cpu --dir=C:/Users/JUSTIN~1/AppData/Local/Temp/alt7593_1856843843189524073.dir/0067_cpu_gen/ --quartus_bindir=C:/altera/15.0/quartus/bin64 --verilog --config=C:/Users/JUSTIN~1/AppData/Local/Temp/alt7593_1856843843189524073.dir/0067_cpu_gen//lab7_soc_nios2_gen2_0_cpu_processor_configuration.pl  --do_build_sim=0  ]
-Info: cpu: # 2018.03.03 17:48:12 (*) Starting Nios II generation
-Info: cpu: # 2018.03.03 17:48:12 (*)   Checking for plaintext license.
-Info: cpu: # 2018.03.03 17:48:13 (*)   Couldn't query license setup in Quartus directory C:/altera/15.0/quartus/bin64
-Info: cpu: # 2018.03.03 17:48:13 (*)   Defaulting to contents of LM_LICENSE_FILE environment variable
-Info: cpu: # 2018.03.03 17:48:13 (*)   LM_LICENSE_FILE environment variable is empty
-Info: cpu: # 2018.03.03 17:48:13 (*)   Plaintext license not found.
-Info: cpu: # 2018.03.03 17:48:13 (*)   No license required to generate encrypted Nios II/e.
-Info: cpu: # 2018.03.03 17:48:13 (*)   Elaborating CPU configuration settings
-Info: cpu: # 2018.03.03 17:48:13 (*)   Creating all objects for CPU
-Info: cpu: # 2018.03.03 17:48:15 (*)   Generating RTL from CPU objects
-Info: cpu: # 2018.03.03 17:48:15 (*)   Creating plain-text RTL
-Info: cpu: # 2018.03.03 17:48:16 (*) Done Nios II generation
+Info: cpu:   Generation command is [exec C:/altera/15.0/quartus/bin64/eperlcmd.exe -I C:/altera/15.0/quartus/bin64/perl/lib -I C:/altera/15.0/quartus/sopc_builder/bin/europa -I C:/altera/15.0/quartus/sopc_builder/bin/perl_lib -I C:/altera/15.0/quartus/sopc_builder/bin -I C:/altera/15.0/quartus/../ip/altera/nios2_ip/altera_nios2_gen2/cpu_lib -I C:/altera/15.0/quartus/../ip/altera/nios2_ip/altera_nios2_gen2/nios_lib -I C:/altera/15.0/quartus/../ip/altera/nios2_ip/altera_nios2_gen2 -I C:/altera/15.0/quartus/../ip/altera/nios2_ip/altera_nios2_gen2 -- C:/altera/15.0/quartus/../ip/altera/nios2_ip/altera_nios2_gen2/generate_rtl.epl --name=lab7_soc_nios2_gen2_0_cpu --dir=C:/Users/JUSTIN~1/AppData/Local/Temp/alt7596_1904904302482033192.dir/0011_cpu_gen/ --quartus_bindir=C:/altera/15.0/quartus/bin64 --verilog --config=C:/Users/JUSTIN~1/AppData/Local/Temp/alt7596_1904904302482033192.dir/0011_cpu_gen//lab7_soc_nios2_gen2_0_cpu_processor_configuration.pl  --do_build_sim=0  ]
+Info: cpu: # 2018.03.05 20:02:11 (*) Starting Nios II generation
+Info: cpu: # 2018.03.05 20:02:11 (*)   Checking for plaintext license.
+Info: cpu: # 2018.03.05 20:02:12 (*)   Couldn't query license setup in Quartus directory C:/altera/15.0/quartus/bin64
+Info: cpu: # 2018.03.05 20:02:12 (*)   Defaulting to contents of LM_LICENSE_FILE environment variable
+Info: cpu: # 2018.03.05 20:02:12 (*)   LM_LICENSE_FILE environment variable is empty
+Info: cpu: # 2018.03.05 20:02:12 (*)   Plaintext license not found.
+Info: cpu: # 2018.03.05 20:02:12 (*)   No license required to generate encrypted Nios II/e.
+Info: cpu: # 2018.03.05 20:02:12 (*)   Elaborating CPU configuration settings
+Info: cpu: # 2018.03.05 20:02:12 (*)   Creating all objects for CPU
+Info: cpu: # 2018.03.05 20:02:14 (*)   Generating RTL from CPU objects
+Info: cpu: # 2018.03.05 20:02:14 (*)   Creating plain-text RTL
+Info: cpu: # 2018.03.05 20:02:15 (*) Done Nios II generation
 Info: cpu: Done RTL generation for module 'lab7_soc_nios2_gen2_0_cpu'
 Info: cpu: "nios2_gen2_0" instantiated altera_nios2_gen2_unit "cpu"
 Info: nios2_gen2_0_data_master_translator: "mm_interconnect_0" instantiated altera_merlin_master_translator "nios2_gen2_0_data_master_translator"

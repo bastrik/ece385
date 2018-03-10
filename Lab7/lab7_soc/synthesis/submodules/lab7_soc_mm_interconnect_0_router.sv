@@ -203,7 +203,7 @@ module lab7_soc_mm_interconnect_0_router
     // ( 0x0 .. 0x10 )
     if ( {address[RG:PAD0],{PAD0{1'b0}}} == 29'h0   ) begin
             src_channel = 8'b00001000;
-            src_data[PKT_DEST_ID_H:PKT_DEST_ID_L] = 4;
+            src_data[PKT_DEST_ID_H:PKT_DEST_ID_L] = 3;
     end
 
     // ( 0x20 .. 0x30 )
@@ -215,19 +215,19 @@ module lab7_soc_mm_interconnect_0_router
     // ( 0x30 .. 0x40 )
     if ( {address[RG:PAD2],{PAD2{1'b0}}} == 29'h30  && read_transaction  ) begin
             src_channel = 8'b01000000;
-            src_data[PKT_DEST_ID_H:PKT_DEST_ID_L] = 1;
+            src_data[PKT_DEST_ID_H:PKT_DEST_ID_L] = 0;
     end
 
     // ( 0x40 .. 0x50 )
     if ( {address[RG:PAD3],{PAD3{1'b0}}} == 29'h40   ) begin
             src_channel = 8'b00000100;
-            src_data[PKT_DEST_ID_H:PKT_DEST_ID_L] = 0;
+            src_data[PKT_DEST_ID_H:PKT_DEST_ID_L] = 4;
     end
 
     // ( 0x50 .. 0x60 )
     if ( {address[RG:PAD4],{PAD4{1'b0}}} == 29'h50   ) begin
             src_channel = 8'b00010000;
-            src_data[PKT_DEST_ID_H:PKT_DEST_ID_L] = 2;
+            src_data[PKT_DEST_ID_H:PKT_DEST_ID_L] = 1;
     end
 
     // ( 0x68 .. 0x70 )
@@ -239,7 +239,7 @@ module lab7_soc_mm_interconnect_0_router
     // ( 0x1000 .. 0x1800 )
     if ( {address[RG:PAD6],{PAD6{1'b0}}} == 29'h1000   ) begin
             src_channel = 8'b00000010;
-            src_data[PKT_DEST_ID_H:PKT_DEST_ID_L] = 3;
+            src_data[PKT_DEST_ID_H:PKT_DEST_ID_L] = 2;
     end
 
     // ( 0x10000000 .. 0x18000000 )

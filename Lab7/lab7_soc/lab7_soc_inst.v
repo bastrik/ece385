@@ -1,5 +1,7 @@
 	lab7_soc u0 (
+		.buttons_wire_export  (<connected-to-buttons_wire_export>),  //  buttons_wire.export
 		.clk_clk              (<connected-to-clk_clk>),              //           clk.clk
+		.led_wire_export      (<connected-to-led_wire_export>),      //      led_wire.export
 		.reset_reset_n        (<connected-to-reset_reset_n>),        //         reset.reset_n
 		.sdram_clk_clk        (<connected-to-sdram_clk_clk>),        //     sdram_clk.clk
 		.sdram_wire_addr      (<connected-to-sdram_wire_addr>),      //    sdram_wire.addr
@@ -11,8 +13,6 @@
 		.sdram_wire_dqm       (<connected-to-sdram_wire_dqm>),       //              .dqm
 		.sdram_wire_ras_n     (<connected-to-sdram_wire_ras_n>),     //              .ras_n
 		.sdram_wire_we_n      (<connected-to-sdram_wire_we_n>),      //              .we_n
-		.led_wire_export      (<connected-to-led_wire_export>),      //      led_wire.export
-		.buttons_wire_export  (<connected-to-buttons_wire_export>),  //  buttons_wire.export
 		.switches_wire_export (<connected-to-switches_wire_export>)  // switches_wire.export
 	);
 

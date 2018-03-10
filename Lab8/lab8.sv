@@ -43,7 +43,8 @@ module lab8( input               CLOCK_50,
                                  DRAM_CKE,     //SDRAM Clock Enable
                                  DRAM_WE_N,    //SDRAM Write Enable
                                  DRAM_CS_N,    //SDRAM Chip Select
-                                 DRAM_CLK      //SDRAM Clock
+                                 DRAM_CLK,     //SDRAM Clock
+	     output logic [8:0]  LEDG	       //Directions
                     );
     
     logic Reset_h, Clk;
@@ -80,7 +81,7 @@ module lab8( input               CLOCK_50,
     );
      
      // You need to make sure that the port names here match the ports in Qsys-generated codes.
-     nios_system nios_system(
+     lab8_soc nios_system(
                              .clk_clk(Clk),         
                              .reset_reset_n(1'b1),    // Never reset NIOS
                              .sdram_wire_addr(DRAM_ADDR), 
@@ -106,18 +107,63 @@ module lab8( input               CLOCK_50,
     // Use PLL to generate the 25MHZ VGA_CLK.
     // You will have to generate it on your own in simulation.
     vga_clk vga_clk_instance(.inclk0(Clk), .c0(VGA_CLK));
+
+    // Connections
+    logic [9:0] DrX, DrY;
+    logic cancerball;
     
     // TODO: Fill in the connections for the rest of the modules 
-    VGA_controller vga_controller_instance();
+    VGA_controller vga_controller_instance(.Clk(Clk),
+    					.Reset(Reset_h),
+					.VGA_HS(VGA_HS),
+					.VGA_VS(VGA_VS),
+					.VGA_CLK(VGA_CLK),
+					.VGA_BLANK_N(VGA_BLANK_N),
+					.VGA_SYNC_N(VGA_SYNC_N),
+					.DrawX(DrX),
+					.DrawY(DrY)
+				);
     
     // Which signal should be frame_clk?
-    ball ball_instance();
+    ball ball_instance(.Clk(Clk),
+			.Reset(Reset_h),
+			.frame_clk(VGA_VS),
+			.keycode(keycode[7:0]),
+			.DrawX(DrX),
+			.DrawY(DrY),
+			.is_ball(cancerball)
+		);
     
-    color_mapper color_instance();
+    color_mapper color_instance(.is_ball(cancerball),
+    				.DrawX(DrX),
+				.DrawY(DrY),
+				.VGA_R(VGA_R),
+				.VGA_G(VGA_G),
+				.VGA_B(VGA_B)
+			);
     
     // Display keycode on hex display
     HexDriver hex_inst_0 (keycode[3:0], HEX0);
     HexDriver hex_inst_1 (keycode[7:4], HEX1);
+
+    always_comb
+    begin
+	    // Display direction on green LEDs: 0 0 0 0 0 W A S D
+	    case (keycode[7:0])
+		8'h1A: // W
+			LEDG = 9'b000001000;
+		8'h04: // A
+			LEDG = 9'b000000100;
+		8'h16: // S
+			LEDG = 9'b000000010;
+		8'h07: // D
+			LEDG = 9'b000000001;
+		default:
+			LEDG = 9'b000000000;
+	    endcase
+    end
+
+	
     
     /**************************************************************************************
         ATTENTION! Please answer the following quesiton in your lab report! Points will be allocated for the answers!
