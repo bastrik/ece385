@@ -78,20 +78,6 @@ module  ball ( input         Clk,                // 50 MHz clock
             //   both sides of the operator as UNSIGNED numbers.
             // e.g. Ball_Y_Pos - Ball_Size <= Ball_Y_Min 
             // If Ball_Y_Pos is 0, then Ball_Y_Pos - Ball_Size will not be -4, but rather a large positive number.
-
-            // *************** Y-DIRECTION CONDITIONS ****************** //
-            if( Ball_Y_Pos + Ball_Size >= Ball_Y_Max )  // Ball is at the bottom edge, BOUNCE!
-                Ball_Y_Motion_in = (~(Ball_Y_Step) + 1'b1);  // 2's complement.  
-            else if ( Ball_Y_Pos <= Ball_Y_Min + Ball_Size )  // Ball is at the top edge, BOUNCE!
-                Ball_Y_Motion_in = Ball_Y_Step;
-
-            // *************** X-DIRECTION CONDITIONS ****************** //
-            if( Ball_X_Pos + Ball_Size >= Ball_X_Max )  // Ball is at the RIGHT edge, BOUNCE!
-                Ball_X_Motion_in = (~(Ball_X_Step) + 1'b1);  // 2's complement.  
-            else if ( Ball_X_Pos <= Ball_X_Min + Ball_Size )  // Ball is at the LEFT edge, BOUNCE!
-                Ball_X_Motion_in = Ball_X_Step;
-
-            // *************** KEY PRESS CONDITIONS ****************** //
             case (keycode)
                 8'h1A:      // w
                 begin
@@ -115,6 +101,20 @@ module  ball ( input         Clk,                // 50 MHz clock
                 end
                 default : ;
             endcase
+            // *************** Y-DIRECTION CONDITIONS ****************** //
+            if( Ball_Y_Pos + Ball_Size >= Ball_Y_Max )  // Ball is at the bottom edge, BOUNCE!
+                Ball_Y_Motion_in = (~(Ball_Y_Step) + 1'b1);  // 2's complement.  
+            else if ( Ball_Y_Pos <= Ball_Y_Min + Ball_Size )  // Ball is at the top edge, BOUNCE!
+                Ball_Y_Motion_in = Ball_Y_Step;
+
+            // *************** X-DIRECTION CONDITIONS ****************** //
+            if( Ball_X_Pos + Ball_Size >= Ball_X_Max )  // Ball is at the RIGHT edge, BOUNCE!
+                Ball_X_Motion_in = (~(Ball_X_Step) + 1'b1);  // 2's complement.  
+            else if ( Ball_X_Pos <= Ball_X_Min + Ball_Size )  // Ball is at the LEFT edge, BOUNCE!
+                Ball_X_Motion_in = Ball_X_Step;
+
+            // *************** KEY PRESS CONDITIONS ****************** //
+
         
             // Update the ball's position with its motion
             Ball_X_Pos_in = Ball_X_Pos + Ball_X_Motion;
