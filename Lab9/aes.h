@@ -7,7 +7,7 @@
 void KeyExpansion(uchar*, uint*);
 uint rotWord(uint);
 void SubBytes(uchar*);
-uint SubWord(uint*);
+uint SubWord(uint);
 void ShiftRows(uchar*);
 void MixColumns(uchar*);
 void AddRoundKey( uchar*, uint*, int );

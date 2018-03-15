@@ -86,25 +86,25 @@ void encrypt(unsigned char * msg_ascii, unsigned char * key_ascii, unsigned int 
 		}
 	}
 
-	KeyExpansion( &cipherKey, &roundKeyArr );
-	AddRoundKey( &input, &roundKeyArr, 0 );
+	KeyExpansion( cipherKey, roundKeyArr );
+	AddRoundKey( input, roundKeyArr, 0 );
 
 	for (i = 0; i < 9; i++)
 	{
-		SubBytes(&input);
-		ShiftRows(&input);
-		MixColumns(&input);
-		AddRoundKey( &input, &roundKeyArr, i+1 );
+		SubBytes(input);
+		ShiftRows(input);
+		MixColumns(input);
+		AddRoundKey( input, roundKeyArr, i+1 );
 	}
-	SubBytes(&input);
-	ShiftRows(&input);
-	AddRoundKey( &input, &roundKeyArr, 10 );
+	SubBytes(input);
+	ShiftRows(input);
+	AddRoundKey( input, roundKeyArr, 10 );
 
 	for (i = 0; i < 4; ++i)
 		state[i] = (input[4*i] << 24) | (input[4*i +1] << 16) | 
 		(input[4*i +2] << 8) | (input[4*i +3]);
 
-	*msg_enc = state;
+	msg_enc = state;
 }
 
 /**  
@@ -143,15 +143,15 @@ void SubBytes(uchar* input)
 		input[i] = aes_sbox[index1*16 + index2];
 	}
 }
-uint SubWord(uint* word)
+uint SubWord(uint word)
 {
 	uchar temp[4] = {
-		*word >> 24 & 0xf,
-		*word >> 16 & 0xf,
-		*word >> 8  & 0xf,
-		*word       & 0xf
+		word >> 24 & 0xf,
+		word >> 16 & 0xf,
+		word >> 8  & 0xf,
+		word       & 0xf
 	};
-	SubBytes(&temp);
+	SubBytes(temp);
 	return (temp[0] << 24) | (temp[1] << 16) | (temp[2] << 8) | temp[3];
 }
 void ShiftRows(uchar* input)
