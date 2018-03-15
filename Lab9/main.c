@@ -11,6 +11,7 @@ University of Illinois ECE Department
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <string.h>
 #include "aes.h"
 
 // Pointer to base address of AES module, make sure it matches Qsys
@@ -59,7 +60,7 @@ char charsToHex(char c1, char c2)
 }
 
 /** encrypt
- *  Perform AES encryption in software.
+ *  Top level AES encryption wrapper.
  *
  *  Input: msg_ascii - Pointer to 32x 8-bit char array that contains the input message in ASCII format
  *         key_ascii - Pointer to 32x 8-bit char array that contains the input key in ASCII format
@@ -68,9 +69,138 @@ char charsToHex(char c1, char c2)
  */
 void encrypt(unsigned char * msg_ascii, unsigned char * key_ascii, unsigned int * msg_enc, unsigned int * key)
 {
-	// Implement this function
+	int i, row, col;
+	uchar input[4*4];		// 1*  4*4 8-bit
+	uint state[4];			// 1*  4*1 32-bit
+	uchar cipherKey[4*4];	// 1*  4*4 8-bit
+	uint roundKeyArr[4*11];	// 11* 4*  32-bit keys
+	uint word[4];			// 4*  32-bit
+	// column major population
+	for (col = 0; col < 4; col++)
+	{
+		for (row = 0; row < 4; row++)
+		{
+			i = 4*col + row;
+			input[ 4*row + col ] = charsToHex( msg_ascii[i], msg_ascii[i+1] );
+			cipherKey [4*row + col] = charsToHex( key_ascii[i], key_ascii[i+1] );
+		}
+	}
+
+	KeyExpansion( &cipherKey, &roundKeyArr );
+	AddRoundKey( &input, &roundKeyArr, 0 );
+
+	for (i = 0; i < 9; i++)
+	{
+		SubBytes(&input);
+		ShiftRows(&input);
+		MixColumns(&input);
+		AddRoundKey( &input, &roundKeyArr, i+1 );
+	}
+	SubBytes(&input);
+	ShiftRows(&input);
+	AddRoundKey( &input, &roundKeyArr, 10 );
+
+	for (i = 0; i < 4; ++i)
+		state[i] = (input[4*i] << 24) | (input[4*i +1] << 16) | 
+		(input[4*i +2] << 8) | (input[4*i +3]);
+
+	*msg_enc = state;
 }
 
+/**  
+ *   Helpers
+ */
+void KeyExpansion(uchar* cipherKey, uint* roundKeyArr)
+{
+	uint temp;
+	int i = 0;
+	for (i = 0; i < 4; ++i)
+	{
+		roundKeyArr[i] = (cipherKey[4*i] << 24) | (cipherKey[4*i +1] << 16) | 
+		(cipherKey[4*i +2] << 8) | (cipherKey[4*i +3]);
+	}
+	for (i = 4; i < 44; ++i)
+	{
+		temp = roundKeyArr[i-1];
+		if (i % 4 == 0)
+		{
+			temp = SubWord(rotWord(temp)) ^ Rcon[i/4 - 1];
+		}
+		roundKeyArr[i] = roundKeyArr[i-4] ^ temp;
+	}
+}
+uint rotWord(uint word)
+{
+	return word;	// TODO
+}
+void SubBytes(uchar* input)
+{
+	int i;
+	for (i = 0; i < strlen(input); i++)
+	{
+		uint index1 = (input[i] >> 4) & 0xf;
+		uint index2 = input[i] & 0xf;
+		input[i] = aes_sbox[index1*16 + index2];
+	}
+}
+uint SubWord(uint* word)
+{
+	uchar temp[4] = {
+		*word >> 24 & 0xf,
+		*word >> 16 & 0xf,
+		*word >> 8  & 0xf,
+		*word       & 0xf
+	};
+	SubBytes(&temp);
+	return (temp[0] << 24) | (temp[1] << 16) | (temp[2] << 8) | temp[3];
+}
+void ShiftRows(uchar* input)
+{
+	uchar temp;
+
+	temp = input[4];
+	input[4] = input[5];
+	input[5] = input[6];
+	input[6] = input[7];
+	input[7] = temp;
+
+	temp = input[8];
+	input[8] = input[10];
+	input[10] = temp;
+	temp = input[9];
+	input[9] = input[11];
+	input[11] = temp;
+
+	temp = input[15];
+	input[15] = input[14];
+	input[14] = input[13];
+	input[13] = input[12];
+	input[12] = temp;
+}
+void MixColumns(uchar* input)
+{
+	int i;
+	uchar b;
+	uchar temp[16];
+
+	for (i = 0; i < 4; i++)
+	{
+		// TODO
+	}
+
+	memcpy(input, temp, sizeof(temp));
+}
+void AddRoundKey( uchar* input, uint* roundKeyArr, int round )
+{
+	int i;
+	for (i = 0; i < 4; ++i)
+	{
+		input[i]    = input[i]    ^ (roundKeyArr[4*round + i] >> 24);
+		input[i+4]  = input[i+4]  ^ (roundKeyArr[4*round + i] >> 16);
+		input[i+8]  = input[i+7]  ^ (roundKeyArr[4*round + i] >> 8);
+		input[i+12] = input[i+11] ^ (roundKeyArr[4*round + i]);
+	}
+}
 /** decrypt
  *  Perform AES decryption in hardware.
  *
