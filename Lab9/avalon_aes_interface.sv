@@ -38,5 +38,36 @@ module avalon_aes_interface (
 	output logic [31:0] EXPORT_DATA		// Exported Conduit Signal to LEDs
 );
 
+// 16 32-bit registers
+logic [31:0] regs[16];
+
+always_ff @ (posedge CLK)
+begin
+	if (RESET) // Synchronous reset
+	begin
+		for (int i = 0; i < 16; i++) 
+		begin
+			regs[i] <= 32'h00000000;
+		end
+	end
+	else if (AVL_CS && AVL_WRITE) // Write operation
+	begin
+		// Check which byte to write
+		if (AVL_BYTE_EN[3])
+			regs[AVL_ADDR][31:24] <= AVL_WRITEDATA[31:24];
+		if (AVL_BYTE_EN[2])
+			regs[AVL_ADDR][23:16] <= AVL_WRITEDATA[23:16];
+		if (AVL_BYTE_EN[1])
+			regs[AVL_ADDR][15:8] <= AVL_WRITEDATA[15:8];
+		if (AVL_BYTE_EN[0])
+			regs[AVL_ADDR][7:0] <= AVL_WRITEDATA[7:0];
+	end
+end
+
+// Read operation
+assign AVL_READDATA = (AVL_CS && AVL_READ)? regs[AVL_ADDR]:32'h00000000;
+
+// Done signal
+assign EXPORT_DATA = {regs[0][31:16], regs[3][15:0]};
 
 endmodule

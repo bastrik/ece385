@@ -4,8 +4,12 @@
 #define uchar unsigned char // 8-bit byte
 #define uint unsigned int // 32-bit word
 
+char charToHex(char);
+char charsToHex(char, char);
+void encrypt(unsigned char *, unsigned char *, unsigned int *, unsigned int *);
+void decrypt(unsigned int *, unsigned int *, unsigned int *);
 void KeyExpansion(uchar*, uint*);
-uint rotWord(uint);
+uint RotWord(uint);
 void SubBytes(uchar*);
 uint SubWord(uint);
 void ShiftRows(uchar*);

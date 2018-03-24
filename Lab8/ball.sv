@@ -103,15 +103,27 @@ module  ball ( input         Clk,                // 50 MHz clock
             endcase
             // *************** Y-DIRECTION CONDITIONS ****************** //
             if( Ball_Y_Pos + Ball_Size >= Ball_Y_Max )  // Ball is at the bottom edge, BOUNCE!
-                Ball_Y_Motion_in = (~(Ball_Y_Step) + 1'b1);  // 2's complement.  
+				begin
+                Ball_X_Motion_in = 0;
+					 Ball_Y_Motion_in = (~(Ball_Y_Step) + 1'b1);  // 2's complement.  
+					 end 
             else if ( Ball_Y_Pos <= Ball_Y_Min + Ball_Size )  // Ball is at the top edge, BOUNCE!
-                Ball_Y_Motion_in = Ball_Y_Step;
+				begin
+                Ball_X_Motion_in = 0;
+					 Ball_Y_Motion_in = Ball_Y_Step;
+					 end
 
             // *************** X-DIRECTION CONDITIONS ****************** //
             if( Ball_X_Pos + Ball_Size >= Ball_X_Max )  // Ball is at the RIGHT edge, BOUNCE!
+				begin
                 Ball_X_Motion_in = (~(Ball_X_Step) + 1'b1);  // 2's complement.  
+					 Ball_Y_Motion_in = 0;
+					 end
             else if ( Ball_X_Pos <= Ball_X_Min + Ball_Size )  // Ball is at the LEFT edge, BOUNCE!
+				begin
                 Ball_X_Motion_in = Ball_X_Step;
+					 Ball_Y_Motion_in = 0;
+					 end
 
             // *************** KEY PRESS CONDITIONS ****************** //
 
