@@ -312,7 +312,9 @@ void AddRoundKey( uchar* input, uint* roundKeyArr, int round )
  */
 void decrypt(unsigned int * msg_enc, unsigned int * msg_dec, unsigned int * key)
 {
-	// Implement this function
+	AES_PTR[14] = 1;	// start
+	while(!AES_PTR[15]);
+
 }
 
 /** main
@@ -354,6 +356,10 @@ int main()
 			printf("\n");
 //			printf("The key is %08x %08x %08x %08x\n", key[0], key[1], key[2], key[3]);
 			decrypt(msg_enc, msg_dec, key);
+			msg_dec[0] = AES_PTR[4];
+			msg_dec[1] = AES_PTR[5];
+			msg_dec[2] = AES_PTR[6];
+			msg_dec[3] = AES_PTR[7];
 			printf("\nDecrypted message is: \n");
 			for(i = 0; i < 4; i++){
 				printf("%08x", msg_dec[i]);
