@@ -18,8 +18,6 @@ University of Illinois ECE Department
 volatile unsigned int * AES_PTR = (unsigned int *) 0x00000040;
 
 // Execution mode: 0 for testing, 1 for benchmarking
-int run_mode = 0;
-
 /** charToHex
  *  Convert a single character to the 4-bit value it represents.
  *  
@@ -67,10 +65,12 @@ char charsToHex(char c1, char c2)
  *  Output:  msg_enc - Pointer to 4x 32-bit int array that contains the encrypted message
  *               key - Pointer to 4x 32-bit int array that contains the input key
  */
+int run_mode = 0;
+
 void encrypt(unsigned char * msg_ascii, unsigned char * key_ascii, unsigned int * msg_enc, unsigned int * key)
 {
-	printf("The given message is %s \n", msg_ascii);
- 	printf("The given key is %s \n\n", key_ascii);
+//	printf("The given message is %s \n", msg_ascii);
+// 	printf("The given key is %s \n\n", key_ascii);
 	int i, row, col;
 	uchar input[4*4];		// 1*  4*4 8-bit
 	uint state[4];			// 1*  4*1 32-bit
@@ -180,7 +180,7 @@ void encrypt(unsigned char * msg_ascii, unsigned char * key_ascii, unsigned int 
 	AES_PTR[5] = msg_enc[1];
 	AES_PTR[6] = msg_enc[2];
 	AES_PTR[7] = msg_enc[3];
-	printf("msg_enc is %x %x %x %x\n", msg_enc[0], msg_enc[1], msg_enc[2], msg_enc[3]);
+//	printf("msg_enc is %x %x %x %x\n", msg_enc[0], msg_enc[1], msg_enc[2], msg_enc[3]);
 	memcpy(key, inputKey, sizeof(inputKey));
 	AES_PTR[0] = key[0];
 	AES_PTR[1] = key[1];
@@ -313,8 +313,12 @@ void AddRoundKey( uchar* input, uint* roundKeyArr, int round )
 void decrypt(unsigned int * msg_enc, unsigned int * msg_dec, unsigned int * key)
 {
 	AES_PTR[14] = 1;	// start
-	while(!AES_PTR[15]);
-
+	while(!AES_PTR[15])
+	{
+		// do nothing
+	}
+	AES_PTR[14] = 0;	// don't start
+	AES_PTR[15] = 0;	// not done
 }
 
 /** main
@@ -330,6 +334,8 @@ int main()
 	unsigned int key[4];
 	unsigned int msg_enc[4];
 	unsigned int msg_dec[4];
+	AES_PTR[14] = 0;	// don't start
+	AES_PTR[15] = 0;	// not done
 
 	printf("Select execution mode: 0 for testing, 1 for benchmarking: ");
 	scanf("%d", &run_mode);
@@ -356,10 +362,10 @@ int main()
 			printf("\n");
 //			printf("The key is %08x %08x %08x %08x\n", key[0], key[1], key[2], key[3]);
 			decrypt(msg_enc, msg_dec, key);
-			msg_dec[0] = AES_PTR[4];
-			msg_dec[1] = AES_PTR[5];
-			msg_dec[2] = AES_PTR[6];
-			msg_dec[3] = AES_PTR[7];
+			msg_dec[0] = AES_PTR[8];
+			msg_dec[1] = AES_PTR[9];
+			msg_dec[2] = AES_PTR[10];
+			msg_dec[3] = AES_PTR[11];
 			printf("\nDecrypted message is: \n");
 			for(i = 0; i < 4; i++){
 				printf("%08x", msg_dec[i]);
@@ -386,12 +392,15 @@ int main()
 		printf("Software Encryption Speed: %f KB/s \n", speed);
 		// Run Decryption
 		begin = clock();
-		for (i = 0; i < size_KB * 64; i++)
+		for (i = 0; i < size_KB * 64; i++) {
 			decrypt(msg_enc, msg_dec, key);
+			printf("%i ", i);
+		}
+		printf("\n");
 		end = clock();
 		time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 		speed = size_KB / time_spent;
-		printf("Hardware Encryption Speed: %f KB/s \n", speed);
+		printf("Hardware Decryption Speed: %f KB/s \n", speed);
 	}
 
 	return 0;

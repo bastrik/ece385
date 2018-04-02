@@ -15,13 +15,14 @@ module AES (
 	input  logic [127:0] 	AES_KEY,
 	input  logic [127:0] 	AES_MSG_ENC,
 	output logic [127:0] 	AES_MSG_DEC,
-	input  logic [31:0] 	Curr_Column_in,
 	output logic [31:0]		Curr_Column_out,
-	output logic [127:0] 	Intermediate_in;
-	output logic [127:0] 	Intermediate_out;
-	input  logic [1407:0]	RoundKeyArr;
-	output logic [127:0] 	RoundKey;
-	output logic [1:0]	 	muxSelect;
+	input logic [127:0] 	Intermediate_in,
+	output logic [127:0] 	Intermediate_out,
+	input  logic [1407:0]	RoundKeyArr,
+	output logic [127:0] 	RoundKey,
+	output logic [1:0]	 	muxSelect,
+	output logic LD_REG,
+	output logic [2:0] Select
 );
 
 enum logic [3:0] {
@@ -42,18 +43,25 @@ enum logic [3:0] {
 					Done
 	} State, Next_state;
 
-	logic [3:0] count, slowASS;
-	logic [127:0] currRoundKey;
+	logic [3:0] count;
+	logic [3:0] slowASS;
+	logic count_reset, slowASS_reset;
+	logic count_plus, slowASS_plus;
 
-	assign count = 4'b0000;
-	assign slowASS = 4'b0000;
-
-	always_ff @ (posedge Clk)
+	always_ff @ (posedge CLK)
 	begin
-		if (Reset) 
+		if (RESET) 
 			State <= Halted;
 		else 
 			State <= Next_state;
+		if (count_reset)
+			count <= 4'b0000;
+		else if (count_plus)
+			count <= count + 4'b0001;
+		if (slowASS_reset)
+			slowASS <= 4'b0000;
+		else if (slowASS_plus)
+			slowASS <= slowASS + 4'b0001;
 	end
 
 	always_comb
@@ -61,12 +69,26 @@ enum logic [3:0] {
 		// Default next state is staying at current state
 		Next_state = State;
 
+		// Default values
+		AES_DONE = 1'b0;
+		AES_MSG_DEC = Intermediate_in;
+		Curr_Column_out = 32'h0;
+		Intermediate_out = Intermediate_in;
+		RoundKey = 128'h0;
+		muxSelect = 2'b00;
+		LD_REG = 1'b0;
+		Select = 3'b000;
+		count_reset = 1'b0;
+		count_plus = 1'b0;
+		slowASS_reset = 1'b0;
+		slowASS_plus = 1'b0;
+
 		unique case (State)
 			Halted : 
 				if (AES_START) 
 					Next_state = keyExpansion;
 			keyExpansion :
-				if (slowASS = 4'b1001)
+				if (slowASS == 4'b1011)
 					Next_state = addRoundKey_0;
 				else
 					Next_state = keyExpansion;
@@ -102,71 +124,112 @@ enum logic [3:0] {
 					Next_state = Done;
 				else
 					Next_state = Halted;
+			default : ;
 		endcase
 
 		case (State)
+			Halted : 
+			begin
+				count_reset = 1'b1;
+				slowASS_reset = 1'b1;
+			end
 			keyExpansion :
-				slowASS = slowASS + 1'b1;
+				slowASS_plus = 1;
 			addRoundKey_0 :
 			begin
 				muxSelect = 2'b00;
 				Intermediate_out = AES_MSG_ENC;
-				currRoundKey = RoundKeyArr[1407:1280];	
+				RoundKey = RoundKeyArr[127:0];
+				LD_REG = 1'b1;
+				Select = 3'b100;
 			end
 			invShiftRows_loop :
 			begin
 				muxSelect = 2'b01;
-				Intermediate_out = Intermediate_in;
+				LD_REG = 1'b1;
+				Select = 3'b100;
 			end
-			invSubBytes : 
+			invSubBytes_loop : 
 			begin
 				muxSelect = 2'b10;
-				Intermediate_out = Intermediate_in;
+				LD_REG = 1'b1;
+				Select = 3'b100;
 			end 
 			addRoundKey_loop : 
 			begin
 				muxSelect = 2'b00;
-				currRoundKey = RoundKeyArr[(1279-128*count):(1152-128*count)];
+				case (count)
+					4'b0000:
+						RoundKey = RoundKeyArr[255:128];
+					4'b0001:
+						RoundKey = RoundKeyArr[383:256];
+					4'b0010:
+						RoundKey = RoundKeyArr[511:384];
+					4'b0011:
+						RoundKey = RoundKeyArr[639:512];
+					4'b0100:
+						RoundKey = RoundKeyArr[767:640];
+					4'b0101:
+						RoundKey = RoundKeyArr[895:768];
+					4'b0110:
+						RoundKey = RoundKeyArr[1023:896];
+					4'b0111:
+						RoundKey = RoundKeyArr[1151:1024];
+					4'b1000:
+						RoundKey = RoundKeyArr[1279:1152];
+					default: ;
+				endcase
+				LD_REG = 1'b1;
+				Select = 3'b100;
 			end
 			invMixColumns_loop1 :
 			begin
-				Curr_Column_out = Intermediate_in[31:0];
+				Curr_Column_out = Intermediate_in[127:96];
+				LD_REG = 1'b1;
+				Select = 3'b000;
 
 			end
 			invMixColumns_loop2 :
 			begin
-				Intermediate_out[31:0] = Curr_Column_in;
-				Curr_Column_out = Intermediate_in[63:32];
+				Curr_Column_out = Intermediate_in[95:64];
+				LD_REG = 1'b1;
+				Select = 3'b001;
 			end
 			invMixColumns_loop3 :
 			begin
-				Intermediate_out[63:32] = Curr_Column_in;
-				Curr_Column_out = Intermediate_in[95:64];
+				Curr_Column_out = Intermediate_in[63:32];
+				LD_REG = 1'b1;
+				Select = 3'b010;
 			end
 			invMixColumns_loop4 : 
 			begin
-				Intermediate_out[95:64] = Curr_Column_in;
-				Curr_Column_out = Intermediate_in[127:96];
+				Curr_Column_out = Intermediate_in[31:0];
+				LD_REG = 1'b1;
+				Select = 3'b011;
 			end
 			invMixColumns_loop5 : 
 			begin
-				Intermediate_out[127:96] = Curr_Column_in;
-				count = count + 1'b1;
+				count_plus = 1'b1;
 			end
 			invShiftRows : 
 			begin
 				muxSelect = 2'b01;
+				LD_REG = 1'b1;
+				Select = 3'b100;
 			end
 			invSubBytes : 
 			begin
 				muxSelect = 2'b10;
-				Intermediate_out = Intermediate_in;
+				LD_REG = 1'b1;
+				Select = 3'b100;
 			end 
 			addRoundKey_1 :
 			begin
 				muxSelect = 2'b00;
-				currRoundKey = RoundKeyArr[127:0];
-				Intermediate_out = Intermediate_in;
+				RoundKey = RoundKeyArr[1407:1280];	
+				LD_REG = 1'b1;
+				Select = 3'b100;
+			end
 			Done :
 			begin
 				AES_MSG_DEC = Intermediate_in;
