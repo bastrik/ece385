@@ -18,7 +18,7 @@ module draw_map (input logic Clk,
 	// Offset DrXplus and DrYplus to align logic and graphics
 	logic [9:0] DrXplus, DrYplus;
 	assign DrXplus = (DrX + 10'd2 > 10'd799)? DrX + 10'd2 - 10'd800:DrX + 10'd2;
-	assign DrYplus = (DrY + 10'd2 > 10'd524)? DrX + 10'd1 - 10'd525:DrY + 10'd1;
+	assign DrYplus = (DrY + 10'd1 > 10'd524)? DrX + 10'd1 - 10'd525:DrY + 10'd1;
 
 	// FOR PLAYER ONE
 	logic [6:0] xTileOne; // tile in the 100 x 75 mapinfo
