@@ -15,10 +15,10 @@ module draw_map (input logic Clk,
 				 output logic [7:0] VGA_B,
 				 output logic [35:0] GPIO);
 
-	// Offset DrXplus and DrYplus by 2 to align logic and graphics
+	// Offset DrXplus and DrYplus to align logic and graphics
 	logic [9:0] DrXplus, DrYplus;
 	assign DrXplus = (DrX + 10'd2 > 10'd799)? DrX + 10'd2 - 10'd800:DrX + 10'd2;
-	assign DrYplus = (DrY + 10'd2 > 10'd524)? DrX + 10'd2 - 10'd525:DrY + 10'd2;
+	assign DrYplus = (DrY + 10'd2 > 10'd524)? DrX + 10'd1 - 10'd525:DrY + 10'd1;
 
 	// FOR PLAYER ONE
 	logic [6:0] xTileOne; // tile in the 100 x 75 mapinfo
@@ -35,10 +35,10 @@ module draw_map (input logic Clk,
 	logic [23:0] memoryValueTwo;
 
 	// Flags
-	logic inMap; // flag to check if current pixel is in map
-	logic toggle; // for drawing each monitor at 30 Hz 
+	logic inMapOne, inMapTwo; // flag to check if current pixel is in map
+	logic toggle; // alternate which screen is fetching from on-chip memory
 
-	// Blanking signal
+	// Horizontal blanking signal for GPIO RGB
 	logic blanking;
 
 	// Is current pixel in the map?
@@ -54,7 +54,7 @@ module draw_map (input logic Clk,
 	// Set blanking signal
 	always_ff @ (posedge Clk)
 	begin
-	if (DrXplus > 10'd640 & DrXplus < 10'd798)
+	if (DrX > 10'd645 & DrX < 10'd795)
 		blanking <= 0;
 	else
 		blanking <= 1;
