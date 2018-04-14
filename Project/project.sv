@@ -38,7 +38,7 @@ module project( input               CLOCK_50,
              // SRAM interface (all control signals are active low)
 				 output logic 			SRAM_CE_N,	// SRAM chip enable
 				 output logic [19:0] SRAM_ADDR,	// SRAM 20-bit address
-				 inout wire [15:0]	SRAM_DQ,		// SRAM 20-bit data
+				 inout wire [15:0]	SRAM_DQ,		// SRAM 16-bit data
 				 output logic 			SRAM_OE_N,	// SRAM output enable
 				 output logic 			SRAM_WE_N,	// SRAM write enable
 				 output logic 			SRAM_LB_N,	// SRAM lower byte enable
@@ -76,12 +76,13 @@ module project( input               CLOCK_50,
 	assign GPIO[11] = VGA_HS? VGA_B[3]:8'h00; //VGA_B[3];
 	assign GPIO[2] = VGA_VS;
 	assign GPIO[4] = VGA_HS;
-    
+
     logic Reset_h, Clk;
     logic [31:0] keycode;
     logic [7:0] PS2in;
-	 logic [31:0] PS2keycode;
+	logic [31:0] PS2keycode;
     logic PS2press;
+    logic [11:0] xOne, yOne, xTwo, yTwo;
     
     assign Clk = CLOCK_50;
     always_ff @ (posedge Clk) begin
@@ -91,14 +92,12 @@ module project( input               CLOCK_50,
     logic [1:0] hpi_addr;
     logic [15:0] hpi_data_in, hpi_data_out;
     logic hpi_r, hpi_w, hpi_cs, hpi_reset;
-	 
-	 // Tri-state buffer to transfer data between FPGA and SRAM
-	 tristate #(.N(16)) tri(.Clk(Clk), 
-									.tristate_output_enable(~SRAM_WE_N),
-									.Data_write(),
-									.Data_read(),
-									.Data(SRAM_DQ)
-									);
+
+    // Determines pixel colors
+    draw_map drawing_engine(.*);
+
+    // Determines game logic
+    game_logic game_engine(.*);
     
     // Interface between NIOS II and EZ-OTG chip
     hpi_io_intf hpi_io_inst(
@@ -171,23 +170,23 @@ module project( input               CLOCK_50,
 					.DrawY(DrY)
 				);
     
-    // Which signal should be frame_clk?
-    ball ball_instance(.Clk(Clk),
-			.Reset(Reset_h),
-			.frame_clk(VGA_VS),
-			.keycode(keycode[31:0]),
-			.DrawX(DrX),
-			.DrawY(DrY),
-			.is_ball(cancerball)
-		);
+  //   // Which signal should be frame_clk?
+  //   ball ball_instance(.Clk(Clk),
+		// 	.Reset(Reset_h),
+		// 	.frame_clk(VGA_VS),
+		// 	.keycode(keycode[31:0]),
+		// 	.DrawX(DrX),
+		// 	.DrawY(DrY),
+		// 	.is_ball(cancerball)
+		// );
     
-    color_mapper color_instance(.is_ball(cancerball),
-    				.DrawX(DrX),
-				.DrawY(DrY),
-				.VGA_R(VGA_R),
-				.VGA_G(VGA_G),
-				.VGA_B(VGA_B)
-			);
+  //   color_mapper color_instance(.is_ball(cancerball),
+  //   				.DrawX(DrX),
+		// 		.DrawY(DrY),
+		// 		.VGA_R(VGA_R),
+		// 		.VGA_G(VGA_G),
+		// 		.VGA_B(VGA_B)
+		// 	);
     
     // Display keycode on hex display
     HexDriver hex_inst_0 (PS2keycode[3:0], HEX0);

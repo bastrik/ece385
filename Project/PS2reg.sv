@@ -3,7 +3,7 @@ module PS2reg (input logic Clk, Reset,
 		input logic press,
 		output logic [31:0] keycode_out);
 		
-	logic Load1, Load2, Load3, Load4;
+	logic Load1, Load2, Load3, Load4, Reset1, Reset2, Reset3, Reset4;
 	logic [7:0] keycode1, keycode2, keycode3, keycode4;
 	
 	always_ff @ (posedge Clk)
