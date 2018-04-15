@@ -166,22 +166,22 @@ begin
 		p2dir_comb = 2'd2;
 	end
 	// up arrow
-	if (aOne == 8'h75 | bOne == 8'h75 | cOne == 8'h75 | dOne == 8'h75)
+	if (aTwo == 8'h75 | bTwo == 8'h75 | cTwo == 8'h75 | dTwo == 8'h75)
 	begin
 		p2dir_comb = 2'd0;
 	end
 	// down arrow
-	if (aOne == 8'h72 | bOne == 8'h72 | cOne == 8'h72 | dOne == 8'h72)
+	if (aTwo == 8'h72 | bTwo == 8'h72 | cTwo == 8'h72 | dTwo == 8'h72)
 	begin
 		p2dir_comb = 2'd1;	
 	end
 	// left arrow
-	if (aOne == 8'h6B | bOne == 8'h6B | cOne == 8'h6B | dOne == 8'h6B)
+	if (aTwo == 8'h6B | bTwo == 8'h6B | cTwo == 8'h6B | dTwo == 8'h6B)
 	begin
 		p2dir_comb = 2'd3;
 	end
 	// right arrow
-	if (aOne == 8'h74 | bOne == 8'h74 | cOne == 8'h74 | dOne == 8'h74)
+	if (aTwo == 8'h74 | bTwo == 8'h74 | cTwo == 8'h74 | dTwo == 8'h74)
 	begin
 		p2dir_comb = 2'd2;
 	end
