@@ -7,7 +7,9 @@ module game_logic (input logic VGA_VS,
 				   output logic [11:0] xOne,
 				   output logic [11:0] yOne,
 				   output logic [11:0] xTwo,
-				   output logic [11:0] yTwo);
+				   output logic [11:0] yTwo
+				   output logic [1:0] p1dir		// direction player is facing
+				   output logic [1:0] p2dir);	// 0-> north, 1-> south, 2-> east, 3-> west
 
 // Location of player on map
 assign xOne = _xOne;
@@ -46,28 +48,62 @@ assign bTwo = PS2keycode[15:8];
 assign cTwo = PS2keycode[23:16];
 assign dTwo = PS2keycode[31:24];
 
-// Player 1 motion
+// Player 1 motion and shooting
 always_comb
 begin
 	northOne = 12'd0;
 	southOne = 12'd0;
 	eastOne = 12'd0;
 	westOne = 12'd0;
+
 	// W
 	if (aOne == 8'h1A | bOne == 8'h1A | cOne == 8'h1A | dOne == 8'h1A)
+	begin
 		northOne = 12'd2;
+		p1dir = 2'd0;
+	end
 	// A
 	if (aOne == 8'h04 | bOne == 8'h04 | cOne == 8'h04 | dOne == 8'h04)
-		westOne = 12'd2;	
+	begin
+		westOne = 12'd2;
+		p1dir = 2'd3;	
+	end
 	// S
 	if (aOne == 8'h16 | bOne == 8'h16 | cOne == 8'h16 | dOne == 8'h16)
+	begin
 		southOne = 12'd2;
+		p1dir = 2'd1;
+	end
 	// D
 	if (aOne == 8'h07 | bOne == 8'h07 | cOne == 8'h07 | dOne == 8'h07)
+	begin
 		eastOne = 12'd2;
+		p1dir = 2'd2;
+	end
+	// up arrow
+	if (aOne == 8'h52 | bOne == 8'h52 | cOne == 8'h52 | dOne == 8'h52)
+	begin
+		p1dir = 2'd0;
+	end
+	// down arrow
+	if (aOne == 8'h04 | bOne == 8'h04 | cOne == 8'h04 | dOne == 8'h04)
+	begin
+		p1dir = 2'd1;	
+	end
+	// left arrow
+	if (aOne == 8'h50 | bOne == 8'h50 | cOne == 8'h50 | dOne == 8'h50)
+	begin
+		p1dir = 2'd3;
+	end
+	// right arrow
+	if (aOne == 8'h4f | bOne == 8'h4f | cOne == 8'h4f | dOne == 8'h4f)
+	begin
+		p1dir = 2'd2;
+	end
+
 end
 
-// Player 2 motion
+// Player 2 motion and shooting
 always_comb
 begin
 	northTwo = 12'd0;
@@ -76,16 +112,48 @@ begin
 	westTwo = 12'd0;
 	// W
 	if (aTwo == 8'h1D | bTwo == 8'h1D | cTwo == 8'h1D | dTwo == 8'h1D)
+	begin
 		northTwo = 12'd2;
+		p2dir = 2'd0;
+	end
 	// A
 	if (aTwo == 8'h1C | bTwo == 8'h1C | cTwo == 8'h1C | dTwo == 8'h1C)
-		westTwo = 12'd2;	
+	begin
+		northTwo = 12'd2;
+		p2dir = 2'd3;
+	end
 	// S
 	if (aTwo == 8'h1B | bTwo == 8'h1B | cTwo == 8'h1B | dTwo == 8'h1B)
-		southTwo = 12'd2;
+	begin
+		northTwo = 12'd2;
+		p2dir = 2'd1;
+	end
 	// D
 	if (aTwo == 8'h23 | bTwo == 8'h23 | cTwo == 8'h23 | dTwo == 8'h23)
-		eastTwo = 12'd2;
+	begin
+		northTwo = 12'd2;
+		p2dir = 2'd2;
+	end
+	// up arrow
+	if (aOne == 8'h75 | bOne == 8'h75 | cOne == 8'h75 | dOne == 8'h75)
+	begin
+		p2dir = 2'd0;
+	end
+	// down arrow
+	if (aOne == 8'h72 | bOne == 8'h72 | cOne == 8'h72 | dOne == 8'h72)
+	begin
+		p2dir = 2'd1;	
+	end
+	// left arrow
+	if (aOne == 8'h6B | bOne == 8'h6B | cOne == 8'h6B | dOne == 8'h6B)
+	begin
+		p2dir = 2'd3;
+	end
+	// right arrow
+	if (aOne == 8'h74 | bOne == 8'h74 | cOne == 8'h74 | dOne == 8'h74)
+	begin
+		p2dir = 2'd2;
+	end
 end
 // always_comb
 // begin

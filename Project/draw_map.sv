@@ -6,6 +6,8 @@ module draw_map (input logic Clk,
 				 input logic [11:0] yOne,
 				 input logic [11:0] xTwo, // player 2's absolute location on map
 				 input logic [11:0] yTwo,
+				 input logic [1:0]  p1dir,	// direction player is facing
+				 input logic [1:0]  p2dir,
 				 input logic [9:0] DrX,
 				 input logic [9:0] DrY, 
 				 input logic VGA_VS,
@@ -71,6 +73,17 @@ module draw_map (input logic Clk,
 		// Determine map pixel for both monitors
 		if (~toggle)
 		begin
+			case (p1dir)
+				2'd0:
+					memoryValueOne <= playerNorth[logic here];
+				2'd1:
+					memoryValueOne <= playerSouth[logic here];
+				2'd2:
+					memoryValueOne <= playerEast[logic here];
+				2'd3:
+					memoryValueOne <= playerWest[logic here];
+			endcase
+
 			case (mapdata[yTileOne*100 + xTileOne])
 				2'b01:
 					mapOne <= inMapOne? grass[yTileOneOffset*32 + xTileOneOffset]:24'h0000;
