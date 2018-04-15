@@ -9,7 +9,8 @@ module game_logic (input logic VGA_VS,
 				   output logic [11:0] xTwo,
 				   output logic [11:0] yTwo,
 				   output logic [1:0] p1dir,		// direction player is facing
-				   output logic [1:0] p2dir);	// 0-> north, 1-> south, 2-> east, 3-> west
+				   output logic [1:0] p2dir,	// 0-> north, 1-> south, 2-> east, 3-> west
+				   output logic [11:0] northOne, southOne, eastOne, westOne, northOne_comb, southOne_comb, eastOne_comb, westOne_comb);
 
 // Location of player on map
 assign xOne = _xOne;
@@ -32,7 +33,7 @@ begin
 end
 
 // Player motion
-logic [11:0] northOne, southOne, eastOne, westOne;
+//logic [11:0] northOne, southOne, eastOne, westOne;
 //logic [11:0] northOne_comb, southOne_comb, eastOne_comb, westOne_comb;
 logic [11:0] northTwo, southTwo, eastTwo, westTwo;
 logic [11:0] northTwo_comb, southTwo_comb, eastTwo_comb, westTwo_comb;
