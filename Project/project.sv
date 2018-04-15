@@ -64,6 +64,7 @@ module project( input               CLOCK_50,
     logic PS2press; // PS2 key press flag
     logic [11:0] xOne, yOne, xTwo, yTwo; // Position of players
     logic [9:0] DrX, DrY; // VGA controller scanning position
+    logic [1:0] p1dir, p2dir; // Direction each player is facing
 
     assign Clk = CLOCK_50;
     always_ff @ (posedge Clk) begin

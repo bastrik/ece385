@@ -7,8 +7,8 @@ module game_logic (input logic VGA_VS,
 				   output logic [11:0] xOne,
 				   output logic [11:0] yOne,
 				   output logic [11:0] xTwo,
-				   output logic [11:0] yTwo
-				   output logic [1:0] p1dir		// direction player is facing
+				   output logic [11:0] yTwo,
+				   output logic [1:0] p1dir,		// direction player is facing
 				   output logic [1:0] p2dir);	// 0-> north, 1-> south, 2-> east, 3-> west
 
 // Location of player on map
@@ -16,6 +16,9 @@ assign xOne = _xOne;
 assign yOne = _yOne;
 assign xTwo = _xTwo;
 assign yTwo = _yTwo;
+
+// always_ff player direction
+logic [1:0] p1dir_ff, p2dir_ff;
 
 // Location of players on map
 logic [11:0] _xOne = 12'd700;
@@ -39,14 +42,20 @@ logic [11:0] northTwo, southTwo, eastTwo, westTwo;
 logic [7:0] aOne, bOne, cOne, dOne;
 logic [7:0] aTwo, bTwo, cTwo, dTwo;
 
-assign aOne = keycode[7:0];
-assign bOne = keycode[15:8];
-assign cOne = keycode[23:16];
-assign dOne = keycode[31:24];
-assign aTwo = PS2keycode[7:0];
-assign bTwo = PS2keycode[15:8];
-assign cTwo = PS2keycode[23:16];
-assign dTwo = PS2keycode[31:24];
+assign aOne = PS2keycode[7:0];
+assign bOne = PS2keycode[15:8];
+assign cOne = PS2keycode[23:16];
+assign dOne = PS2keycode[31:24];
+assign aTwo = keycode[7:0];
+assign bTwo = keycode[15:8];
+assign cTwo = keycode[23:16];
+assign dTwo = keycode[31:24];
+
+always_ff @(posedge VGA_VS)
+begin
+	p1dir_ff <= p1dir;
+	p2dir_ff <= p2dir;
+end
 
 // Player 1 motion and shooting
 always_comb
@@ -55,6 +64,7 @@ begin
 	southOne = 12'd0;
 	eastOne = 12'd0;
 	westOne = 12'd0;
+	p1dir = p1dir_ff;
 
 	// W
 	if (aOne == 8'h1A | bOne == 8'h1A | cOne == 8'h1A | dOne == 8'h1A)
@@ -110,6 +120,8 @@ begin
 	southTwo = 12'd0;
 	eastTwo = 12'd0;
 	westTwo = 12'd0;
+	p2dir = p2dir_ff;
+
 	// W
 	if (aTwo == 8'h1D | bTwo == 8'h1D | cTwo == 8'h1D | dTwo == 8'h1D)
 	begin

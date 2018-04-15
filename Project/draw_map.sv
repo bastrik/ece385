@@ -38,6 +38,7 @@ module draw_map (input logic Clk,
 
 	// FOR PLAYER SPRITE
 	logic [23:0] player;
+	logic [12:0] playerOffset;
 
 	// Flags
 	logic inMapOne, inMapTwo; // flag to check if current pixel is in map
@@ -69,21 +70,10 @@ module draw_map (input logic Clk,
 	always_ff @ (posedge Clk)
 	begin
 		// Get pixel for player sprite
-		player <= inPlayer? playerNorth[(DrYplus - 165)*150 + DrXplus]:24'h0ff0d2;
+		player <= inPlayer? playerNorth[playerOffset]:24'hff00d2;
 		// Determine map pixel for both monitors
 		if (~toggle)
 		begin
-			case (p1dir)
-				2'd0:
-					memoryValueOne <= playerNorth[logic here];
-				2'd1:
-					memoryValueOne <= playerSouth[logic here];
-				2'd2:
-					memoryValueOne <= playerEast[logic here];
-				2'd3:
-					memoryValueOne <= playerWest[logic here];
-			endcase
-
 			case (mapdata[yTileOne*100 + xTileOne])
 				2'b01:
 					mapOne <= inMapOne? grass[yTileOneOffset*32 + xTileOneOffset]:24'h0000;
@@ -107,9 +97,9 @@ module draw_map (input logic Clk,
 	end
 
 	// Assign VGA values for player 1
-	assign VGA_R = (player == 24'h0ff0d2)? {mapOne[23:19], 3'b000}:{player[23:19], 3'b000};
-	assign VGA_G = (player == 24'h0ff0d2)? {mapOne[15:11], 3'b000}:{player[15:11], 3'b000};
-	assign VGA_B = (player == 24'h0ff0d2)? {mapOne[7:3], 3'b000}:{player[7:3], 3'b000};
+	assign VGA_R = (player == 24'hff00d2)? {mapOne[23:19], 3'b000}:{player[23:19], 3'b000};
+	assign VGA_G = (player == 24'hff00d2)? {mapOne[15:11], 3'b000}:{player[15:11], 3'b000};
+	assign VGA_B = (player == 24'hff00d2)? {mapOne[7:3], 3'b000}:{player[7:3], 3'b000};
 
 	// Assign GPIO values for player 2
 	// Set RGB signals to low during horizontal blanking interval
@@ -144,12 +134,12 @@ module draw_map (input logic Clk,
 		$readmemh("mapdata.txt", mapdata);
 	end
 
-	// Player with gun (150 x 150)
+	// Player with gun (75 x 75)
 	// One sprite for each direction
-	logic [23:0] playerNorth[22500];
-	logic [23:0] playerSouth[22500];
-	logic [23:0] playerEast[22500];
-	logic [23:0] playerWest[22500];
+	logic [23:0] playerNorth[5625];
+	logic [23:0] playerSouth[5625];
+	logic [23:0] playerEast[5625];
+	logic [23:0] playerWest[5625];
 	initial
 	begin
 		$readmemh("player2_1.txt", playerNorth);
@@ -160,6 +150,9 @@ module draw_map (input logic Clk,
 
 	// Calculate if current pixel is in player sprite
 	assign inPlayer = (DrXplus > 245) & (DrXplus < 395) & (DrYplus > 165) & (DrYplus < 315);
+
+	// Calculate pixel in player sprite
+	assign playerOffset = (DrYplus - 167)*150 + (DrXplus - 247);
 
 	// Calculate background tile for player 1
 	assign xTileOne = (xOne - 320 + DrXplus) >> 5; // each tile is 32 x 32
