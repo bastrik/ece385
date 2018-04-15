@@ -1605,7 +1605,7 @@ ff00d2
 ff00d2
 ff00d2
 ff00d2
-ff17c7
+ff00d2
 ff00d2
 fcc875
 fcc875
@@ -1699,7 +1699,7 @@ fcc875
 fcc875
 fcc875
 fcbb7b
-ff17c7
+ff00d2
 ff00d2
 ff00d2
 ff00d2
@@ -1963,7 +1963,7 @@ ffef8c
 dfbb6c
 241b11
 010000
-fa00ce
+ff00d2
 ff00d2
 ff00d2
 ff00d2
@@ -2049,7 +2049,7 @@ ff00d2
 ff00d2
 ff00d2
 ff00d2
-fa06cb
+ff00d2
 df9179
 f9cb77
 ffe385
@@ -2474,7 +2474,7 @@ ff00d2
 ff00d2
 ff00d2
 ff00d2
-fb00ce
+ff00d2
 23001d
 1e041a
 271e0f
@@ -2775,7 +2775,7 @@ ff00d2
 ff00d2
 ff00d2
 ff00d2
-f600cb
+ff00d2
 000000
 000000
 000000
@@ -3019,8 +3019,8 @@ ff00d2
 ff00d2
 ff00d2
 ff00d2
-f500ca
-f200c7
+ff00d2
+ff00d2
 ff00d2
 33002a
 000000
@@ -3247,7 +3247,7 @@ ff00d2
 ff00d2
 ff00d2
 ff00d2
-ff1cc5
+ff00d2
 fcc875
 fcc875
 fcc875
@@ -3398,7 +3398,7 @@ ff00d2
 ff00d2
 ff00d2
 ff00d2
-ff0fcb
+ff00d2
 fcc875
 fcc875
 fcc875
@@ -3504,7 +3504,6 @@ fcc875
 fcc875
 fcc875
 fcc875
-fe4caf
 ff00d2
 ff00d2
 ff00d2
@@ -3549,7 +3548,8 @@ ff00d2
 ff00d2
 ff00d2
 ff00d2
-ff06cf
+ff00d2
+ff00d2
 fcbc7b
 fcc875
 fcc875
@@ -3777,7 +3777,7 @@ ff00d2
 ff00d2
 ff00d2
 ff00d2
-fd5fa7
+ff00d2
 fcbf79
 fcc875
 fcc875
@@ -4006,7 +4006,7 @@ ff00d2
 ff00d2
 ff00d2
 ff00d2
-ff17c7
+ff00d2
 fd978c
 fcbe7a
 fcc875

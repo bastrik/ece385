@@ -142,38 +142,38 @@ begin
 	// A
 	if (aTwo == 8'h1C | bTwo == 8'h1C | cTwo == 8'h1C | dTwo == 8'h1C)
 	begin
-		northTwo = 12'd2;
+		westTwo = 12'd2;
 		p2dir = 2'd3;
 	end
 	// S
 	if (aTwo == 8'h1B | bTwo == 8'h1B | cTwo == 8'h1B | dTwo == 8'h1B)
 	begin
-		northTwo = 12'd2;
+		southTwo = 12'd2;
 		p2dir = 2'd1;
 	end
 	// D
 	if (aTwo == 8'h23 | bTwo == 8'h23 | cTwo == 8'h23 | dTwo == 8'h23)
 	begin
-		northTwo = 12'd2;
+		eastTwo = 12'd2;
 		p2dir = 2'd2;
 	end
 	// up arrow
-	if (aOne == 8'h75 | bOne == 8'h75 | cOne == 8'h75 | dOne == 8'h75)
+	if (aTwo == 8'h75 | bTwo == 8'h75 | cTwo == 8'h75 | dTwo == 8'h75)
 	begin
 		p2dir = 2'd0;
 	end
 	// down arrow
-	if (aOne == 8'h72 | bOne == 8'h72 | cOne == 8'h72 | dOne == 8'h72)
+	if (aTwo == 8'h72 | bTwo == 8'h72 | cTwo == 8'h72 | dTwo == 8'h72)
 	begin
 		p2dir = 2'd1;	
 	end
 	// left arrow
-	if (aOne == 8'h6B | bOne == 8'h6B | cOne == 8'h6B | dOne == 8'h6B)
+	if (aTwo == 8'h6B | bTwo == 8'h6B | cTwo == 8'h6B | dTwo == 8'h6B)
 	begin
 		p2dir = 2'd3;
 	end
 	// right arrow
-	if (aOne == 8'h74 | bOne == 8'h74 | cOne == 8'h74 | dOne == 8'h74)
+	if (aTwo == 8'h74 | bTwo == 8'h74 | cTwo == 8'h74 | dTwo == 8'h74)
 	begin
 		p2dir = 2'd2;
 	end
