@@ -61,7 +61,7 @@ module draw_map (input logic Clk,
 	// Set blanking signal
 	always_ff @ (posedge Clk)
 	begin
-	if (DrX > 10'd645 & DrX < 10'd795)
+	if (DrX > 10'd640 & DrX < 10'd799)
 		blanking <= 0;
 	else
 		blanking <= 1;
@@ -174,7 +174,7 @@ module draw_map (input logic Clk,
 	assign inPlayer = (DrXplus > 283) & (DrXplus < 357) & (DrYplus > 203) & (DrYplus < 277);
 
 	// Calculate pixel in player sprite
-	assign playerOffset = (DrYplus - 203)*150 + (DrXplus - 2283);
+	assign playerOffset = (DrYplus - 203)*75 + (DrXplus - 283);
 
 	// Calculate background tile for player 1
 	assign xTileOne = (xOne - 320 + DrXplus) >> 5; // each tile is 32 x 32

@@ -66,6 +66,8 @@ module project( input               CLOCK_50,
     logic [9:0] DrX, DrY; // VGA controller scanning position
     logic [1:0] p1dir, p2dir; // Direction each player is facing
 
+    logic [11:0] northOne, northOne_comb, southOne, southOne_comb, eastOne, eastOne_comb, westOne, westOne_comb;
+
     assign Clk = CLOCK_50;
     always_ff @ (posedge Clk) begin
         Reset_h <= ~(KEY[0]);        // The push buttons are active low
@@ -172,18 +174,22 @@ module project( input               CLOCK_50,
     HexDriver hex_inst_1 (PS2keycode[7:4], HEX1);
     HexDriver hex_inst_2 (PS2keycode[11:8], HEX2);
     HexDriver hex_inst_3 (PS2keycode[15:12], HEX3);
-    HexDriver hex_inst_4 (xTwo[3:0], HEX4);
-    HexDriver hex_inst_5 (xTwo[7:4], HEX5);
-    HexDriver hex_inst_6 (yTwo[3:0], HEX6);
-    HexDriver hex_inst_7 (yTwo[7:4], HEX7);
+    HexDriver hex_inst_4 (xOne[3:0], HEX4);
+    HexDriver hex_inst_5 (xOne[7:4], HEX5);
+    HexDriver hex_inst_6 (yOne[3:0], HEX6);
+    HexDriver hex_inst_7 (yOne[7:4], HEX7);
 
     always_comb
     begin
 	    // For testing
-	    LEDG[0] = 1'b1;
-		LEDG[1] = 1'b1;
-        LEDG[2] = 1'b1;
-        LEDG[3] = 1'b1;
+	    LEDG[0] = westOne_comb[1];
+		LEDG[1] = westOne[1];
+        LEDG[2] = eastOne_comb[1];
+        LEDG[3] = eastOne[1];
+        LEDG[4] = southOne_comb[1];
+        LEDG[5] = southOne[1];
+        LEDG[6] = northOne_comb[1];
+        LEDG[7] = northOne[1];
     end
 
 endmodule
