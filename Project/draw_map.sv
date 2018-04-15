@@ -37,7 +37,7 @@ module draw_map (input logic Clk,
 	logic [23:0] mapTwo;
 
 	// FOR PLAYER SPRITE
-	logic [23:0] player;
+	logic [23:0] player1, player2;
 	logic [12:0] playerOffset;
 
 	// Flags
@@ -69,11 +69,10 @@ module draw_map (input logic Clk,
 
 	always_ff @ (posedge Clk)
 	begin
-		// Get pixel for player sprite
-		player <= inPlayer? playerNorth[playerOffset]:24'hff00d2;
-		// Determine map pixel for both monitors
+		// Determine map and sprite pixels for player 1
 		if (~toggle)
 		begin
+			// Get map pixel
 			case (mapdata[yTileOne*100 + xTileOne])
 				2'b01:
 					mapOne <= inMapOne? grass[yTileOneOffset*32 + xTileOneOffset]:24'h0000;
@@ -82,9 +81,21 @@ module draw_map (input logic Clk,
 				2'b11:
 					mapOne <= inMapOne? sand[yTileOneOffset*32 + xTileOneOffset]:24'h0000;
 			endcase
+			// Get player sprite pixel
+			case (p1dir)
+				2'b00:
+					player1 <= inPlayer? playerNorth[playerOffset]:24'hff00d2;
+				2'b01:
+					player1 <= inPlayer? playerSouth[playerOffset]:24'hff00d2;
+				2'b10:
+					player1 <= inPlayer? playerEast[playerOffset]:24'hff00d2;
+				2'b11:
+					player1 <= inPlayer? playerWest[playerOffset]:24'hff00d2;
+			endcase
 		end
 		else
 		begin
+			// Get map pixel
 			case (mapdata[yTileTwo*100 + xTileTwo])
 				2'b01:
 					mapTwo <= inMapTwo? grass[yTileTwoOffset*32 + xTileTwoOffset]:24'h0000;
@@ -93,31 +104,42 @@ module draw_map (input logic Clk,
 				2'b11:
 					mapTwo <= inMapTwo? sand[yTileTwoOffset*32 + xTileTwoOffset]:24'h0000;
 			endcase
+			// Get player sprite pixel
+			case (p2dir)
+				2'b00:
+					player2 <= inPlayer? playerNorth[playerOffset]:24'hff00d2;
+				2'b01:
+					player2 <= inPlayer? playerSouth[playerOffset]:24'hff00d2;
+				2'b10:
+					player2 <= inPlayer? playerEast[playerOffset]:24'hff00d2;
+				2'b11:
+					player2 <= inPlayer? playerWest[playerOffset]:24'hff00d2;
+			endcase
 		end
 	end
 
 	// Assign VGA values for player 1
-	assign VGA_R = (player == 24'hff00d2)? {mapOne[23:19], 3'b000}:{player[23:19], 3'b000};
-	assign VGA_G = (player == 24'hff00d2)? {mapOne[15:11], 3'b000}:{player[15:11], 3'b000};
-	assign VGA_B = (player == 24'hff00d2)? {mapOne[7:3], 3'b000}:{player[7:3], 3'b000};
+	assign VGA_R = (player1 == 24'hff00d2)? {mapOne[23:19], 3'b000}:{player1[23:19], 3'b000};
+	assign VGA_G = (player1 == 24'hff00d2)? {mapOne[15:11], 3'b000}:{player1[15:11], 3'b000};
+	assign VGA_B = (player1 == 24'hff00d2)? {mapOne[7:3], 3'b000}:{player1[7:3], 3'b000};
 
 	// Assign GPIO values for player 2
 	// Set RGB signals to low during horizontal blanking interval
-	assign GPIO[9] = blanking? mapTwo[23]:1'b0;
-	assign GPIO[7] = blanking? mapTwo[22]:1'b0;
-	assign GPIO[5] = blanking? mapTwo[21]:1'b0;
-	assign GPIO[3] = blanking? mapTwo[20]:1'b0;
-	assign GPIO[1] = blanking? mapTwo[19]:1'b0;
-	assign GPIO[14] = blanking? mapTwo[15]:1'b0;
-	assign GPIO[12] = blanking? mapTwo[14]:1'b0;
-	assign GPIO[10] = blanking? mapTwo[13]:1'b0;
-	assign GPIO[6] = blanking? mapTwo[12]:1'b0;
-	assign GPIO[0] = blanking? mapTwo[11]:1'b0;
-	assign GPIO[19] = blanking? mapTwo[7]:1'b0;
-	assign GPIO[17] = blanking? mapTwo[6]:1'b0;
-	assign GPIO[15] = blanking? mapTwo[5]:1'b0;
-	assign GPIO[13] = blanking? mapTwo[4]:1'b0;
-	assign GPIO[11] = blanking? mapTwo[3]:1'b0;
+	assign GPIO[9] = blanking? ((player2 == 24'hff00d2)? mapTwo[23]:player2[23]):1'b0;
+	assign GPIO[7] = blanking? ((player2 == 24'hff00d2)? mapTwo[22]:player2[22]):1'b0;
+	assign GPIO[5] = blanking? ((player2 == 24'hff00d2)? mapTwo[21]:player2[21]):1'b0;
+	assign GPIO[3] = blanking? ((player2 == 24'hff00d2)? mapTwo[20]:player2[20]):1'b0;
+	assign GPIO[1] = blanking? ((player2 == 24'hff00d2)? mapTwo[19]:player2[19]):1'b0;
+	assign GPIO[14] = blanking? ((player2 == 24'hff00d2)? mapTwo[15]:player2[15]):1'b0;
+	assign GPIO[12] = blanking? ((player2 == 24'hff00d2)? mapTwo[14]:player2[14]):1'b0;
+	assign GPIO[10] = blanking? ((player2 == 24'hff00d2)? mapTwo[13]:player2[13]):1'b0;
+	assign GPIO[6] = blanking? ((player2 == 24'hff00d2)? mapTwo[12]:player2[12]):1'b0;
+	assign GPIO[0] = blanking? ((player2 == 24'hff00d2)? mapTwo[11]:player2[11]):1'b0;
+	assign GPIO[19] = blanking? ((player2 == 24'hff00d2)? mapTwo[7]:player2[7]):1'b0;
+	assign GPIO[17] = blanking? ((player2 == 24'hff00d2)? mapTwo[6]:player2[6]):1'b0;
+	assign GPIO[15] = blanking? ((player2 == 24'hff00d2)? mapTwo[5]:player2[5]):1'b0;
+	assign GPIO[13] = blanking? ((player2 == 24'hff00d2)? mapTwo[4]:player2[4]):1'b0;
+	assign GPIO[11] = blanking? ((player2 == 24'hff00d2)? mapTwo[3]:player2[3]):1'b0;
 	assign GPIO[2] = VGA_VS;
 	assign GPIO[4] = VGA_HS;
 
@@ -149,10 +171,10 @@ module draw_map (input logic Clk,
 	end
 
 	// Calculate if current pixel is in player sprite
-	assign inPlayer = (DrXplus > 245) & (DrXplus < 395) & (DrYplus > 165) & (DrYplus < 315);
+	assign inPlayer = (DrXplus > 283) & (DrXplus < 357) & (DrYplus > 203) & (DrYplus < 277);
 
 	// Calculate pixel in player sprite
-	assign playerOffset = (DrYplus - 167)*150 + (DrXplus - 247);
+	assign playerOffset = (DrYplus - 203)*150 + (DrXplus - 2283);
 
 	// Calculate background tile for player 1
 	assign xTileOne = (xOne - 320 + DrXplus) >> 5; // each tile is 32 x 32

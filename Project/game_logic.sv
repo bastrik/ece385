@@ -42,6 +42,7 @@ logic [11:0] northTwo, southTwo, eastTwo, westTwo;
 logic [7:0] aOne, bOne, cOne, dOne;
 logic [7:0] aTwo, bTwo, cTwo, dTwo;
 
+// PS2 keyboard for player 1, USB keyboard for player 2
 assign aOne = PS2keycode[7:0];
 assign bOne = PS2keycode[15:8];
 assign cOne = PS2keycode[23:16];
@@ -50,6 +51,16 @@ assign aTwo = keycode[7:0];
 assign bTwo = keycode[15:8];
 assign cTwo = keycode[23:16];
 assign dTwo = keycode[31:24];
+
+// // USB keyboard for player 1, PS2 keyboard for player 2
+// assign aOne = keycode[7:0];
+// assign bOne = keycode[15:8];
+// assign cOne = keycode[23:16];
+// assign dOne = keycode[31:24];
+// assign aTwo = PS2keycode[7:0];
+// assign bTwo = PS2keycode[15:8];
+// assign cTwo = PS2keycode[23:16];
+// assign dTwo = PS2keycode[31:24];
 
 always_ff @(posedge VGA_VS)
 begin
