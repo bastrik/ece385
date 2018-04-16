@@ -166,16 +166,16 @@ module project( input               CLOCK_50,
 		// 		.VGA_G(VGA_G),
 		// 		.VGA_B(VGA_B)
 		// 	);
-    
+    logic[6:0] xTileTwo, yTileTwo;
     // Display keycode on hex display
     HexDriver hex_inst_0 (PS2keycode[3:0], HEX0);
     HexDriver hex_inst_1 (PS2keycode[7:4], HEX1);
     HexDriver hex_inst_2 (PS2keycode[11:8], HEX2);
     HexDriver hex_inst_3 (PS2keycode[15:12], HEX3);
-    HexDriver hex_inst_4 (xOne[3:0], HEX4);
-    HexDriver hex_inst_5 (xOne[7:4], HEX5);
-    HexDriver hex_inst_6 (yOne[3:0], HEX6);
-    HexDriver hex_inst_7 (yOne[7:4], HEX7);
+    HexDriver hex_inst_4 (xTileTwo[3:0], HEX4);
+    HexDriver hex_inst_5 ({1'b0,xTileTwo[6:4]}, HEX5);
+    HexDriver hex_inst_6 (yTileTwo[3:0], HEX6);
+    HexDriver hex_inst_7 ({1'b0,yTileTwo[6:4]}, HEX7);
 
     always_comb
     begin
