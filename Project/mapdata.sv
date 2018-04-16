@@ -10,7 +10,7 @@ module mapdata(input logic clk,
 
 	initial
 	begin
-		$readmemh("mapinfo.txt", mem);
+		$readmemh("mapdata.txt", mem);
 	end
 
 	always_ff @ (posedge clk)
