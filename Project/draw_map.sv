@@ -12,6 +12,8 @@ module draw_map (input logic Clk,
 				 input logic [9:0] DrY, 
 				 input logic VGA_VS,
 				 input logic VGA_HS,
+				 input logic [11:0] b1X, b1Y, b2X, b2Y, b3X, b3Y, b4X, b4Y, b5X, b5Y, b6X, b6Y, b7X, b7Y, b8X, b8Y, b9X, b9Y, b10X, b10Y, b11X, b11Y, b12X, b12Y, b13X, b13Y, b14X, b14Y, b15X, b15Y, b16X, b16Y,
+				 input logic b1active, b2active, b3active, b4active, b5active, b6active, b7active, b8active, b9active, b10active, b11active, b12active, b13active, b14active, b15active, b16active,
 				 output logic [7:0] VGA_R,
 				 output logic [7:0] VGA_G,
 				 output logic [7:0] VGA_B,
@@ -46,7 +48,10 @@ module draw_map (input logic Clk,
 	logic [23:0] p2onp1, p1onp2;
 	logic [12:0] player1offset, player2offset;
 
-	//
+	// FOR SPRITE OF BULLETS ON MONITORS
+	logic [23:0] bullet1, bullet2;
+
+	// FOR DRAWING NON-MAP PIXELS
 	logic [23:0] sprite1, sprite2;
 
 	// Flags
@@ -122,6 +127,16 @@ module draw_map (input logic Clk,
 			end
 			else
 				p2onp1 <= 24'hff00d2;
+			// Check if bullets are onscreen
+			if (b9active & b9on1 & b9on1offset >= 5'd0 & b9on1offset < 5'd25)
+			begin
+				if ((((xOne - 12'd320 + DrXplus > b9X)? xOne - 12'd320 + DrXplus - b9X:b9X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b9Y)? yOne - 12'd240 + DrYplus - b9Y:b9Y - (yOne - 12'd240 + DrYplus)) < 2))
+					bullet1 <= bullet9a_out;
+				else
+					bullet1 <= 24'hff00d2;
+			end
+			else
+				bullet1 <= 24'hff00d2;
 		end
 		else
 		begin
@@ -166,6 +181,16 @@ module draw_map (input logic Clk,
 			end
 			else
 				p1onp2 <= 24'hff00d2;
+			// Check if bullets are onscreen
+			if (b9active & b9on2 & b9on2offset >= 5'd0 & b9on2offset < 5'd25)
+			begin
+				if ((((xTwo - 12'd320 + DrXplus > b9X)? xTwo - 12'd320 + DrXplus - b9X:b9X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b9Y)? yTwo - 12'd240 + DrYplus - b9Y:b9Y - (yTwo - 12'd240 + DrYplus)) < 2))
+					bullet2 <= bullet9b_out;
+				else
+					bullet2 <= 24'hff00d2;
+			end
+			else
+				bullet2 <= 24'hff00d2;
 		end
 	end
 
@@ -182,6 +207,8 @@ module draw_map (input logic Clk,
 		player2South_in = 13'd0;
 		player2East_in = 13'd0;
 		player2West_in = 13'd0;
+		bullet9a_in = 5'd0;
+		bullet9b_in = 5'd0;
 
 		if (toggle)
 		begin
@@ -199,6 +226,7 @@ module draw_map (input logic Clk,
 			player2South_in = player2offset;
 			player2East_in = player2offset;
 			player2West_in = player2offset;
+			bullet9a_in = b9on1offset;
 		end
 		else
 		begin
@@ -216,6 +244,7 @@ module draw_map (input logic Clk,
 			player1South_in = player1offset;
 			player1East_in = player1offset;
 			player1West_in = player1offset;
+			bullet9b_in = b9on2offset;
 		end
 	end
 
@@ -227,12 +256,16 @@ module draw_map (input logic Clk,
 			sprite1 = player1;
 		else if (p2onp1 != 24'hff00d2)
 			sprite1 = p2onp1;
+		else if (bullet1 != 24'hff00d2)
+			sprite1 = bullet1;
 		else
 			sprite1 = 24'hff00d2;
 		if (player2 != 24'hff00d2)
 			sprite2 = player2;
 		else if (p1onp2 != 24'hff00d2)
 			sprite2 = p1onp2;
+		else if (bullet2 != 24'hff00d2)
+			sprite2 = bullet2;
 		else
 			sprite2 = 24'hff00d2;
 	end
@@ -267,10 +300,12 @@ module draw_map (input logic Clk,
 	logic [12:0] player1North_in, player1South_in, player1West_in, player1East_in; 
 	logic [12:0] player2North_in, player2South_in, player2West_in, player2East_in;
 	logic [12:0] map_in; 
+	logic [4:0] bullet9a_in, bullet9b_in;
 	logic [23:0] grass_out, sand_out, water_out;
 	logic [23:0] player1North_out, player1South_out, player1West_out, player1East_out;
 	logic [23:0] player2North_out, player2South_out, player2West_out, player2East_out;
 	logic [1:0] map_out;
+	logic [23:0] bullet9a_out, bullet9b_out;
 	grass grassTile(.clk(Clk), .d(0), .write_address(0), .read_address(grass_in), .we(0), .q(grass_out));
 	sand  sandTile (.clk(Clk), .d(0), .write_address(0), .read_address(sand_in), .we(0), .q(sand_out));
 	water waterTile(.clk(Clk), .d(0), .write_address(0), .read_address(water_in), .we(0), .q(water_out));
@@ -283,9 +318,20 @@ module draw_map (input logic Clk,
 	player2_3 playerEastmem2(.clk(Clk), .d(0), .write_address(0), .read_address(player2South_in), .we(0), .q(player2South_out));
 	player2_4 playerWestmem2(.clk(Clk), .d(0), .write_address(0), .read_address(player2West_in), .we(0), .q(player2West_out));
 	mapdata mapinfo(.clk(Clk), .d(0), .write_address(0), .read_address(map_in), .we(0), .q(map_out));
+	bulletmem bullet9a(.clk(Clk), .d(0), .write_address(0), .read_address(bullet9a_in), .we(0), .q(bullet9a_out));
+	bulletmem bullet9b(.clk(Clk), .d(0), .write_address(0), .read_address(bullet9b_in), .we(0), .q(bullet9b_out));
 
 
-	//// OTHER SPRITE LOGIC
+	//// BULLET LOGIC
+	logic b9on1, b9on2;
+	logic [4:0] b9on1offset, b9on2offset;
+	assign b9on1 = (((b9X > xOne)? b9X - xOne:xOne - b9X) < 12'd330) & (((b9Y > yOne)? b9Y - yOne:yOne - b9Y) < 12'd250);
+	assign b9on2 = (((b9X > xTwo)? b9X - xTwo:xTwo - b9X) < 12'd330) & (((b9Y > yTwo)? b9Y - yTwo:yTwo - b9Y) < 12'd250);
+	assign b9on1offset = (DrYplus - ((b9Y - 12'd2) - (yOne - 12'd240)))*12'd5 + (DrXplus - ((b9X - 12'd2) - (xOne - 12'd320)));
+	assign b9on2offset = (DrYplus - ((b9Y - 12'd2) - (yTwo - 12'd240)))*12'd5 + (DrXplus - ((b9X - 12'd2) - (xTwo - 12'd320)));
+
+
+	//// OTHER PLAYER SPRITE LOGIC
 	// Calculate pixel of other player
 	assign onscreen = (((xTwo > xOne)? xTwo - xOne:xOne - xTwo) < 12'd360) & (((yTwo > yOne)? yTwo - yOne:yOne - yTwo) < 12'd280);
 	// assign onscreen = (xOne + 320 > xTwo) & (xOne - 320 < xTwo) & (yOne + 240 > yTwo) & (yOne - 240 < yTwo);
