@@ -9,8 +9,7 @@ module game_logic (input logic VGA_VS,
 				   output logic [11:0] xTwo,
 				   output logic [11:0] yTwo,
 				   output logic [1:0] p1dir,		// direction player is facing
-				   output logic [1:0] p2dir,	// 0-> north, 1-> south, 2-> east, 3-> west
-				   output logic [11:0] northOne, southOne, eastOne, westOne, northOne_comb, southOne_comb, eastOne_comb, westOne_comb);
+				   output logic [1:0] p2dir);	// 0-> north, 1-> south, 2-> east, 3-> west
 
 // Location of player on map
 assign xOne = _xOne;
@@ -21,8 +20,8 @@ assign yTwo = _yTwo;
 // Location of players on map
 logic [11:0] _xOne = 12'd700;
 logic [11:0] _yOne = 12'd700;
-logic [11:0] _xTwo = 12'd2500;
-logic [11:0] _yTwo = 12'd1700;
+logic [11:0] _xTwo = 12'd1500;
+logic [11:0] _yTwo = 12'd1400;
 
 always_ff @ (posedge VGA_VS)
 begin
@@ -33,46 +32,26 @@ begin
 end
 
 // Player motion
-//logic [11:0] northOne, southOne, eastOne, westOne;
-//logic [11:0] northOne_comb, southOne_comb, eastOne_comb, westOne_comb;
+logic [11:0] northOne, southOne, eastOne, westOne;
 logic [11:0] northTwo, southTwo, eastTwo, westTwo;
-logic [11:0] northTwo_comb, southTwo_comb, eastTwo_comb, westTwo_comb;
 logic [1:0] p1dir_comb, p2dir_comb;
 
 // Four-key rollover
 logic [7:0] aOne, bOne, cOne, dOne;
 logic [7:0] aTwo, bTwo, cTwo, dTwo;
 
-// PS2 keyboard for player 1, USB keyboard for player 2
-assign aOne = PS2keycode[7:0];
-assign bOne = PS2keycode[15:8];
-assign cOne = PS2keycode[23:16];
-assign dOne = PS2keycode[31:24];
-assign aTwo = keycode[7:0];
-assign bTwo = keycode[15:8];
-assign cTwo = keycode[23:16];
-assign dTwo = keycode[31:24];
-
-// // USB keyboard for player 1, PS2 keyboard for player 2
-// assign aOne = keycode[7:0];
-// assign bOne = keycode[15:8];
-// assign cOne = keycode[23:16];
-// assign dOne = keycode[31:24];
-// assign aTwo = PS2keycode[7:0];
-// assign bTwo = PS2keycode[15:8];
-// assign cTwo = PS2keycode[23:16];
-// assign dTwo = PS2keycode[31:24];
+// USB keyboard for player 1, PS2 keyboard for player 2
+assign aOne = keycode[7:0];
+assign bOne = keycode[15:8];
+assign cOne = keycode[23:16];
+assign dOne = keycode[31:24];
+assign aTwo = PS2keycode[7:0];
+assign bTwo = PS2keycode[15:8];
+assign cTwo = PS2keycode[23:16];
+assign dTwo = PS2keycode[31:24];
 
 always_ff @(posedge VGA_VS)
 begin
-	northOne <= northOne_comb;
-	southOne <= southOne_comb;
-	eastOne <= eastOne_comb;
-	westOne <= westOne_comb;
-	northTwo <= northTwo_comb;
-	southTwo <= southTwo_comb;
-	eastTwo <= eastTwo_comb;
-	westTwo <= westTwo_comb;
 	p1dir <= p1dir_comb;
 	p2dir <= p2dir_comb;
 end
@@ -80,34 +59,34 @@ end
 // Player 1 motion and shooting
 always_comb
 begin
-	northOne_comb = 12'd0;
-	southOne_comb = 12'd0;
-	eastOne_comb = 12'd0;
-	westOne_comb = 12'd0;
+	northOne = 12'd0;
+	southOne = 12'd0;
+	eastOne = 12'd0;
+	westOne = 12'd0;
 	p1dir_comb = p1dir;
 
 	// W
 	if (aOne == 8'h1A | bOne == 8'h1A | cOne == 8'h1A | dOne == 8'h1A)
 	begin
-		northOne_comb = 12'd2;
+		northOne = 12'd2;
 		p1dir_comb = 2'd0;
 	end
 	// A
 	if (aOne == 8'h04 | bOne == 8'h04 | cOne == 8'h04 | dOne == 8'h04)
 	begin
-		westOne_comb = 12'd2;
+		westOne = 12'd2;
 		p1dir_comb = 2'd3;	
 	end
 	// S
 	if (aOne == 8'h16 | bOne == 8'h16 | cOne == 8'h16 | dOne == 8'h16)
 	begin
-		southOne_comb = 12'd2;
+		southOne = 12'd2;
 		p1dir_comb = 2'd1;
 	end
 	// D
 	if (aOne == 8'h07 | bOne == 8'h07 | cOne == 8'h07 | dOne == 8'h07)
 	begin
-		eastOne_comb = 12'd2;
+		eastOne = 12'd2;
 		p1dir_comb = 2'd2;
 	end
 	// up arrow
@@ -116,7 +95,7 @@ begin
 		p1dir_comb = 2'd0;
 	end
 	// down arrow
-	if (aOne == 8'h04 | bOne == 8'h04 | cOne == 8'h04 | dOne == 8'h04)
+	if (aOne == 8'h51 | bOne == 8'h51 | cOne == 8'h51 | dOne == 8'h51)
 	begin
 		p1dir_comb = 2'd1;	
 	end
@@ -136,34 +115,34 @@ end
 // Player 2 motion and shooting
 always_comb
 begin
-	northTwo_comb = 12'd0;
-	southTwo_comb = 12'd0;
-	eastTwo_comb = 12'd0;
-	westTwo_comb = 12'd0;
+	northTwo = 12'd0;
+	southTwo = 12'd0;
+	eastTwo = 12'd0;
+	westTwo = 12'd0;
 	p2dir_comb = p2dir;
 
 	// W
 	if (aTwo == 8'h1D | bTwo == 8'h1D | cTwo == 8'h1D | dTwo == 8'h1D)
 	begin
-		northTwo_comb = 12'd2;
+		northTwo = 12'd2;
 		p2dir_comb = 2'd0;
 	end
 	// A
 	if (aTwo == 8'h1C | bTwo == 8'h1C | cTwo == 8'h1C | dTwo == 8'h1C)
 	begin
-		westTwo_comb = 12'd2;
+		westTwo = 12'd2;
 		p2dir_comb = 2'd3;
 	end
 	// S
 	if (aTwo == 8'h1B | bTwo == 8'h1B | cTwo == 8'h1B | dTwo == 8'h1B)
 	begin
-		southTwo_comb = 12'd2;
+		southTwo = 12'd2;
 		p2dir_comb = 2'd1;
 	end
 	// D
 	if (aTwo == 8'h23 | bTwo == 8'h23 | cTwo == 8'h23 | dTwo == 8'h23)
 	begin
-		eastTwo_comb = 12'd2;
+		eastTwo = 12'd2;
 		p2dir_comb = 2'd2;
 	end
 	// up arrow
