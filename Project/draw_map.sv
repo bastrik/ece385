@@ -83,35 +83,35 @@ module draw_map (input logic Clk,
 			// Get map pixel
 			case (mapdata[yTileOne*100 + xTileOne])
 				2'b01:
-					mapOne <= inMapOne? grass[yTileOneOffset*32 + xTileOneOffset]:24'h0000;
+					mapOne <= inMapOne? grass_out : 24'h0000;
 				2'b10:
-					mapOne <= inMapOne? water[yTileOneOffset*32 + xTileOneOffset]:24'h0000;
+					mapOne <= inMapOne? water_out : 24'h0000;
 				2'b11:
-					mapOne <= inMapOne? sand[yTileOneOffset*32 + xTileOneOffset]:24'h0000;
+					mapOne <= inMapOne? sand_out : 24'h0000;
 			endcase
 			// Get player sprite pixel
 			case (p1dir)
 				2'b00:
-					player1 <= inPlayer? playerNorth[playerOffset]:24'hff00d2;
+					player1 <= inPlayer? playerNorth_out : 24'hff00d2;
 				2'b01:
-					player1 <= inPlayer? playerSouth[playerOffset]:24'hff00d2;
+					player1 <= inPlayer? playerSouth_out : 24'hff00d2;
 				2'b10:
-					player1 <= inPlayer? playerEast[playerOffset]:24'hff00d2;
+					player1 <= inPlayer? playerEast_out : 24'hff00d2;
 				2'b11:
-					player1 <= inPlayer? playerWest[playerOffset]:24'hff00d2;
+					player1 <= inPlayer? playerWest_out : 24'hff00d2;
 			endcase
 			// Check if player 2 is onscreen
 			if (onscreen & player2offset > 0 & player2offset < 5625)
 			begin
 				case (p2dir)
 					2'b00:
-						p2onp1 <= playerNorth[player2offset];
+						p2onp1 <= playerNorth_out;
 					2'b01:
-						p2onp1 <= playerSouth[player2offset];
+						p2onp1 <= playerSouth_out;
 					2'b10:
-						p2onp1 <= playerEast[player2offset];
+						p2onp1 <= playerEast_out;
 					2'b11:
-						p2onp1 <= playerWest[player2offset];
+						p2onp1 <= playerWest_out;
 				endcase 
 			end
 			else
@@ -122,41 +122,120 @@ module draw_map (input logic Clk,
 			// Get map pixel
 			case (mapdata[yTileTwo*100 + xTileTwo])
 				2'b01:
-					mapTwo <= inMapTwo? grass[yTileTwoOffset*32 + xTileTwoOffset]:24'h0000;
+					mapTwo <= inMapTwo? grass_out : 24'h0000;
 				2'b10:
-					mapTwo <= inMapTwo? water[yTileTwoOffset*32 + xTileTwoOffset]:24'h0000;
+					mapTwo <= inMapTwo? water_out : 24'h0000;
 				2'b11:
-					mapTwo <= inMapTwo? sand[yTileTwoOffset*32 + xTileTwoOffset]:24'h0000;
+					mapTwo <= inMapTwo? sand_out : 24'h0000;
 			endcase
 			// Get player sprite pixel
 			case (p2dir)
 				2'b00:
-					player2 <= inPlayer? playerNorth[playerOffset]:24'hff00d2;
+					player2 <= inPlayer? playerNorth_out : 24'hff00d2;
 				2'b01:
-					player2 <= inPlayer? playerSouth[playerOffset]:24'hff00d2;
+					player2 <= inPlayer? playerSouth_out : 24'hff00d2;
 				2'b10:
-					player2 <= inPlayer? playerEast[playerOffset]:24'hff00d2;
+					player2 <= inPlayer? playerEast_out : 24'hff00d2;
 				2'b11:
-					player2 <= inPlayer? playerWest[playerOffset]:24'hff00d2;
+					player2 <= inPlayer? playerWest_out : 24'hff00d2;
 			endcase
 			// Check if player 1 is onscreen
 			if (onscreen & player1offset > 0 & player1offset < 5625)
 			begin
 				case (p1dir)
 					2'b00:
-						p1onp2 <= playerNorth[player1offset];
+						p1onp2 <= playerNorth_out;
 					2'b01:
-						p1onp2 <= playerSouth[player1offset];
+						p1onp2 <= playerSouth_out;
 					2'b10:
-						p1onp2 <= playerEast[player1offset];
+						p1onp2 <= playerEast_out;
 					2'b11:
-						p1onp2 <= playerWest[player1offset];
-				endcase 
+						p1onp2 <= playerWest_out;
+				endcase  
 			end
 			else
 				p1onp2 <= 24'hff00d2;
 		end
 	end
+
+	always_comb
+	begin
+		if (~toggle)
+		begin
+			// Get map pixel
+			case (mapdata[yTileOne*100 + xTileOne])
+				2'b01:
+					grass_in = yTileOneOffset*32 + xTileOneOffset;
+				2'b10:
+					water_in = yTileOneOffset*32 + xTileOneOffset;
+				2'b11:
+					sand_in = yTileOneOffset*32 + xTileOneOffset;
+			endcase
+			// Get player sprite pixel
+			case (p1dir)
+				2'b00:
+					playerNorth_in = playerOffset;
+				2'b01:
+					playerSouth_in = playerOffset;
+				2'b10:
+					playerEast_in = playerOffset;
+				2'b11:
+					playerWest_in = playerOffset;
+			endcase
+			// Check if player 2 is onscreen
+			if (onscreen & player2offset > 0 & player2offset < 5625)
+			begin
+				case (p2dir)
+					2'b00:
+						playerNorth_in = player2offset;
+					2'b01:
+						playerSouth_in = player2offset;
+					2'b10:
+						playerEast_in = player2offset;
+					2'b11:
+						playerWest_in = player2offset;
+				endcase 
+			end
+		end
+		else
+		begin
+			// Get map pixel
+			case (mapdata[yTileTwo*100 + xTileTwo])
+				2'b01:
+					grass_in = yTileTwoOffset*32 + xTileTwoOffset;
+				2'b10:
+					water_in = yTileTwoOffset*32 + xTileTwoOffset;
+				2'b11:
+					sand_in  = yTileTwoOffset*32 + xTileTwoOffset;
+			endcase
+			// Get player sprite pixel
+			case (p2dir)
+				2'b00:
+					playerNorth_in = playerOffset;
+				2'b01:
+					playerSouth_in = playerOffset;
+				2'b10:
+					playerEast_in = playerOffset;
+				2'b11:
+					playerWest_in = playerOffset;
+			endcase
+			// Check if player 1 is onscreen
+			if (onscreen & player1offset > 0 & player1offset < 5625)
+			begin
+				case (p1dir)
+					2'b00:
+						playerNorth_in = player1offset;
+					2'b01:
+						playerSouth_in = player1offset;
+					2'b10:
+						playerEast_in = player1offset;
+					2'b11:
+						playerWest_in = player1offset;
+				endcase 
+			end
+		end
+	end
+
 	
 	// For drawing non-map pixels
 	always_comb
@@ -226,6 +305,20 @@ module draw_map (input logic Clk,
 		$readmemh("player2_3.txt", playerSouth);
 		$readmemh("player2_4.txt", playerWest);
 	end
+
+	logic [9:0]	 grass_in, sand_in, water_in;
+	logic [12:0] playerNorth_in, playerSouth_in, playerWest_in, playerEast_in; 
+	logic [12:0] map_in;
+	logic [1:0]  map_out;
+	logic [23:0] grass_out, sand_out, water_out, playerNorth_out, playerSouth_out, playerWest_out, playerEast_out;
+	grass grassTile(.clk(Clk), d(0), write_address(0), read_address(grass_in), we(0), q(grass_out));
+	sand  sandTile (.clk(Clk), d(0), write_address(0), read_address(sand_in), we(0), q(sand_out));
+	water waterTile(.clk(Clk), d(0), write_address(0), read_address(water_in), we(0), q(water_out));
+	player2_1 playerNorth(.clk(Clk), d(0), write_address(0), read_address(playerNorth_in), we(0), q(playerNorth_out));
+	player2_2 playerSouth(.clk(Clk), d(0), write_address(0), read_address(playerSouth_in), we(0), q(playerSouth_out));
+	player2_3 playerEast(.clk(Clk), d(0), write_address(0), read_address(playerEast_in), we(0), q(playerEast_out));
+	player2_4 playerWest(.clk(Clk), d(0), write_address(0), read_address(playerWest_in), we(0), q(playerWest_out));
+	mapdata   mapdata(.clk(Clk), d(0), write_address(0), read_address(map_in), we(0), q(map_out));
 
 
 	//// OTHER SPRITE LOGIC
