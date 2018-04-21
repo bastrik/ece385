@@ -128,16 +128,91 @@ module draw_map (input logic Clk,
 			else
 				p2onp1 <= 24'hff00d2;
 			// Check if bullets are onscreen
-			if (b9active & b9on1 & b9on1offset >= 5'd0 & b9on1offset < 5'd25)
+			if (b1active & b1on1 & b1on1offset >= 5'd0 & b1on1offset < 5'd25)
+			begin
+				if ((((xOne - 12'd320 + DrXplus > b1X)? xOne - 12'd320 + DrXplus - b1X:b1X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b1Y)? yOne - 12'd240 + DrYplus - b1Y:b1Y - (yOne - 12'd240 + DrYplus)) < 2))
+					bullet1 <= bullet1a_out;
+			end
+			else if (b2active & b2on1 & b2on1offset >= 5'd0 & b2on1offset < 5'd25)
+			begin
+				if ((((xOne - 12'd320 + DrXplus > b2X)? xOne - 12'd320 + DrXplus - b2X:b2X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b2Y)? yOne - 12'd240 + DrYplus - b2Y:b2Y - (yOne - 12'd240 + DrYplus)) < 2))
+					bullet1 <= bullet2a_out;
+			end
+			else if (b3active & b3on1 & b3on1offset >= 5'd0 & b3on1offset < 5'd25)
+			begin
+				if ((((xOne - 12'd320 + DrXplus > b3X)? xOne - 12'd320 + DrXplus - b3X:b3X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b3Y)? yOne - 12'd240 + DrYplus - b3Y:b3Y - (yOne - 12'd240 + DrYplus)) < 2))
+					bullet1 <= bullet3a_out;
+			end
+			else if (b4active & b4on1 & b4on1offset >= 5'd0 & b4on1offset < 5'd25)
+			begin
+				if ((((xOne - 12'd320 + DrXplus > b4X)? xOne - 12'd320 + DrXplus - b4X:b4X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b4Y)? yOne - 12'd240 + DrYplus - b4Y:b4Y - (yOne - 12'd240 + DrYplus)) < 2))
+					bullet1 <= bullet4a_out;
+			end
+			else if (b5active & b5on1 & b5on1offset >= 5'd0 & b5on1offset < 5'd25)
+			begin
+				if ((((xOne - 12'd320 + DrXplus > b5X)? xOne - 12'd320 + DrXplus - b5X:b5X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b5Y)? yOne - 12'd240 + DrYplus - b5Y:b5Y - (yOne - 12'd240 + DrYplus)) < 2))
+					bullet1 <= bullet5a_out;
+			end
+			else if (b6active & b6on1 & b6on1offset >= 5'd0 & b6on1offset < 5'd25)
+			begin
+				if ((((xOne - 12'd320 + DrXplus > b6X)? xOne - 12'd320 + DrXplus - b6X:b6X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b6Y)? yOne - 12'd240 + DrYplus - b6Y:b6Y - (yOne - 12'd240 + DrYplus)) < 2))
+					bullet1 <= bullet6a_out;
+			end
+			else if (b7active & b7on1 & b7on1offset >= 5'd0 & b7on1offset < 5'd25)
+			begin
+				if ((((xOne - 12'd320 + DrXplus > b7X)? xOne - 12'd320 + DrXplus - b7X:b7X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b7Y)? yOne - 12'd240 + DrYplus - b7Y:b7Y - (yOne - 12'd240 + DrYplus)) < 2))
+					bullet1 <= bullet7a_out;
+			end
+			else if (b8active & b8on1 & b8on1offset >= 5'd0 & b8on1offset < 5'd25)
+			begin
+				if ((((xOne - 12'd320 + DrXplus > b8X)? xOne - 12'd320 + DrXplus - b8X:b8X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b8Y)? yOne - 12'd240 + DrYplus - b8Y:b8Y - (yOne - 12'd240 + DrYplus)) < 2))
+					bullet1 <= bullet8a_out;
+			end
+			else if (b9active & b9on1 & b9on1offset >= 5'd0 & b9on1offset < 5'd25)
 			begin
 				if ((((xOne - 12'd320 + DrXplus > b9X)? xOne - 12'd320 + DrXplus - b9X:b9X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b9Y)? yOne - 12'd240 + DrYplus - b9Y:b9Y - (yOne - 12'd240 + DrYplus)) < 2))
 					bullet1 <= bullet9a_out;
-				else
-					bullet1 <= 24'hff00d2;
+			end
+			else if (b10active & b10on1 & b10on1offset >= 5'd0 & b10on1offset < 5'd25)
+			begin
+				if ((((xOne - 12'd320 + DrXplus > b10X)? xOne - 12'd320 + DrXplus - b10X:b10X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b10Y)? yOne - 12'd240 + DrYplus - b10Y:b10Y - (yOne - 12'd240 + DrYplus)) < 2))
+					bullet1 <= bullet10a_out;
+			end
+			else if (b11active & b11on1 & b11on1offset >= 5'd0 & b11on1offset < 5'd25)
+			begin
+				if ((((xOne - 12'd320 + DrXplus > b11X)? xOne - 12'd320 + DrXplus - b11X:b11X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b11Y)? yOne - 12'd240 + DrYplus - b11Y:b11Y - (yOne - 12'd240 + DrYplus)) < 2))
+					bullet1 <= bullet11a_out;
+			end
+			else if (b12active & b12on1 & b12on1offset >= 5'd0 & b12on1offset < 5'd25)
+			begin
+				if ((((xOne - 12'd320 + DrXplus > b12X)? xOne - 12'd320 + DrXplus - b12X:b12X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b12Y)? yOne - 12'd240 + DrYplus - b12Y:b12Y - (yOne - 12'd240 + DrYplus)) < 2))
+					bullet1 <= bullet12a_out;
+			end
+			else if (b13active & b13on1 & b13on1offset >= 5'd0 & b13on1offset < 5'd25)
+			begin
+				if ((((xOne - 12'd320 + DrXplus > b13X)? xOne - 12'd320 + DrXplus - b13X:b13X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b13Y)? yOne - 12'd240 + DrYplus - b13Y:b13Y - (yOne - 12'd240 + DrYplus)) < 2))
+					bullet1 <= bullet13a_out;
+			end
+			else if (b14active & b14on1 & b14on1offset >= 5'd0 & b14on1offset < 5'd25)
+			begin
+				if ((((xOne - 12'd320 + DrXplus > b14X)? xOne - 12'd320 + DrXplus - b14X:b14X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b14Y)? yOne - 12'd240 + DrYplus - b14Y:b14Y - (yOne - 12'd240 + DrYplus)) < 2))
+					bullet1 <= bullet14a_out;
+			end
+			else if (b15active & b15on1 & b15on1offset >= 5'd0 & b15on1offset < 5'd25)
+			begin
+				if ((((xOne - 12'd320 + DrXplus > b15X)? xOne - 12'd320 + DrXplus - b15X:b15X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b15Y)? yOne - 12'd240 + DrYplus - b15Y:b15Y - (yOne - 12'd240 + DrYplus)) < 2))
+					bullet1 <= bullet15a_out;
+			end
+			else if (b16active & b16on1 & b16on1offset >= 5'd0 & b16on1offset < 5'd25)
+			begin
+				if ((((xOne - 12'd320 + DrXplus > b16X)? xOne - 12'd320 + DrXplus - b16X:b16X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b16Y)? yOne - 12'd240 + DrYplus - b16Y:b16Y - (yOne - 12'd240 + DrYplus)) < 2))
+					bullet1 <= bullet16a_out;
 			end
 			else
 				bullet1 <= 24'hff00d2;
 		end
+
+		// Determine map and sprite pixels for player 2
 		else
 		begin
 			// Get map pixel
@@ -182,12 +257,85 @@ module draw_map (input logic Clk,
 			else
 				p1onp2 <= 24'hff00d2;
 			// Check if bullets are onscreen
-			if (b9active & b9on2 & b9on2offset >= 5'd0 & b9on2offset < 5'd25)
+			if (b1active & b1on2 & b1on2offset >= 5'd0 & b1on2offset < 5'd25)
+			begin
+				if ((((xTwo - 12'd320 + DrXplus > b1X)? xTwo - 12'd320 + DrXplus - b1X:b1X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b1Y)? yTwo - 12'd240 + DrYplus - b1Y:b1Y - (yTwo - 12'd240 + DrYplus)) < 2))
+					bullet2 <= bullet1b_out;
+			end
+			else if (b2active & b2on2 & b2on2offset >= 5'd0 & b2on2offset < 5'd25)
+			begin
+				if ((((xTwo - 12'd320 + DrXplus > b2X)? xTwo - 12'd320 + DrXplus - b2X:b2X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b2Y)? yTwo - 12'd240 + DrYplus - b2Y:b2Y - (yTwo - 12'd240 + DrYplus)) < 2))
+					bullet2 <= bullet2b_out;
+			end
+			else if (b3active & b3on2 & b3on2offset >= 5'd0 & b3on2offset < 5'd25)
+			begin
+				if ((((xTwo - 12'd320 + DrXplus > b3X)? xTwo - 12'd320 + DrXplus - b3X:b3X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b3Y)? yTwo - 12'd240 + DrYplus - b3Y:b3Y - (yTwo - 12'd240 + DrYplus)) < 2))
+					bullet2 <= bullet3b_out;
+			end
+			else if (b4active & b4on2 & b4on2offset >= 5'd0 & b4on2offset < 5'd25)
+			begin
+				if ((((xTwo - 12'd320 + DrXplus > b4X)? xTwo - 12'd320 + DrXplus - b4X:b4X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b4Y)? yTwo - 12'd240 + DrYplus - b4Y:b4Y - (yTwo - 12'd240 + DrYplus)) < 2))
+					bullet2 <= bullet4b_out;
+			end
+			else if (b5active & b5on2 & b5on2offset >= 5'd0 & b5on2offset < 5'd25)
+			begin
+				if ((((xTwo - 12'd320 + DrXplus > b5X)? xTwo - 12'd320 + DrXplus - b5X:b5X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b5Y)? yTwo - 12'd240 + DrYplus - b5Y:b5Y - (yTwo - 12'd240 + DrYplus)) < 2))
+					bullet2 <= bullet5b_out;
+			end
+			else if (b6active & b6on2 & b6on2offset >= 5'd0 & b6on2offset < 5'd25)
+			begin
+				if ((((xTwo - 12'd320 + DrXplus > b6X)? xTwo - 12'd320 + DrXplus - b6X:b6X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b6Y)? yTwo - 12'd240 + DrYplus - b6Y:b6Y - (yTwo - 12'd240 + DrYplus)) < 2))
+					bullet2 <= bullet6b_out;
+			end
+			else if (b7active & b7on2 & b7on2offset >= 5'd0 & b7on2offset < 5'd25)
+			begin
+				if ((((xTwo - 12'd320 + DrXplus > b7X)? xTwo - 12'd320 + DrXplus - b7X:b7X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b7Y)? yTwo - 12'd240 + DrYplus - b7Y:b7Y - (yTwo - 12'd240 + DrYplus)) < 2))
+					bullet2 <= bullet7b_out;
+			end
+			else if (b8active & b8on2 & b8on2offset >= 5'd0 & b8on2offset < 5'd25)
+			begin
+				if ((((xTwo - 12'd320 + DrXplus > b8X)? xTwo - 12'd320 + DrXplus - b8X:b8X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b8Y)? yTwo - 12'd240 + DrYplus - b8Y:b8Y - (yTwo - 12'd240 + DrYplus)) < 2))
+					bullet2 <= bullet8b_out;
+			end
+			else if (b9active & b9on2 & b9on2offset >= 5'd0 & b9on2offset < 5'd25)
 			begin
 				if ((((xTwo - 12'd320 + DrXplus > b9X)? xTwo - 12'd320 + DrXplus - b9X:b9X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b9Y)? yTwo - 12'd240 + DrYplus - b9Y:b9Y - (yTwo - 12'd240 + DrYplus)) < 2))
 					bullet2 <= bullet9b_out;
-				else
-					bullet2 <= 24'hff00d2;
+			end
+			else if (b10active & b10on2 & b10on2offset >= 5'd0 & b10on2offset < 5'd25)
+			begin
+				if ((((xTwo - 12'd320 + DrXplus > b10X)? xTwo - 12'd320 + DrXplus - b10X:b10X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b10Y)? yTwo - 12'd240 + DrYplus - b10Y:b10Y - (yTwo - 12'd240 + DrYplus)) < 2))
+					bullet2 <= bullet10b_out;
+			end
+			else if (b11active & b11on2 & b11on2offset >= 5'd0 & b11on2offset < 5'd25)
+			begin
+				if ((((xTwo - 12'd320 + DrXplus > b11X)? xTwo - 12'd320 + DrXplus - b11X:b11X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b11Y)? yTwo - 12'd240 + DrYplus - b11Y:b11Y - (yTwo - 12'd240 + DrYplus)) < 2))
+					bullet2 <= bullet11b_out;
+			end
+			else if (b12active & b12on2 & b12on2offset >= 5'd0 & b12on2offset < 5'd25)
+			begin
+				if ((((xTwo - 12'd320 + DrXplus > b12X)? xTwo - 12'd320 + DrXplus - b12X:b12X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b12Y)? yTwo - 12'd240 + DrYplus - b12Y:b12Y - (yTwo - 12'd240 + DrYplus)) < 2))
+					bullet2 <= bullet12b_out;
+			end
+			else if (b13active & b13on2 & b13on2offset >= 5'd0 & b13on2offset < 5'd25)
+			begin
+				if ((((xTwo - 12'd320 + DrXplus > b13X)? xTwo - 12'd320 + DrXplus - b13X:b13X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b13Y)? yTwo - 12'd240 + DrYplus - b13Y:b13Y - (yTwo - 12'd240 + DrYplus)) < 2))
+					bullet2 <= bullet13b_out;
+			end
+			else if (b14active & b14on2 & b14on2offset >= 5'd0 & b14on2offset < 5'd25)
+			begin
+				if ((((xTwo - 12'd320 + DrXplus > b14X)? xTwo - 12'd320 + DrXplus - b14X:b14X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b14Y)? yTwo - 12'd240 + DrYplus - b14Y:b14Y - (yTwo - 12'd240 + DrYplus)) < 2))
+					bullet2 <= bullet14b_out;
+			end
+			else if (b15active & b15on2 & b15on2offset >= 5'd0 & b15on2offset < 5'd25)
+			begin
+				if ((((xTwo - 12'd320 + DrXplus > b15X)? xTwo - 12'd320 + DrXplus - b15X:b15X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b15Y)? yTwo - 12'd240 + DrYplus - b15Y:b15Y - (yTwo - 12'd240 + DrYplus)) < 2))
+					bullet2 <= bullet15b_out;
+			end
+			else if (b16active & b16on2 & b16on2offset >= 5'd0 & b16on2offset < 5'd25)
+			begin
+				if ((((xTwo - 12'd320 + DrXplus > b16X)? xTwo - 12'd320 + DrXplus - b16X:b16X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b16Y)? yTwo - 12'd240 + DrYplus - b16Y:b16Y - (yTwo - 12'd240 + DrYplus)) < 2))
+					bullet2 <= bullet16b_out;
 			end
 			else
 				bullet2 <= 24'hff00d2;
@@ -207,8 +355,38 @@ module draw_map (input logic Clk,
 		player2South_in = 13'd0;
 		player2East_in = 13'd0;
 		player2West_in = 13'd0;
+		bullet1a_in = 5'd0;
+		bullet1b_in = 5'd0;
+		bullet2a_in = 5'd0;
+		bullet2b_in = 5'd0;
+		bullet3a_in = 5'd0;
+		bullet3b_in = 5'd0;
+		bullet4a_in = 5'd0;
+		bullet4b_in = 5'd0;
+		bullet5a_in = 5'd0;
+		bullet5b_in = 5'd0;
+		bullet6a_in = 5'd0;
+		bullet6b_in = 5'd0;
+		bullet7a_in = 5'd0;
+		bullet7b_in = 5'd0;
+		bullet8a_in = 5'd0;
+		bullet8b_in = 5'd0;
 		bullet9a_in = 5'd0;
 		bullet9b_in = 5'd0;
+		bullet10a_in = 5'd0;
+		bullet10b_in = 5'd0;
+		bullet11a_in = 5'd0;
+		bullet11b_in = 5'd0;
+		bullet12a_in = 5'd0;
+		bullet12b_in = 5'd0;
+		bullet13a_in = 5'd0;
+		bullet13b_in = 5'd0;
+		bullet14a_in = 5'd0;
+		bullet14b_in = 5'd0;
+		bullet15a_in = 5'd0;
+		bullet15b_in = 5'd0;
+		bullet16a_in = 5'd0;
+		bullet16b_in = 5'd0;
 
 		if (toggle)
 		begin
@@ -226,7 +404,22 @@ module draw_map (input logic Clk,
 			player2South_in = player2offset;
 			player2East_in = player2offset;
 			player2West_in = player2offset;
+			bullet1a_in = b1on1offset;
+			bullet2a_in = b2on1offset;
+			bullet3a_in = b3on1offset;
+			bullet4a_in = b4on1offset;
+			bullet5a_in = b5on1offset;
+			bullet6a_in = b6on1offset;
+			bullet7a_in = b7on1offset;
+			bullet8a_in = b8on1offset;
 			bullet9a_in = b9on1offset;
+			bullet10a_in = b10on1offset;
+			bullet11a_in = b11on1offset;
+			bullet12a_in = b12on1offset;
+			bullet13a_in = b13on1offset;
+			bullet14a_in = b14on1offset;
+			bullet15a_in = b15on1offset;
+			bullet16a_in = b16on1offset;
 		end
 		else
 		begin
@@ -244,7 +437,22 @@ module draw_map (input logic Clk,
 			player1South_in = player1offset;
 			player1East_in = player1offset;
 			player1West_in = player1offset;
+			bullet1b_in = b1on2offset;
+			bullet2b_in = b2on2offset;
+			bullet3b_in = b3on2offset;
+			bullet4b_in = b4on2offset;
+			bullet5b_in = b5on2offset;
+			bullet6b_in = b6on2offset;
+			bullet7b_in = b7on2offset;
+			bullet8b_in = b8on2offset;
 			bullet9b_in = b9on2offset;
+			bullet10b_in = b10on2offset;
+			bullet11b_in = b11on2offset;
+			bullet12b_in = b12on2offset;
+			bullet13b_in = b13on2offset;
+			bullet14b_in = b14on2offset;
+			bullet15b_in = b15on2offset;
+			bullet16b_in = b16on2offset;
 		end
 	end
 
@@ -300,12 +508,12 @@ module draw_map (input logic Clk,
 	logic [12:0] player1North_in, player1South_in, player1West_in, player1East_in; 
 	logic [12:0] player2North_in, player2South_in, player2West_in, player2East_in;
 	logic [12:0] map_in; 
-	logic [4:0] bullet9a_in, bullet9b_in;
+	logic [4:0] bullet1a_in, bullet1b_in, bullet2a_in, bullet2b_in, bullet3a_in, bullet3b_in, bullet4a_in, bullet4b_in, bullet5a_in, bullet5b_in, bullet6a_in, bullet6b_in, bullet7a_in, bullet7b_in, bullet8a_in, bullet8b_in, bullet9a_in, bullet9b_in, bullet10a_in, bullet10b_in, bullet11a_in, bullet11b_in, bullet12a_in, bullet12b_in, bullet13a_in, bullet13b_in, bullet14a_in, bullet14b_in, bullet15a_in, bullet15b_in, bullet16a_in, bullet16b_in;
 	logic [23:0] grass_out, sand_out, water_out;
 	logic [23:0] player1North_out, player1South_out, player1West_out, player1East_out;
 	logic [23:0] player2North_out, player2South_out, player2West_out, player2East_out;
 	logic [1:0] map_out;
-	logic [23:0] bullet9a_out, bullet9b_out;
+	logic [23:0] bullet1a_out, bullet1b_out, bullet2a_out, bullet2b_out, bullet3a_out, bullet3b_out, bullet4a_out, bullet4b_out, bullet5a_out, bullet5b_out, bullet6a_out, bullet6b_out, bullet7a_out, bullet7b_out, bullet8a_out, bullet8b_out, bullet9a_out, bullet9b_out, bullet10a_out, bullet10b_out, bullet11a_out, bullet11b_out, bullet12a_out, bullet12b_out, bullet13a_out, bullet13b_out, bullet14a_out, bullet14b_out, bullet15a_out, bullet15b_out, bullet16a_out, bullet16b_out;
 	grass grassTile(.clk(Clk), .d(0), .write_address(0), .read_address(grass_in), .we(0), .q(grass_out));
 	sand  sandTile (.clk(Clk), .d(0), .write_address(0), .read_address(sand_in), .we(0), .q(sand_out));
 	water waterTile(.clk(Clk), .d(0), .write_address(0), .read_address(water_in), .we(0), .q(water_out));
@@ -318,17 +526,136 @@ module draw_map (input logic Clk,
 	player2_3 playerEastmem2(.clk(Clk), .d(0), .write_address(0), .read_address(player2South_in), .we(0), .q(player2South_out));
 	player2_4 playerWestmem2(.clk(Clk), .d(0), .write_address(0), .read_address(player2West_in), .we(0), .q(player2West_out));
 	mapdata mapinfo(.clk(Clk), .d(0), .write_address(0), .read_address(map_in), .we(0), .q(map_out));
+	bulletmem bullet1a(.clk(Clk), .d(0), .write_address(0), .read_address(bullet1a_in), .we(0), .q(bullet1a_out));
+	bulletmem bullet1b(.clk(Clk), .d(0), .write_address(0), .read_address(bullet1b_in), .we(0), .q(bullet1b_out));
+	bulletmem bullet2a(.clk(Clk), .d(0), .write_address(0), .read_address(bullet2a_in), .we(0), .q(bullet2a_out));
+	bulletmem bullet2b(.clk(Clk), .d(0), .write_address(0), .read_address(bullet2b_in), .we(0), .q(bullet2b_out));
+	bulletmem bullet3a(.clk(Clk), .d(0), .write_address(0), .read_address(bullet3a_in), .we(0), .q(bullet3a_out));
+	bulletmem bullet3b(.clk(Clk), .d(0), .write_address(0), .read_address(bullet3b_in), .we(0), .q(bullet3b_out));
+	bulletmem bullet4a(.clk(Clk), .d(0), .write_address(0), .read_address(bullet4a_in), .we(0), .q(bullet4a_out));
+	bulletmem bullet4b(.clk(Clk), .d(0), .write_address(0), .read_address(bullet4b_in), .we(0), .q(bullet4b_out));
+	bulletmem bullet5a(.clk(Clk), .d(0), .write_address(0), .read_address(bullet5a_in), .we(0), .q(bullet5a_out));
+	bulletmem bullet5b(.clk(Clk), .d(0), .write_address(0), .read_address(bullet5b_in), .we(0), .q(bullet5b_out));
+	bulletmem bullet6a(.clk(Clk), .d(0), .write_address(0), .read_address(bullet6a_in), .we(0), .q(bullet6a_out));
+	bulletmem bullet6b(.clk(Clk), .d(0), .write_address(0), .read_address(bullet6b_in), .we(0), .q(bullet6b_out));
+	bulletmem bullet7a(.clk(Clk), .d(0), .write_address(0), .read_address(bullet7a_in), .we(0), .q(bullet7a_out));
+	bulletmem bullet7b(.clk(Clk), .d(0), .write_address(0), .read_address(bullet7b_in), .we(0), .q(bullet7b_out));
+	bulletmem bullet8a(.clk(Clk), .d(0), .write_address(0), .read_address(bullet8a_in), .we(0), .q(bullet8a_out));
+	bulletmem bullet8b(.clk(Clk), .d(0), .write_address(0), .read_address(bullet8b_in), .we(0), .q(bullet8b_out));
 	bulletmem bullet9a(.clk(Clk), .d(0), .write_address(0), .read_address(bullet9a_in), .we(0), .q(bullet9a_out));
 	bulletmem bullet9b(.clk(Clk), .d(0), .write_address(0), .read_address(bullet9b_in), .we(0), .q(bullet9b_out));
-
+	bulletmem bullet10a(.clk(Clk), .d(0), .write_address(0), .read_address(bullet10a_in), .we(0), .q(bullet10a_out));
+	bulletmem bullet10b(.clk(Clk), .d(0), .write_address(0), .read_address(bullet10b_in), .we(0), .q(bullet10b_out));
+	bulletmem bullet11a(.clk(Clk), .d(0), .write_address(0), .read_address(bullet11a_in), .we(0), .q(bullet11a_out));
+	bulletmem bullet11b(.clk(Clk), .d(0), .write_address(0), .read_address(bullet11b_in), .we(0), .q(bullet11b_out));
+	bulletmem bullet12a(.clk(Clk), .d(0), .write_address(0), .read_address(bullet12a_in), .we(0), .q(bullet12a_out));
+	bulletmem bullet12b(.clk(Clk), .d(0), .write_address(0), .read_address(bullet12b_in), .we(0), .q(bullet12b_out));
+	bulletmem bullet13a(.clk(Clk), .d(0), .write_address(0), .read_address(bullet13a_in), .we(0), .q(bullet13a_out));
+	bulletmem bullet13b(.clk(Clk), .d(0), .write_address(0), .read_address(bullet13b_in), .we(0), .q(bullet13b_out));
+	bulletmem bullet14a(.clk(Clk), .d(0), .write_address(0), .read_address(bullet14a_in), .we(0), .q(bullet14a_out));
+	bulletmem bullet14b(.clk(Clk), .d(0), .write_address(0), .read_address(bullet14b_in), .we(0), .q(bullet14b_out));
+	bulletmem bullet15a(.clk(Clk), .d(0), .write_address(0), .read_address(bullet15a_in), .we(0), .q(bullet15a_out));
+	bulletmem bullet15b(.clk(Clk), .d(0), .write_address(0), .read_address(bullet15b_in), .we(0), .q(bullet15b_out));
+	bulletmem bullet16a(.clk(Clk), .d(0), .write_address(0), .read_address(bullet16a_in), .we(0), .q(bullet16a_out));
+	bulletmem bullet16b(.clk(Clk), .d(0), .write_address(0), .read_address(bullet16b_in), .we(0), .q(bullet16b_out));
 
 	//// BULLET LOGIC
+	logic b1on1, b1on2;
+	logic [4:0] b1on1offset, b1on2offset;
+	assign b1on1 = (((b1X > xOne)? b1X - xOne:xOne - b1X) < 12'd330) & (((b1Y > yOne)? b1Y - yOne:yOne - b1Y) < 12'd250);
+	assign b1on2 = (((b1X > xTwo)? b1X - xTwo:xTwo - b1X) < 12'd330) & (((b1Y > yTwo)? b1Y - yTwo:yTwo - b1Y) < 12'd250);
+	assign b1on1offset = (DrYplus - ((b1Y - 12'd2) - (yOne - 12'd240)))*12'd5 + (DrXplus - ((b1X - 12'd2) - (xOne - 12'd320)));
+	assign b1on2offset = (DrYplus - ((b1Y - 12'd2) - (yTwo - 12'd240)))*12'd5 + (DrXplus - ((b1X - 12'd2) - (xTwo - 12'd320)));
+	logic b2on1, b2on2;
+	logic [4:0] b2on1offset, b2on2offset;
+	assign b2on1 = (((b2X > xOne)? b2X - xOne:xOne - b2X) < 12'd330) & (((b2Y > yOne)? b2Y - yOne:yOne - b2Y) < 12'd250);
+	assign b2on2 = (((b2X > xTwo)? b2X - xTwo:xTwo - b2X) < 12'd330) & (((b2Y > yTwo)? b2Y - yTwo:yTwo - b2Y) < 12'd250);
+	assign b2on1offset = (DrYplus - ((b2Y - 12'd2) - (yOne - 12'd240)))*12'd5 + (DrXplus - ((b2X - 12'd2) - (xOne - 12'd320)));
+	assign b2on2offset = (DrYplus - ((b2Y - 12'd2) - (yTwo - 12'd240)))*12'd5 + (DrXplus - ((b2X - 12'd2) - (xTwo - 12'd320)));
+	logic b3on1, b3on2;
+	logic [4:0] b3on1offset, b3on2offset;
+	assign b3on1 = (((b3X > xOne)? b3X - xOne:xOne - b3X) < 12'd330) & (((b3Y > yOne)? b3Y - yOne:yOne - b3Y) < 12'd250);
+	assign b3on2 = (((b3X > xTwo)? b3X - xTwo:xTwo - b3X) < 12'd330) & (((b3Y > yTwo)? b3Y - yTwo:yTwo - b3Y) < 12'd250);
+	assign b3on1offset = (DrYplus - ((b3Y - 12'd2) - (yOne - 12'd240)))*12'd5 + (DrXplus - ((b3X - 12'd2) - (xOne - 12'd320)));
+	assign b3on2offset = (DrYplus - ((b3Y - 12'd2) - (yTwo - 12'd240)))*12'd5 + (DrXplus - ((b3X - 12'd2) - (xTwo - 12'd320)));
+	logic b4on1, b4on2;
+	logic [4:0] b4on1offset, b4on2offset;
+	assign b4on1 = (((b4X > xOne)? b4X - xOne:xOne - b4X) < 12'd330) & (((b4Y > yOne)? b4Y - yOne:yOne - b4Y) < 12'd250);
+	assign b4on2 = (((b4X > xTwo)? b4X - xTwo:xTwo - b4X) < 12'd330) & (((b4Y > yTwo)? b4Y - yTwo:yTwo - b4Y) < 12'd250);
+	assign b4on1offset = (DrYplus - ((b4Y - 12'd2) - (yOne - 12'd240)))*12'd5 + (DrXplus - ((b4X - 12'd2) - (xOne - 12'd320)));
+	assign b4on2offset = (DrYplus - ((b4Y - 12'd2) - (yTwo - 12'd240)))*12'd5 + (DrXplus - ((b4X - 12'd2) - (xTwo - 12'd320)));
+	logic b5on1, b5on2;
+	logic [4:0] b5on1offset, b5on2offset;
+	assign b5on1 = (((b5X > xOne)? b5X - xOne:xOne - b5X) < 12'd330) & (((b5Y > yOne)? b5Y - yOne:yOne - b5Y) < 12'd250);
+	assign b5on2 = (((b5X > xTwo)? b5X - xTwo:xTwo - b5X) < 12'd330) & (((b5Y > yTwo)? b5Y - yTwo:yTwo - b5Y) < 12'd250);
+	assign b5on1offset = (DrYplus - ((b5Y - 12'd2) - (yOne - 12'd240)))*12'd5 + (DrXplus - ((b5X - 12'd2) - (xOne - 12'd320)));
+	assign b5on2offset = (DrYplus - ((b5Y - 12'd2) - (yTwo - 12'd240)))*12'd5 + (DrXplus - ((b5X - 12'd2) - (xTwo - 12'd320)));
+	logic b6on1, b6on2;
+	logic [4:0] b6on1offset, b6on2offset;
+	assign b6on1 = (((b6X > xOne)? b6X - xOne:xOne - b6X) < 12'd330) & (((b6Y > yOne)? b6Y - yOne:yOne - b6Y) < 12'd250);
+	assign b6on2 = (((b6X > xTwo)? b6X - xTwo:xTwo - b6X) < 12'd330) & (((b6Y > yTwo)? b6Y - yTwo:yTwo - b6Y) < 12'd250);
+	assign b6on1offset = (DrYplus - ((b6Y - 12'd2) - (yOne - 12'd240)))*12'd5 + (DrXplus - ((b6X - 12'd2) - (xOne - 12'd320)));
+	assign b6on2offset = (DrYplus - ((b6Y - 12'd2) - (yTwo - 12'd240)))*12'd5 + (DrXplus - ((b6X - 12'd2) - (xTwo - 12'd320)));
+	logic b7on1, b7on2;
+	logic [4:0] b7on1offset, b7on2offset;
+	assign b7on1 = (((b7X > xOne)? b7X - xOne:xOne - b7X) < 12'd330) & (((b7Y > yOne)? b7Y - yOne:yOne - b7Y) < 12'd250);
+	assign b7on2 = (((b7X > xTwo)? b7X - xTwo:xTwo - b7X) < 12'd330) & (((b7Y > yTwo)? b7Y - yTwo:yTwo - b7Y) < 12'd250);
+	assign b7on1offset = (DrYplus - ((b7Y - 12'd2) - (yOne - 12'd240)))*12'd5 + (DrXplus - ((b7X - 12'd2) - (xOne - 12'd320)));
+	assign b7on2offset = (DrYplus - ((b7Y - 12'd2) - (yTwo - 12'd240)))*12'd5 + (DrXplus - ((b7X - 12'd2) - (xTwo - 12'd320)));
+	logic b8on1, b8on2;
+	logic [4:0] b8on1offset, b8on2offset;
+	assign b8on1 = (((b8X > xOne)? b8X - xOne:xOne - b8X) < 12'd330) & (((b8Y > yOne)? b8Y - yOne:yOne - b8Y) < 12'd250);
+	assign b8on2 = (((b8X > xTwo)? b8X - xTwo:xTwo - b8X) < 12'd330) & (((b8Y > yTwo)? b8Y - yTwo:yTwo - b8Y) < 12'd250);
+	assign b8on1offset = (DrYplus - ((b8Y - 12'd2) - (yOne - 12'd240)))*12'd5 + (DrXplus - ((b8X - 12'd2) - (xOne - 12'd320)));
+	assign b8on2offset = (DrYplus - ((b8Y - 12'd2) - (yTwo - 12'd240)))*12'd5 + (DrXplus - ((b8X - 12'd2) - (xTwo - 12'd320)));
 	logic b9on1, b9on2;
 	logic [4:0] b9on1offset, b9on2offset;
 	assign b9on1 = (((b9X > xOne)? b9X - xOne:xOne - b9X) < 12'd330) & (((b9Y > yOne)? b9Y - yOne:yOne - b9Y) < 12'd250);
 	assign b9on2 = (((b9X > xTwo)? b9X - xTwo:xTwo - b9X) < 12'd330) & (((b9Y > yTwo)? b9Y - yTwo:yTwo - b9Y) < 12'd250);
 	assign b9on1offset = (DrYplus - ((b9Y - 12'd2) - (yOne - 12'd240)))*12'd5 + (DrXplus - ((b9X - 12'd2) - (xOne - 12'd320)));
 	assign b9on2offset = (DrYplus - ((b9Y - 12'd2) - (yTwo - 12'd240)))*12'd5 + (DrXplus - ((b9X - 12'd2) - (xTwo - 12'd320)));
+	logic b10on1, b10on2;
+	logic [4:0] b10on1offset, b10on2offset;
+	assign b10on1 = (((b10X > xOne)? b10X - xOne:xOne - b10X) < 12'd330) & (((b10Y > yOne)? b10Y - yOne:yOne - b10Y) < 12'd250);
+	assign b10on2 = (((b10X > xTwo)? b10X - xTwo:xTwo - b10X) < 12'd330) & (((b10Y > yTwo)? b10Y - yTwo:yTwo - b10Y) < 12'd250);
+	assign b10on1offset = (DrYplus - ((b10Y - 12'd2) - (yOne - 12'd240)))*12'd5 + (DrXplus - ((b10X - 12'd2) - (xOne - 12'd320)));
+	assign b10on2offset = (DrYplus - ((b10Y - 12'd2) - (yTwo - 12'd240)))*12'd5 + (DrXplus - ((b10X - 12'd2) - (xTwo - 12'd320)));
+	logic b11on1, b11on2;
+	logic [4:0] b11on1offset, b11on2offset;
+	assign b11on1 = (((b11X > xOne)? b11X - xOne:xOne - b11X) < 12'd330) & (((b11Y > yOne)? b11Y - yOne:yOne - b11Y) < 12'd250);
+	assign b11on2 = (((b11X > xTwo)? b11X - xTwo:xTwo - b11X) < 12'd330) & (((b11Y > yTwo)? b11Y - yTwo:yTwo - b11Y) < 12'd250);
+	assign b11on1offset = (DrYplus - ((b11Y - 12'd2) - (yOne - 12'd240)))*12'd5 + (DrXplus - ((b11X - 12'd2) - (xOne - 12'd320)));
+	assign b11on2offset = (DrYplus - ((b11Y - 12'd2) - (yTwo - 12'd240)))*12'd5 + (DrXplus - ((b11X - 12'd2) - (xTwo - 12'd320)));
+	logic b12on1, b12on2;
+	logic [4:0] b12on1offset, b12on2offset;
+	assign b12on1 = (((b12X > xOne)? b12X - xOne:xOne - b12X) < 12'd330) & (((b12Y > yOne)? b12Y - yOne:yOne - b12Y) < 12'd250);
+	assign b12on2 = (((b12X > xTwo)? b12X - xTwo:xTwo - b12X) < 12'd330) & (((b12Y > yTwo)? b12Y - yTwo:yTwo - b12Y) < 12'd250);
+	assign b12on1offset = (DrYplus - ((b12Y - 12'd2) - (yOne - 12'd240)))*12'd5 + (DrXplus - ((b12X - 12'd2) - (xOne - 12'd320)));
+	assign b12on2offset = (DrYplus - ((b12Y - 12'd2) - (yTwo - 12'd240)))*12'd5 + (DrXplus - ((b12X - 12'd2) - (xTwo - 12'd320)));
+	logic b13on1, b13on2;
+	logic [4:0] b13on1offset, b13on2offset;
+	assign b13on1 = (((b13X > xOne)? b13X - xOne:xOne - b13X) < 12'd330) & (((b13Y > yOne)? b13Y - yOne:yOne - b13Y) < 12'd250);
+	assign b13on2 = (((b13X > xTwo)? b13X - xTwo:xTwo - b13X) < 12'd330) & (((b13Y > yTwo)? b13Y - yTwo:yTwo - b13Y) < 12'd250);
+	assign b13on1offset = (DrYplus - ((b13Y - 12'd2) - (yOne - 12'd240)))*12'd5 + (DrXplus - ((b13X - 12'd2) - (xOne - 12'd320)));
+	assign b13on2offset = (DrYplus - ((b13Y - 12'd2) - (yTwo - 12'd240)))*12'd5 + (DrXplus - ((b13X - 12'd2) - (xTwo - 12'd320)));
+	logic b14on1, b14on2;
+	logic [4:0] b14on1offset, b14on2offset;
+	assign b14on1 = (((b14X > xOne)? b14X - xOne:xOne - b14X) < 12'd330) & (((b14Y > yOne)? b14Y - yOne:yOne - b14Y) < 12'd250);
+	assign b14on2 = (((b14X > xTwo)? b14X - xTwo:xTwo - b14X) < 12'd330) & (((b14Y > yTwo)? b14Y - yTwo:yTwo - b14Y) < 12'd250);
+	assign b14on1offset = (DrYplus - ((b14Y - 12'd2) - (yOne - 12'd240)))*12'd5 + (DrXplus - ((b14X - 12'd2) - (xOne - 12'd320)));
+	assign b14on2offset = (DrYplus - ((b14Y - 12'd2) - (yTwo - 12'd240)))*12'd5 + (DrXplus - ((b14X - 12'd2) - (xTwo - 12'd320)));
+	logic b15on1, b15on2;
+	logic [4:0] b15on1offset, b15on2offset;
+	assign b15on1 = (((b15X > xOne)? b15X - xOne:xOne - b15X) < 12'd330) & (((b15Y > yOne)? b15Y - yOne:yOne - b15Y) < 12'd250);
+	assign b15on2 = (((b15X > xTwo)? b15X - xTwo:xTwo - b15X) < 12'd330) & (((b15Y > yTwo)? b15Y - yTwo:yTwo - b15Y) < 12'd250);
+	assign b15on1offset = (DrYplus - ((b15Y - 12'd2) - (yOne - 12'd240)))*12'd5 + (DrXplus - ((b15X - 12'd2) - (xOne - 12'd320)));
+	assign b15on2offset = (DrYplus - ((b15Y - 12'd2) - (yTwo - 12'd240)))*12'd5 + (DrXplus - ((b15X - 12'd2) - (xTwo - 12'd320)));
+	logic b16on1, b16on2;
+	logic [4:0] b16on1offset, b16on2offset;
+	assign b16on1 = (((b16X > xOne)? b16X - xOne:xOne - b16X) < 12'd330) & (((b16Y > yOne)? b16Y - yOne:yOne - b16Y) < 12'd250);
+	assign b16on2 = (((b16X > xTwo)? b16X - xTwo:xTwo - b16X) < 12'd330) & (((b16Y > yTwo)? b16Y - yTwo:yTwo - b16Y) < 12'd250);
+	assign b16on1offset = (DrYplus - ((b16Y - 12'd2) - (yOne - 12'd240)))*12'd5 + (DrXplus - ((b16X - 12'd2) - (xOne - 12'd320)));
+	assign b16on2offset = (DrYplus - ((b16Y - 12'd2) - (yTwo - 12'd240)))*12'd5 + (DrXplus - ((b16X - 12'd2) - (xTwo - 12'd320)));
 
 
 	//// OTHER PLAYER SPRITE LOGIC

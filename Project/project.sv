@@ -183,6 +183,13 @@ module project( input               CLOCK_50,
     begin
 	    // For testing
 	    LEDG[0] = b9active;
+        LEDG[1] = b10active;
+        LEDG[2] = b11active;
+        LEDG[3] = b12active;
+        LEDG[4] = b13active;
+        LEDG[5] = b14active;
+        LEDG[6] = b15active;
+        LEDG[7] = b16active;
     end
 
 endmodule

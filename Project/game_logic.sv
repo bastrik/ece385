@@ -8,7 +8,7 @@ module game_logic (input logic Clk, VGA_VS,
 				   output logic [11:0] yOne,
 				   output logic [11:0] xTwo,
 				   output logic [11:0] yTwo,
-				   output logic [1:0] p1dir,		// direction player is facing
+				   output logic [1:0] p1dir, // direction player is moving
 				   output logic [1:0] p2dir, // 0-> north, 1-> south, 2-> east, 3-> west
 				   output logic [11:0] b1X, b1Y, b2X, b2Y, b3X, b3Y, b4X, b4Y, b5X, b5Y, b6X, b6Y, b7X, b7Y, b8X, b8Y, b9X, b9Y, b10X, b10Y, b11X, b11Y, b12X, b12Y, b13X, b13Y, b14X, b14Y, b15X, b15Y, b16X, b16Y,
 				   output logic b1active, b2active, b3active, b4active, b5active, b6active, b7active, b8active, b9active, b10active, b11active, b12active, b13active, b14active, b15active, b16active);	
@@ -17,6 +17,45 @@ module game_logic (input logic Clk, VGA_VS,
 logic [11:0] northOne, southOne, eastOne, westOne;
 logic [11:0] northTwo, southTwo, eastTwo, westTwo;
 logic [1:0] p1dir_comb, p2dir_comb;
+
+// Direction in which player is shooting
+logic [1:0] p1fire, p2fire; // direction player is shooting
+logic [1:0] p1fire_comb, p2fire_comb; // 0-> north, 1-> south, 2-> east, 3-> west
+
+// Restrict how often each player can shoot
+logic [24:0] firing_counter_1 = 25'd0;
+logic [24:0] firing_counter_2 = 25'd0;
+logic fire_flag_1 = 1'b1;
+logic fire_flag_2 = 1'b1;
+
+always_ff @ (posedge Clk)
+begin
+	// Allow player to fire again
+	if (firing_counter_1 >= 25'd30000000)
+	begin
+		firing_counter_1 <= 25'd0;
+		fire_flag_1 <= 1'b1;
+	end
+	// Don't allow player to fire
+	else if (b1CD == 1'b1)
+	begin
+		firing_counter_1 <= firing_counter_1 + 25'd1;
+		fire_flag_1 <= 1'b0;
+	end
+
+	// Allow player to fire again
+	if (firing_counter_2 >= 25'd30000000)
+	begin
+		firing_counter_2 <= 25'd0;
+		fire_flag_2 <= 1'b1;
+	end
+	// Don't allow player to fire
+	else if (b2CD == 1'b1)
+	begin
+		firing_counter_2 <= firing_counter_2 + 25'd1;
+		fire_flag_2 <= 1'b0;
+	end
+end
 
 // Four-key rollover
 logic [7:0] aOne, bOne, cOne, dOne;
@@ -77,7 +116,7 @@ begin
 		if(b1active == 1'b0)
 		begin
 			b1set <= 1'b1;
-			case (p1dir)
+			case (p1fire)
 				2'd0:
 				begin
 					b1sX <= xOne;
@@ -119,7 +158,7 @@ begin
 		else if(b2active == 1'b0)
 		begin
 			b2set <= 1'b1;
-			case (p1dir)
+			case (p1fire)
 				2'd0:
 				begin
 					b2sX <= xOne;
@@ -161,7 +200,7 @@ begin
 		else if(b3active == 1'b0)
 		begin
 			b3set <= 1'b1;
-			case (p1dir)
+			case (p1fire)
 				2'd0:
 				begin
 					b3sX <= xOne;
@@ -203,7 +242,7 @@ begin
 		else if(b4active == 1'b0)
 		begin
 			b4set <= 1'b1;
-			case (p1dir)
+			case (p1fire)
 				2'd0:
 				begin
 					b4sX <= xOne;
@@ -245,7 +284,7 @@ begin
 		else if(b5active == 1'b0)
 		begin
 			b5set <= 1'b1;
-			case (p1dir)
+			case (p1fire)
 				2'd0:
 				begin
 					b5sX <= xOne;
@@ -287,7 +326,7 @@ begin
 		else if(b6active == 1'b0)
 		begin
 			b6set <= 1'b1;
-			case (p1dir)
+			case (p1fire)
 				2'd0:
 				begin
 					b6sX <= xOne;
@@ -329,7 +368,7 @@ begin
 		else if(b7active == 1'b0)
 		begin
 			b7set <= 1'b1;
-			case (p1dir)
+			case (p1fire)
 				2'd0:
 				begin
 					b7sX <= xOne;
@@ -371,7 +410,7 @@ begin
 		else if(b8active == 1'b0)
 		begin
 			b8set <= 1'b1;
-			case (p1dir)
+			case (p1fire)
 				2'd0:
 				begin
 					b8sX <= xOne;
@@ -412,7 +451,10 @@ begin
 		end
 	end
 	else
-		b1CD <= 1'b0;
+	begin
+		if (fire_flag_1 == 1'b1)
+			b1CD <= 1'b0;
+	end
 
 	if (set_bullet2 & ~b2CD) // no cooldown, fire
 	begin
@@ -420,7 +462,7 @@ begin
 		if(b9active == 1'b0)
 		begin
 			b9set <= 1'b1;
-			case (p2dir)
+			case (p2fire)
 				2'd0:
 				begin
 					b9sX <= xTwo;
@@ -462,7 +504,7 @@ begin
 		else if(b10active == 1'b0)
 		begin
 			b10set <= 1'b1;
-			case (p2dir)
+			case (p2fire)
 				2'd0:
 				begin
 					b10sX <= xTwo;
@@ -504,7 +546,7 @@ begin
 		else if(b11active == 1'b0)
 		begin
 			b11set <= 1'b1;
-			case (p2dir)
+			case (p2fire)
 				2'd0:
 				begin
 					b11sX <= xTwo;
@@ -546,7 +588,7 @@ begin
 		else if(b12active == 1'b0)
 		begin
 			b12set <= 1'b1;
-			case (p2dir)
+			case (p2fire)
 				2'd0:
 				begin
 					b12sX <= xTwo;
@@ -588,7 +630,7 @@ begin
 		else if(b13active == 1'b0)
 		begin
 			b13set <= 1'b1;
-			case (p2dir)
+			case (p2fire)
 				2'd0:
 				begin
 					b13sX <= xTwo;
@@ -630,7 +672,7 @@ begin
 		else if(b14active == 1'b0)
 		begin
 			b14set <= 1'b1;
-			case (p2dir)
+			case (p2fire)
 				2'd0:
 				begin
 					b14sX <= xTwo;
@@ -672,7 +714,7 @@ begin
 		else if(b15active == 1'b0)
 		begin
 			b15set <= 1'b1;
-			case (p2dir)
+			case (p2fire)
 				2'd0:
 				begin
 					b15sX <= xTwo;
@@ -714,7 +756,7 @@ begin
 		else if(b16active == 1'b0)
 		begin
 			b16set <= 1'b1;
-			case (p2dir)
+			case (p2fire)
 				2'd0:
 				begin
 					b16sX <= xTwo;
@@ -755,7 +797,10 @@ begin
 		end
 	end
 	else
-		b2CD = 1'b0;
+	begin
+		if (fire_flag_2 == 1'b1)
+			b2CD <= 1'b0;
+	end
 end
 
 // Bullet modules
@@ -818,19 +863,36 @@ logic [11:0] _yOne = 12'd700;
 logic [11:0] _xTwo = 12'd1500;
 logic [11:0] _yTwo = 12'd1400;
 
-// Update location 
+// Update location
+// Prevent players from walking off the map or on top of each other 
 always_ff @ (posedge VGA_VS)
 begin
-	_xOne <= ((_xOne + eastOne - westOne >= 12'd64) & (_xOne + eastOne - westOne <= 12'd3136))? _xOne + eastOne - westOne:_xOne;
-	_yOne <= ((_yOne + southOne - northOne >= 12'd64) & (_yOne + southOne - northOne <= 12'd2336))? _yOne + southOne - northOne:_yOne;
-	_xTwo <= ((_xTwo + eastTwo - westTwo >= 12'd64) & (_xTwo + eastTwo - westTwo <= 12'd3136))? _xTwo + eastTwo - westTwo:_xTwo;
-	_yTwo <= ((_yTwo + southTwo - northTwo >= 12'd64) & (_yTwo + southTwo - northTwo <= 12'd2336))? _yTwo + southTwo - northTwo:_yTwo;
+	// Check if players are about to walk on top of each other
+	if (~((((xOne + eastOne - westOne > xTwo + eastTwo - westTwo)? (xOne + eastOne - westOne) - (xTwo + eastTwo - westTwo):(xTwo + eastTwo - westTwo) - (xOne + eastOne - westOne)) < 12'd37) & (((yOne + southOne - northOne > yTwo + southTwo - northTwo)? (yOne + southOne - northOne) - (yTwo + southTwo - northTwo):(yTwo + southTwo - northTwo) - (yOne + southOne - northOne)) < 12'd37)))
+	begin
+		_xOne <= ((_xOne + eastOne - westOne >= 12'd64) & (_xOne + eastOne - westOne <= 12'd3136))? _xOne + eastOne - westOne:_xOne;
+		_yOne <= ((_yOne + southOne - northOne >= 12'd64) & (_yOne + southOne - northOne <= 12'd2336))? _yOne + southOne - northOne:_yOne;
+		_xTwo <= ((_xTwo + eastTwo - westTwo >= 12'd64) & (_xTwo + eastTwo - westTwo <= 12'd3136))? _xTwo + eastTwo - westTwo:_xTwo;
+		_yTwo <= ((_yTwo + southTwo - northTwo >= 12'd64) & (_yTwo + southTwo - northTwo <= 12'd2336))? _yTwo + southTwo - northTwo:_yTwo;
+	end
 end
 
-always_ff @(posedge VGA_VS)
+always_ff @ (posedge VGA_VS)
 begin
+	// Update player motion and shooting direction
 	p1dir <= p1dir_comb;
 	p2dir <= p2dir_comb;
+	p1fire <= p1fire_comb;
+	p2fire <= p2fire_comb;
+	// Firing bullets
+	if (aOne == 8'h52 | bOne == 8'h52 | cOne == 8'h52 | dOne == 8'h52 | aOne == 8'h51 | bOne == 8'h51 | cOne == 8'h51 | dOne == 8'h51 | aOne == 8'h50 | bOne == 8'h50 | cOne == 8'h50 | dOne == 8'h50 | aOne == 8'h4f | bOne == 8'h4f | cOne == 8'h4f | dOne == 8'h4f)
+		set_bullet1 <= 1'b1;
+	else
+		set_bullet1 <= 1'b0;
+	if (aTwo == 8'h75 | bTwo == 8'h75 | cTwo == 8'h75 | dTwo == 8'h75 | aTwo == 8'h72 | bTwo == 8'h72 | cTwo == 8'h72 | dTwo == 8'h72 | aTwo == 8'h6B | bTwo == 8'h6B | cTwo == 8'h6B | dTwo == 8'h6B | aTwo == 8'h74 | bTwo == 8'h74 | cTwo == 8'h74 | dTwo == 8'h74)
+		set_bullet2 <= 1'b1;
+	else
+		set_bullet2 <= 1'b0;
 end
 
 // Player 1 motion and shooting
@@ -841,7 +903,8 @@ begin
 	eastOne = 12'd0;
 	westOne = 12'd0;
 	p1dir_comb = p1dir;
-	set_bullet1 = 1'b0;
+	p1fire_comb = p1fire;
+	// set_bullet1 = 1'b0;
 
 	// W
 	if (aOne == 8'h1A | bOne == 8'h1A | cOne == 8'h1A | dOne == 8'h1A)
@@ -871,25 +934,29 @@ begin
 	if (aOne == 8'h52 | bOne == 8'h52 | cOne == 8'h52 | dOne == 8'h52)
 	begin
 		p1dir_comb = 2'd0;
-		set_bullet1 = 1'b1;
+		p1fire_comb = 2'd0;
+		// set_bullet1 = 1'b1;
 	end
 	// down arrow
 	if (aOne == 8'h51 | bOne == 8'h51 | cOne == 8'h51 | dOne == 8'h51)
 	begin
 		p1dir_comb = 2'd1;
-		set_bullet1 = 1'b1;	
+		p1fire_comb = 2'd1;
+		// set_bullet1 = 1'b1;	
 	end
 	// left arrow
 	if (aOne == 8'h50 | bOne == 8'h50 | cOne == 8'h50 | dOne == 8'h50)
 	begin
 		p1dir_comb = 2'd3;
-		set_bullet1 = 1'b1;
+		p1fire_comb = 2'd3;
+		// set_bullet1 = 1'b1;
 	end
 	// right arrow
 	if (aOne == 8'h4f | bOne == 8'h4f | cOne == 8'h4f | dOne == 8'h4f)
 	begin
 		p1dir_comb = 2'd2;
-		set_bullet1 = 1'b1;
+		p1fire_comb = 2'd2;
+		// set_bullet1 = 1'b1;
 	end
 
 end
@@ -902,7 +969,8 @@ begin
 	eastTwo = 12'd0;
 	westTwo = 12'd0;
 	p2dir_comb = p2dir;
-	set_bullet2 = 1'b0;
+	p2fire_comb = p2fire;
+	// set_bullet2 = 1'b0;
 
 	// W
 	if (aTwo == 8'h1D | bTwo == 8'h1D | cTwo == 8'h1D | dTwo == 8'h1D)
@@ -932,25 +1000,29 @@ begin
 	if (aTwo == 8'h75 | bTwo == 8'h75 | cTwo == 8'h75 | dTwo == 8'h75)
 	begin
 		p2dir_comb = 2'd0;
-		set_bullet2 = 1'b1;
+		p2fire_comb = 2'd0;
+		// set_bullet2 = 1'b1;
 	end
 	// down arrow
 	if (aTwo == 8'h72 | bTwo == 8'h72 | cTwo == 8'h72 | dTwo == 8'h72)
 	begin
 		p2dir_comb = 2'd1;
-		set_bullet2	= 1'b1;	
+		p2fire_comb = 2'd1;
+		// set_bullet2 = 1'b1;	
 	end
 	// left arrow
 	if (aTwo == 8'h6B | bTwo == 8'h6B | cTwo == 8'h6B | dTwo == 8'h6B)
 	begin
 		p2dir_comb = 2'd3;
-		set_bullet2 = 1'b1;
+		p2fire_comb = 2'd3;
+		// set_bullet2 = 1'b1;
 	end
 	// right arrow
 	if (aTwo == 8'h74 | bTwo == 8'h74 | cTwo == 8'h74 | dTwo == 8'h74)
 	begin
 		p2dir_comb = 2'd2;
-		set_bullet2 = 1'b1;
+		p2fire_comb = 2'd2;
+		// set_bullet2 = 1'b1;
 	end
 end
 
