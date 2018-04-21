@@ -49,7 +49,7 @@ module bullet(input logic Clk, frame_clk,
 			posX <= posX - _nspeedX + _pspeedX;
 			posY <= posY - _nspeedY + _pspeedY;
 			counter <= counter + 1'b1;
-			if (counter > 7'd75)
+			if (counter > 7'd100)
 				_active <= 1'b0;
 			if (h1 | h2)
 				_active <= 1'b0;

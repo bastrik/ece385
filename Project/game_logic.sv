@@ -75,7 +75,7 @@ assign dTwo = PS2keycode[31:24];
 //// SHOOTING
 logic b1CD = 1'b0;
 logic b2CD = 1'b0;
-logic [3:0] BULLETSPEED = 4'd8;
+logic [3:0] BULLETSPEED = 4'd6;
 always_ff @ (posedge Clk)
 begin
 	if (b1set)

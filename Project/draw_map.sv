@@ -128,86 +128,38 @@ module draw_map (input logic Clk,
 			else
 				p2onp1 <= 24'hff00d2;
 			// Check if bullets are onscreen
-			if (b1active & b1on1 & b1on1offset >= 5'd0 & b1on1offset < 5'd25)
-			begin
-				if ((((xOne - 12'd320 + DrXplus > b1X)? xOne - 12'd320 + DrXplus - b1X:b1X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b1Y)? yOne - 12'd240 + DrYplus - b1Y:b1Y - (yOne - 12'd240 + DrYplus)) < 2))
-					bullet1 <= bullet1a_out;
-			end
-			else if (b2active & b2on1 & b2on1offset >= 5'd0 & b2on1offset < 5'd25)
-			begin
-				if ((((xOne - 12'd320 + DrXplus > b2X)? xOne - 12'd320 + DrXplus - b2X:b2X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b2Y)? yOne - 12'd240 + DrYplus - b2Y:b2Y - (yOne - 12'd240 + DrYplus)) < 2))
-					bullet1 <= bullet2a_out;
-			end
-			else if (b3active & b3on1 & b3on1offset >= 5'd0 & b3on1offset < 5'd25)
-			begin
-				if ((((xOne - 12'd320 + DrXplus > b3X)? xOne - 12'd320 + DrXplus - b3X:b3X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b3Y)? yOne - 12'd240 + DrYplus - b3Y:b3Y - (yOne - 12'd240 + DrYplus)) < 2))
-					bullet1 <= bullet3a_out;
-			end
-			else if (b4active & b4on1 & b4on1offset >= 5'd0 & b4on1offset < 5'd25)
-			begin
-				if ((((xOne - 12'd320 + DrXplus > b4X)? xOne - 12'd320 + DrXplus - b4X:b4X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b4Y)? yOne - 12'd240 + DrYplus - b4Y:b4Y - (yOne - 12'd240 + DrYplus)) < 2))
-					bullet1 <= bullet4a_out;
-			end
-			else if (b5active & b5on1 & b5on1offset >= 5'd0 & b5on1offset < 5'd25)
-			begin
-				if ((((xOne - 12'd320 + DrXplus > b5X)? xOne - 12'd320 + DrXplus - b5X:b5X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b5Y)? yOne - 12'd240 + DrYplus - b5Y:b5Y - (yOne - 12'd240 + DrYplus)) < 2))
-					bullet1 <= bullet5a_out;
-			end
-			else if (b6active & b6on1 & b6on1offset >= 5'd0 & b6on1offset < 5'd25)
-			begin
-				if ((((xOne - 12'd320 + DrXplus > b6X)? xOne - 12'd320 + DrXplus - b6X:b6X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b6Y)? yOne - 12'd240 + DrYplus - b6Y:b6Y - (yOne - 12'd240 + DrYplus)) < 2))
-					bullet1 <= bullet6a_out;
-			end
-			else if (b7active & b7on1 & b7on1offset >= 5'd0 & b7on1offset < 5'd25)
-			begin
-				if ((((xOne - 12'd320 + DrXplus > b7X)? xOne - 12'd320 + DrXplus - b7X:b7X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b7Y)? yOne - 12'd240 + DrYplus - b7Y:b7Y - (yOne - 12'd240 + DrYplus)) < 2))
-					bullet1 <= bullet7a_out;
-			end
-			else if (b8active & b8on1 & b8on1offset >= 5'd0 & b8on1offset < 5'd25)
-			begin
-				if ((((xOne - 12'd320 + DrXplus > b8X)? xOne - 12'd320 + DrXplus - b8X:b8X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b8Y)? yOne - 12'd240 + DrYplus - b8Y:b8Y - (yOne - 12'd240 + DrYplus)) < 2))
-					bullet1 <= bullet8a_out;
-			end
-			else if (b9active & b9on1 & b9on1offset >= 5'd0 & b9on1offset < 5'd25)
-			begin
-				if ((((xOne - 12'd320 + DrXplus > b9X)? xOne - 12'd320 + DrXplus - b9X:b9X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b9Y)? yOne - 12'd240 + DrYplus - b9Y:b9Y - (yOne - 12'd240 + DrYplus)) < 2))
-					bullet1 <= bullet9a_out;
-			end
-			else if (b10active & b10on1 & b10on1offset >= 5'd0 & b10on1offset < 5'd25)
-			begin
-				if ((((xOne - 12'd320 + DrXplus > b10X)? xOne - 12'd320 + DrXplus - b10X:b10X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b10Y)? yOne - 12'd240 + DrYplus - b10Y:b10Y - (yOne - 12'd240 + DrYplus)) < 2))
-					bullet1 <= bullet10a_out;
-			end
-			else if (b11active & b11on1 & b11on1offset >= 5'd0 & b11on1offset < 5'd25)
-			begin
-				if ((((xOne - 12'd320 + DrXplus > b11X)? xOne - 12'd320 + DrXplus - b11X:b11X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b11Y)? yOne - 12'd240 + DrYplus - b11Y:b11Y - (yOne - 12'd240 + DrYplus)) < 2))
-					bullet1 <= bullet11a_out;
-			end
-			else if (b12active & b12on1 & b12on1offset >= 5'd0 & b12on1offset < 5'd25)
-			begin
-				if ((((xOne - 12'd320 + DrXplus > b12X)? xOne - 12'd320 + DrXplus - b12X:b12X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b12Y)? yOne - 12'd240 + DrYplus - b12Y:b12Y - (yOne - 12'd240 + DrYplus)) < 2))
-					bullet1 <= bullet12a_out;
-			end
-			else if (b13active & b13on1 & b13on1offset >= 5'd0 & b13on1offset < 5'd25)
-			begin
-				if ((((xOne - 12'd320 + DrXplus > b13X)? xOne - 12'd320 + DrXplus - b13X:b13X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b13Y)? yOne - 12'd240 + DrYplus - b13Y:b13Y - (yOne - 12'd240 + DrYplus)) < 2))
-					bullet1 <= bullet13a_out;
-			end
-			else if (b14active & b14on1 & b14on1offset >= 5'd0 & b14on1offset < 5'd25)
-			begin
-				if ((((xOne - 12'd320 + DrXplus > b14X)? xOne - 12'd320 + DrXplus - b14X:b14X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b14Y)? yOne - 12'd240 + DrYplus - b14Y:b14Y - (yOne - 12'd240 + DrYplus)) < 2))
-					bullet1 <= bullet14a_out;
-			end
-			else if (b15active & b15on1 & b15on1offset >= 5'd0 & b15on1offset < 5'd25)
-			begin
-				if ((((xOne - 12'd320 + DrXplus > b15X)? xOne - 12'd320 + DrXplus - b15X:b15X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b15Y)? yOne - 12'd240 + DrYplus - b15Y:b15Y - (yOne - 12'd240 + DrYplus)) < 2))
-					bullet1 <= bullet15a_out;
-			end
-			else if (b16active & b16on1 & b16on1offset >= 5'd0 & b16on1offset < 5'd25)
-			begin
-				if ((((xOne - 12'd320 + DrXplus > b16X)? xOne - 12'd320 + DrXplus - b16X:b16X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b16Y)? yOne - 12'd240 + DrYplus - b16Y:b16Y - (yOne - 12'd240 + DrYplus)) < 2))
-					bullet1 <= bullet16a_out;
-			end
+			if (b1active & b1on1 & b1on1offset >= 5'd0 & b1on1offset < 5'd25 & (((xOne - 12'd320 + DrXplus > b1X)? xOne - 12'd320 + DrXplus - b1X:b1X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b1Y)? yOne - 12'd240 + DrYplus - b1Y:b1Y - (yOne - 12'd240 + DrYplus)) < 2))
+				bullet1 <= bullet1a_out;
+			else if (b2active & b2on1 & b2on1offset >= 5'd0 & b2on1offset < 5'd25 & (((xOne - 12'd320 + DrXplus > b2X)? xOne - 12'd320 + DrXplus - b2X:b2X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b2Y)? yOne - 12'd240 + DrYplus - b2Y:b2Y - (yOne - 12'd240 + DrYplus)) < 2))
+				bullet1 <= bullet2a_out;
+			else if (b3active & b3on1 & b3on1offset >= 5'd0 & b3on1offset < 5'd25 & (((xOne - 12'd320 + DrXplus > b3X)? xOne - 12'd320 + DrXplus - b3X:b3X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b3Y)? yOne - 12'd240 + DrYplus - b3Y:b3Y - (yOne - 12'd240 + DrYplus)) < 2))
+				bullet1 <= bullet3a_out;
+			else if (b4active & b4on1 & b4on1offset >= 5'd0 & b4on1offset < 5'd25 & (((xOne - 12'd320 + DrXplus > b4X)? xOne - 12'd320 + DrXplus - b4X:b4X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b4Y)? yOne - 12'd240 + DrYplus - b4Y:b4Y - (yOne - 12'd240 + DrYplus)) < 2))
+				bullet1 <= bullet4a_out;
+			else if (b5active & b5on1 & b5on1offset >= 5'd0 & b5on1offset < 5'd25 & (((xOne - 12'd320 + DrXplus > b5X)? xOne - 12'd320 + DrXplus - b5X:b5X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b5Y)? yOne - 12'd240 + DrYplus - b5Y:b5Y - (yOne - 12'd240 + DrYplus)) < 2))
+				bullet1 <= bullet5a_out;
+			else if (b6active & b6on1 & b6on1offset >= 5'd0 & b6on1offset < 5'd25 & (((xOne - 12'd320 + DrXplus > b6X)? xOne - 12'd320 + DrXplus - b6X:b6X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b6Y)? yOne - 12'd240 + DrYplus - b6Y:b6Y - (yOne - 12'd240 + DrYplus)) < 2))
+				bullet1 <= bullet6a_out;
+			else if (b7active & b7on1 & b7on1offset >= 5'd0 & b7on1offset < 5'd25 & (((xOne - 12'd320 + DrXplus > b7X)? xOne - 12'd320 + DrXplus - b7X:b7X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b7Y)? yOne - 12'd240 + DrYplus - b7Y:b7Y - (yOne - 12'd240 + DrYplus)) < 2))
+				bullet1 <= bullet7a_out;
+			else if (b8active & b8on1 & b8on1offset >= 5'd0 & b8on1offset < 5'd25 & (((xOne - 12'd320 + DrXplus > b8X)? xOne - 12'd320 + DrXplus - b8X:b8X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b8Y)? yOne - 12'd240 + DrYplus - b8Y:b8Y - (yOne - 12'd240 + DrYplus)) < 2))
+				bullet1 <= bullet8a_out;
+			else if (b9active & b9on1 & b9on1offset >= 5'd0 & b9on1offset < 5'd25 & (((xOne - 12'd320 + DrXplus > b9X)? xOne - 12'd320 + DrXplus - b9X:b9X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b9Y)? yOne - 12'd240 + DrYplus - b9Y:b9Y - (yOne - 12'd240 + DrYplus)) < 2))
+				bullet1 <= bullet9a_out;
+			else if (b10active & b10on1 & b10on1offset >= 5'd0 & b10on1offset < 5'd25 & (((xOne - 12'd320 + DrXplus > b10X)? xOne - 12'd320 + DrXplus - b10X:b10X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b10Y)? yOne - 12'd240 + DrYplus - b10Y:b10Y - (yOne - 12'd240 + DrYplus)) < 2))
+				bullet1 <= bullet10a_out;
+			else if (b11active & b11on1 & b11on1offset >= 5'd0 & b11on1offset < 5'd25 & (((xOne - 12'd320 + DrXplus > b11X)? xOne - 12'd320 + DrXplus - b11X:b11X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b11Y)? yOne - 12'd240 + DrYplus - b11Y:b11Y - (yOne - 12'd240 + DrYplus)) < 2))
+				bullet1 <= bullet11a_out;
+			else if (b12active & b12on1 & b12on1offset >= 5'd0 & b12on1offset < 5'd25 & (((xOne - 12'd320 + DrXplus > b12X)? xOne - 12'd320 + DrXplus - b12X:b12X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b12Y)? yOne - 12'd240 + DrYplus - b12Y:b12Y - (yOne - 12'd240 + DrYplus)) < 2))
+				bullet1 <= bullet12a_out;
+			else if (b13active & b13on1 & b13on1offset >= 5'd0 & b13on1offset < 5'd25 & (((xOne - 12'd320 + DrXplus > b13X)? xOne - 12'd320 + DrXplus - b13X:b13X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b13Y)? yOne - 12'd240 + DrYplus - b13Y:b13Y - (yOne - 12'd240 + DrYplus)) < 2))
+				bullet1 <= bullet13a_out;
+			else if (b14active & b14on1 & b14on1offset >= 5'd0 & b14on1offset < 5'd25 & (((xOne - 12'd320 + DrXplus > b14X)? xOne - 12'd320 + DrXplus - b14X:b14X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b14Y)? yOne - 12'd240 + DrYplus - b14Y:b14Y - (yOne - 12'd240 + DrYplus)) < 2))
+				bullet1 <= bullet14a_out;
+			else if (b15active & b15on1 & b15on1offset >= 5'd0 & b15on1offset < 5'd25 & (((xOne - 12'd320 + DrXplus > b15X)? xOne - 12'd320 + DrXplus - b15X:b15X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b15Y)? yOne - 12'd240 + DrYplus - b15Y:b15Y - (yOne - 12'd240 + DrYplus)) < 2))
+				bullet1 <= bullet15a_out;
+			else if (b16active & b16on1 & b16on1offset >= 5'd0 & b16on1offset < 5'd25 & (((xOne - 12'd320 + DrXplus > b16X)? xOne - 12'd320 + DrXplus - b16X:b16X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b16Y)? yOne - 12'd240 + DrYplus - b16Y:b16Y - (yOne - 12'd240 + DrYplus)) < 2))
+				bullet1 <= bullet16a_out;
 			else
 				bullet1 <= 24'hff00d2;
 		end
@@ -257,86 +209,38 @@ module draw_map (input logic Clk,
 			else
 				p1onp2 <= 24'hff00d2;
 			// Check if bullets are onscreen
-			if (b1active & b1on2 & b1on2offset >= 5'd0 & b1on2offset < 5'd25)
-			begin
-				if ((((xTwo - 12'd320 + DrXplus > b1X)? xTwo - 12'd320 + DrXplus - b1X:b1X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b1Y)? yTwo - 12'd240 + DrYplus - b1Y:b1Y - (yTwo - 12'd240 + DrYplus)) < 2))
-					bullet2 <= bullet1b_out;
-			end
-			else if (b2active & b2on2 & b2on2offset >= 5'd0 & b2on2offset < 5'd25)
-			begin
-				if ((((xTwo - 12'd320 + DrXplus > b2X)? xTwo - 12'd320 + DrXplus - b2X:b2X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b2Y)? yTwo - 12'd240 + DrYplus - b2Y:b2Y - (yTwo - 12'd240 + DrYplus)) < 2))
-					bullet2 <= bullet2b_out;
-			end
-			else if (b3active & b3on2 & b3on2offset >= 5'd0 & b3on2offset < 5'd25)
-			begin
-				if ((((xTwo - 12'd320 + DrXplus > b3X)? xTwo - 12'd320 + DrXplus - b3X:b3X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b3Y)? yTwo - 12'd240 + DrYplus - b3Y:b3Y - (yTwo - 12'd240 + DrYplus)) < 2))
-					bullet2 <= bullet3b_out;
-			end
-			else if (b4active & b4on2 & b4on2offset >= 5'd0 & b4on2offset < 5'd25)
-			begin
-				if ((((xTwo - 12'd320 + DrXplus > b4X)? xTwo - 12'd320 + DrXplus - b4X:b4X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b4Y)? yTwo - 12'd240 + DrYplus - b4Y:b4Y - (yTwo - 12'd240 + DrYplus)) < 2))
-					bullet2 <= bullet4b_out;
-			end
-			else if (b5active & b5on2 & b5on2offset >= 5'd0 & b5on2offset < 5'd25)
-			begin
-				if ((((xTwo - 12'd320 + DrXplus > b5X)? xTwo - 12'd320 + DrXplus - b5X:b5X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b5Y)? yTwo - 12'd240 + DrYplus - b5Y:b5Y - (yTwo - 12'd240 + DrYplus)) < 2))
-					bullet2 <= bullet5b_out;
-			end
-			else if (b6active & b6on2 & b6on2offset >= 5'd0 & b6on2offset < 5'd25)
-			begin
-				if ((((xTwo - 12'd320 + DrXplus > b6X)? xTwo - 12'd320 + DrXplus - b6X:b6X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b6Y)? yTwo - 12'd240 + DrYplus - b6Y:b6Y - (yTwo - 12'd240 + DrYplus)) < 2))
-					bullet2 <= bullet6b_out;
-			end
-			else if (b7active & b7on2 & b7on2offset >= 5'd0 & b7on2offset < 5'd25)
-			begin
-				if ((((xTwo - 12'd320 + DrXplus > b7X)? xTwo - 12'd320 + DrXplus - b7X:b7X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b7Y)? yTwo - 12'd240 + DrYplus - b7Y:b7Y - (yTwo - 12'd240 + DrYplus)) < 2))
-					bullet2 <= bullet7b_out;
-			end
-			else if (b8active & b8on2 & b8on2offset >= 5'd0 & b8on2offset < 5'd25)
-			begin
-				if ((((xTwo - 12'd320 + DrXplus > b8X)? xTwo - 12'd320 + DrXplus - b8X:b8X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b8Y)? yTwo - 12'd240 + DrYplus - b8Y:b8Y - (yTwo - 12'd240 + DrYplus)) < 2))
-					bullet2 <= bullet8b_out;
-			end
-			else if (b9active & b9on2 & b9on2offset >= 5'd0 & b9on2offset < 5'd25)
-			begin
-				if ((((xTwo - 12'd320 + DrXplus > b9X)? xTwo - 12'd320 + DrXplus - b9X:b9X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b9Y)? yTwo - 12'd240 + DrYplus - b9Y:b9Y - (yTwo - 12'd240 + DrYplus)) < 2))
-					bullet2 <= bullet9b_out;
-			end
-			else if (b10active & b10on2 & b10on2offset >= 5'd0 & b10on2offset < 5'd25)
-			begin
-				if ((((xTwo - 12'd320 + DrXplus > b10X)? xTwo - 12'd320 + DrXplus - b10X:b10X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b10Y)? yTwo - 12'd240 + DrYplus - b10Y:b10Y - (yTwo - 12'd240 + DrYplus)) < 2))
-					bullet2 <= bullet10b_out;
-			end
-			else if (b11active & b11on2 & b11on2offset >= 5'd0 & b11on2offset < 5'd25)
-			begin
-				if ((((xTwo - 12'd320 + DrXplus > b11X)? xTwo - 12'd320 + DrXplus - b11X:b11X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b11Y)? yTwo - 12'd240 + DrYplus - b11Y:b11Y - (yTwo - 12'd240 + DrYplus)) < 2))
-					bullet2 <= bullet11b_out;
-			end
-			else if (b12active & b12on2 & b12on2offset >= 5'd0 & b12on2offset < 5'd25)
-			begin
-				if ((((xTwo - 12'd320 + DrXplus > b12X)? xTwo - 12'd320 + DrXplus - b12X:b12X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b12Y)? yTwo - 12'd240 + DrYplus - b12Y:b12Y - (yTwo - 12'd240 + DrYplus)) < 2))
-					bullet2 <= bullet12b_out;
-			end
-			else if (b13active & b13on2 & b13on2offset >= 5'd0 & b13on2offset < 5'd25)
-			begin
-				if ((((xTwo - 12'd320 + DrXplus > b13X)? xTwo - 12'd320 + DrXplus - b13X:b13X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b13Y)? yTwo - 12'd240 + DrYplus - b13Y:b13Y - (yTwo - 12'd240 + DrYplus)) < 2))
-					bullet2 <= bullet13b_out;
-			end
-			else if (b14active & b14on2 & b14on2offset >= 5'd0 & b14on2offset < 5'd25)
-			begin
-				if ((((xTwo - 12'd320 + DrXplus > b14X)? xTwo - 12'd320 + DrXplus - b14X:b14X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b14Y)? yTwo - 12'd240 + DrYplus - b14Y:b14Y - (yTwo - 12'd240 + DrYplus)) < 2))
-					bullet2 <= bullet14b_out;
-			end
-			else if (b15active & b15on2 & b15on2offset >= 5'd0 & b15on2offset < 5'd25)
-			begin
-				if ((((xTwo - 12'd320 + DrXplus > b15X)? xTwo - 12'd320 + DrXplus - b15X:b15X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b15Y)? yTwo - 12'd240 + DrYplus - b15Y:b15Y - (yTwo - 12'd240 + DrYplus)) < 2))
-					bullet2 <= bullet15b_out;
-			end
-			else if (b16active & b16on2 & b16on2offset >= 5'd0 & b16on2offset < 5'd25)
-			begin
-				if ((((xTwo - 12'd320 + DrXplus > b16X)? xTwo - 12'd320 + DrXplus - b16X:b16X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b16Y)? yTwo - 12'd240 + DrYplus - b16Y:b16Y - (yTwo - 12'd240 + DrYplus)) < 2))
-					bullet2 <= bullet16b_out;
-			end
+			if (b1active & b1on2 & b1on2offset >= 5'd0 & b1on2offset < 5'd25 & (((xTwo - 12'd320 + DrXplus > b1X)? xTwo - 12'd320 + DrXplus - b1X:b1X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b1Y)? yTwo - 12'd240 + DrYplus - b1Y:b1Y - (yTwo - 12'd240 + DrYplus)) < 2))
+				bullet2 <= bullet1b_out;
+			else if (b2active & b2on2 & b2on2offset >= 5'd0 & b2on2offset < 5'd25 & (((xTwo - 12'd320 + DrXplus > b2X)? xTwo - 12'd320 + DrXplus - b2X:b2X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b2Y)? yTwo - 12'd240 + DrYplus - b2Y:b2Y - (yTwo - 12'd240 + DrYplus)) < 2))
+				bullet2 <= bullet2b_out;
+			else if (b3active & b3on2 & b3on2offset >= 5'd0 & b3on2offset < 5'd25 & (((xTwo - 12'd320 + DrXplus > b3X)? xTwo - 12'd320 + DrXplus - b3X:b3X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b3Y)? yTwo - 12'd240 + DrYplus - b3Y:b3Y - (yTwo - 12'd240 + DrYplus)) < 2))
+				bullet2 <= bullet3b_out;
+			else if (b4active & b4on2 & b4on2offset >= 5'd0 & b4on2offset < 5'd25 & (((xTwo - 12'd320 + DrXplus > b4X)? xTwo - 12'd320 + DrXplus - b4X:b4X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b4Y)? yTwo - 12'd240 + DrYplus - b4Y:b4Y - (yTwo - 12'd240 + DrYplus)) < 2))
+				bullet2 <= bullet4b_out;
+			else if (b5active & b5on2 & b5on2offset >= 5'd0 & b5on2offset < 5'd25 & (((xTwo - 12'd320 + DrXplus > b5X)? xTwo - 12'd320 + DrXplus - b5X:b5X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b5Y)? yTwo - 12'd240 + DrYplus - b5Y:b5Y - (yTwo - 12'd240 + DrYplus)) < 2))
+				bullet2 <= bullet5b_out;
+			else if (b6active & b6on2 & b6on2offset >= 5'd0 & b6on2offset < 5'd25 & (((xTwo - 12'd320 + DrXplus > b6X)? xTwo - 12'd320 + DrXplus - b6X:b6X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b6Y)? yTwo - 12'd240 + DrYplus - b6Y:b6Y - (yTwo - 12'd240 + DrYplus)) < 2))
+				bullet2 <= bullet6b_out;
+			else if (b7active & b7on2 & b7on2offset >= 5'd0 & b7on2offset < 5'd25 & (((xTwo - 12'd320 + DrXplus > b7X)? xTwo - 12'd320 + DrXplus - b7X:b7X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b7Y)? yTwo - 12'd240 + DrYplus - b7Y:b7Y - (yTwo - 12'd240 + DrYplus)) < 2))
+				bullet2 <= bullet7b_out;
+			else if (b8active & b8on2 & b8on2offset >= 5'd0 & b8on2offset < 5'd25 & (((xTwo - 12'd320 + DrXplus > b8X)? xTwo - 12'd320 + DrXplus - b8X:b8X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b8Y)? yTwo - 12'd240 + DrYplus - b8Y:b8Y - (yTwo - 12'd240 + DrYplus)) < 2))
+				bullet2 <= bullet8b_out;
+			else if (b9active & b9on2 & b9on2offset >= 5'd0 & b9on2offset < 5'd25 & (((xTwo - 12'd320 + DrXplus > b9X)? xTwo - 12'd320 + DrXplus - b9X:b9X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b9Y)? yTwo - 12'd240 + DrYplus - b9Y:b9Y - (yTwo - 12'd240 + DrYplus)) < 2))
+				bullet2 <= bullet9b_out;
+			else if (b10active & b10on2 & b10on2offset >= 5'd0 & b10on2offset < 5'd25 & (((xTwo - 12'd320 + DrXplus > b10X)? xTwo - 12'd320 + DrXplus - b10X:b10X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b10Y)? yTwo - 12'd240 + DrYplus - b10Y:b10Y - (yTwo - 12'd240 + DrYplus)) < 2))
+				bullet2 <= bullet10b_out;
+			else if (b11active & b11on2 & b11on2offset >= 5'd0 & b11on2offset < 5'd25 & (((xTwo - 12'd320 + DrXplus > b11X)? xTwo - 12'd320 + DrXplus - b11X:b11X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b11Y)? yTwo - 12'd240 + DrYplus - b11Y:b11Y - (yTwo - 12'd240 + DrYplus)) < 2))
+				bullet2 <= bullet11b_out;
+			else if (b12active & b12on2 & b12on2offset >= 5'd0 & b12on2offset < 5'd25 & (((xTwo - 12'd320 + DrXplus > b12X)? xTwo - 12'd320 + DrXplus - b12X:b12X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b12Y)? yTwo - 12'd240 + DrYplus - b12Y:b12Y - (yTwo - 12'd240 + DrYplus)) < 2))
+				bullet2 <= bullet12b_out;
+			else if (b13active & b13on2 & b13on2offset >= 5'd0 & b13on2offset < 5'd25 & (((xTwo - 12'd320 + DrXplus > b13X)? xTwo - 12'd320 + DrXplus - b13X:b13X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b13Y)? yTwo - 12'd240 + DrYplus - b13Y:b13Y - (yTwo - 12'd240 + DrYplus)) < 2))
+				bullet2 <= bullet13b_out;
+			else if (b14active & b14on2 & b14on2offset >= 5'd0 & b14on2offset < 5'd25 & (((xTwo - 12'd320 + DrXplus > b14X)? xTwo - 12'd320 + DrXplus - b14X:b14X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b14Y)? yTwo - 12'd240 + DrYplus - b14Y:b14Y - (yTwo - 12'd240 + DrYplus)) < 2))
+				bullet2 <= bullet14b_out;
+			else if (b15active & b15on2 & b15on2offset >= 5'd0 & b15on2offset < 5'd25 & (((xTwo - 12'd320 + DrXplus > b15X)? xTwo - 12'd320 + DrXplus - b15X:b15X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b15Y)? yTwo - 12'd240 + DrYplus - b15Y:b15Y - (yTwo - 12'd240 + DrYplus)) < 2))
+				bullet2 <= bullet15b_out;
+			else if (b16active & b16on2 & b16on2offset >= 5'd0 & b16on2offset < 5'd25 & (((xTwo - 12'd320 + DrXplus > b16X)? xTwo - 12'd320 + DrXplus - b16X:b16X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b16Y)? yTwo - 12'd240 + DrYplus - b16Y:b16Y - (yTwo - 12'd240 + DrYplus)) < 2))
+				bullet2 <= bullet16b_out;
 			else
 				bullet2 <= 24'hff00d2;
 		end
