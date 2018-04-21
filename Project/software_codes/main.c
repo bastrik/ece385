@@ -571,7 +571,6 @@ void usb_getkey()
 	#define WAVE_BUF_SIZE  512
 	int nPlayIndex;
     alt_u32 cnt, uSongStartTime, uTimeElapsed;
-    alt_8 led_mask = 0x03;
     alt_u8 szWaveFile[FILENAME_LEN];
 #endif
 
@@ -662,8 +661,6 @@ void lcd_display(char *pText){
 
 void wait_sdcard_insert(void){
     bool bFirstTime2Detect = TRUE;
-    alt_u8 led_mask = 0x02;
-    LED_AllOff();
     //led = IORD_ALTERA_AVALON_PIO_DATA(LED_RED_SPAN); // low-active
     while(!SDLIB_Init()){
         if (bFirstTime2Detect){
