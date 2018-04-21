@@ -22,7 +22,7 @@
 #include "lcp_data.h"
 
 #include ".\audio_driver\terasic_includes.h"
-#include ".\audio_driver\LED.h"
+#include ".\audio_driver\LCD.h"
 #include ".\fat_fs\FatFileSystem.h"
 #include ".\fat_fs\FatInternal.h"
 #include ".\audio_driver\WaveLib.h"
@@ -647,8 +647,7 @@ int audio_init()
 #define LCD_DISPLAY
 void update_status(void){  
     char szText[64];       
-    sprintf(szText, "\r%s\nVol:%d%C\n", gWavePlay.szFilename, gWavePlay.nVolume, 
-        gWavePlay.bRepeatMode?'R':'S');
+    sprintf(szText, "\r%s\nVol:%d\n", gWavePlay.szFilename, gWavePlay.nVolume);
     lcd_display((szText));  
 }
 void lcd_open(void){
