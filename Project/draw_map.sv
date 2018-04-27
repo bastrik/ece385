@@ -6,14 +6,18 @@ module draw_map (input logic Clk,
 				 input logic [11:0] yOne,
 				 input logic [11:0] xTwo, // player 2's absolute location on map
 				 input logic [11:0] yTwo,
-				 input logic [1:0]  p1dir,	// direction player is facing
+				 input logic [1:0]  p1dir, // direction player is facing
 				 input logic [1:0]  p2dir,
-				 input logic [9:0] DrX,
+				 input logic [9:0] DrX, // pixel being drawn
 				 input logic [9:0] DrY, 
 				 input logic VGA_VS,
 				 input logic VGA_HS,
+				 // bullet positions and status
 				 input logic [11:0] b1X, b1Y, b2X, b2Y, b3X, b3Y, b4X, b4Y, b5X, b5Y, b6X, b6Y, b7X, b7Y, b8X, b8Y, b9X, b9Y, b10X, b10Y, b11X, b11Y, b12X, b12Y, b13X, b13Y, b14X, b14Y, b15X, b15Y, b16X, b16Y,
 				 input logic b1active, b2active, b3active, b4active, b5active, b6active, b7active, b8active, b9active, b10active, b11active, b12active, b13active, b14active, b15active, b16active,
+				 input logic [3:0] p1health, p2health, // player health
+				 input logic p1wins, // did player 1 win?
+				 input logic [2:0] currState, // current game state
 				 output logic [7:0] VGA_R,
 				 output logic [7:0] VGA_G,
 				 output logic [7:0] VGA_B,
@@ -47,6 +51,9 @@ module draw_map (input logic Clk,
 	logic onscreen;
 	logic [23:0] p2onp1, p1onp2;
 	logic [12:0] player1offset, player2offset;
+
+	// FOR HEALTH BAR
+	logic [23:0] hbonp1, hbonp2;
 
 	// FOR SPRITE OF BULLETS ON MONITORS
 	logic [23:0] bullet1, bullet2;
@@ -127,6 +134,22 @@ module draw_map (input logic Clk,
 			end
 			else
 				p2onp1 <= 24'hff00d2;
+			// Check if the health bar should be drawn
+			// Draw border
+			if (hbBorderX & hbBorderY)
+				hbonp1 <= 24'ha0a0a0;
+			// Draw green bar
+			else if (((p1health == 4'd8) & hbBarX8 & hbBarY) | ((p1health == 4'd7) & hbBarX7 & hbBarY) | ((p1health == 4'd6) & hbBarX6 & hbBarY) | ((p1health == 4'd5) & hbBarX5 & hbBarY))
+				hbonp1 <= 24'h00ff00;
+			// Draw orange bar
+			else if (((p1health == 4'd4) & hbBarX4 & hbBarY) | ((p1health == 4'd3) & hbBarX3 & hbBarY))
+				hbonp1 <= 24'hff8000;
+			// Draw red bar
+			else if (((p1health == 4'd2) & hbBarX2 & hbBarY) | ((p1health == 4'd1) & hbBarX1 & hbBarY))
+				hbonp1 <= 24'hff0000;
+			// Don't draw a bar (sentinel color)
+			else
+				hbonp1 <= 24'hff00d2;
 			// Check if bullets are onscreen
 			if (b1active & b1on1 & b1on1offset >= 5'd0 & b1on1offset < 5'd25 & (((xOne - 12'd320 + DrXplus > b1X)? xOne - 12'd320 + DrXplus - b1X:b1X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b1Y)? yOne - 12'd240 + DrYplus - b1Y:b1Y - (yOne - 12'd240 + DrYplus)) < 2))
 				bullet1 <= bullet1a_out;
@@ -208,6 +231,22 @@ module draw_map (input logic Clk,
 			end
 			else
 				p1onp2 <= 24'hff00d2;
+			// Check if the health bar should be drawn
+			// Draw border
+			if (hbBorderX & hbBorderY)
+				hbonp2 <= 24'ha0a0a0;
+			// Draw green bar
+			else if (((p2health == 4'd8) & hbBarX8 & hbBarY) | ((p2health == 4'd7) & hbBarX7 & hbBarY) | ((p2health == 4'd6) & hbBarX6 & hbBarY) | ((p2health == 4'd5) & hbBarX5 & hbBarY))
+				hbonp2 <= 24'h00ff00;
+			// Draw orange bar
+			else if (((p2health == 4'd4) & hbBarX4 & hbBarY) | ((p2health == 4'd3) & hbBarX3 & hbBarY))
+				hbonp2 <= 24'hff8000;
+			// Draw red bar
+			else if (((p2health == 4'd2) & hbBarX2 & hbBarY) | ((p2health == 4'd1) & hbBarX1 & hbBarY))
+				hbonp2 <= 24'hff0000;
+			// Don't draw a bar (sentinel color)
+			else
+				hbonp2 <= 24'hff00d2;
 			// Check if bullets are onscreen
 			if (b1active & b1on2 & b1on2offset >= 5'd0 & b1on2offset < 5'd25 & (((xTwo - 12'd320 + DrXplus > b1X)? xTwo - 12'd320 + DrXplus - b1X:b1X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b1Y)? yTwo - 12'd240 + DrYplus - b1Y:b1Y - (yTwo - 12'd240 + DrYplus)) < 2))
 				bullet2 <= bullet1b_out;
@@ -248,6 +287,12 @@ module draw_map (input logic Clk,
 
 	always_comb
 	begin
+		// Get start/end screen pixel
+		start_in = screenOffset;
+		waiting_in = screenOffset;
+		winner_in = screenOffset;
+		loser_in = screenOffset;
+		// Default values
 		grass_in = 10'd0;
 		water_in = 10'd0;
 		sand_in = 10'd0;
@@ -308,6 +353,7 @@ module draw_map (input logic Clk,
 			player2South_in = player2offset;
 			player2East_in = player2offset;
 			player2West_in = player2offset;
+			// Get bullet pixel
 			bullet1a_in = b1on1offset;
 			bullet2a_in = b2on1offset;
 			bullet3a_in = b3on1offset;
@@ -341,6 +387,7 @@ module draw_map (input logic Clk,
 			player1South_in = player1offset;
 			player1East_in = player1offset;
 			player1West_in = player1offset;
+			// Get bullet pixel
 			bullet1b_in = b1on2offset;
 			bullet2b_in = b2on2offset;
 			bullet3b_in = b3on2offset;
@@ -360,11 +407,13 @@ module draw_map (input logic Clk,
 		end
 	end
 
-	
 	// For drawing non-map pixels
 	always_comb
 	begin
-		if (player1 != 24'hff00d2)
+		// For player 1's screen
+		if (hbonp1 != 24'hff00d2)
+			sprite1 = hbonp1;
+		else if (player1 != 24'hff00d2)
 			sprite1 = player1;
 		else if (p2onp1 != 24'hff00d2)
 			sprite1 = p2onp1;
@@ -372,7 +421,11 @@ module draw_map (input logic Clk,
 			sprite1 = bullet1;
 		else
 			sprite1 = 24'hff00d2;
-		if (player2 != 24'hff00d2)
+
+		// For player 2's screen
+		if (hbonp2 != 24'hff00d2)
+			sprite2 = hbonp2;
+		else if (player2 != 24'hff00d2)
 			sprite2 = player2;
 		else if (p1onp2 != 24'hff00d2)
 			sprite2 = p1onp2;
@@ -382,42 +435,210 @@ module draw_map (input logic Clk,
 			sprite2 = 24'hff00d2;
 	end
 
-	// Assign VGA values for player 1
-	assign VGA_R = (sprite1 == 24'hff00d2)? {mapOne[23:19], 3'b000}:{sprite1[23:19], 3'b000};
-	assign VGA_G = (sprite1 == 24'hff00d2)? {mapOne[15:11], 3'b000}:{sprite1[15:11], 3'b000};
-	assign VGA_B = (sprite1 == 24'hff00d2)? {mapOne[7:3], 3'b000}:{sprite1[7:3], 3'b000};
+	// Assign VGA values for player 1 based on game state
+	always_comb
+	begin
+		// Default values (unused)
+		VGA_R = 8'd0;
+		VGA_G = 8'd0;
+		VGA_B = 8'd0;
+		case (currState)
+			3'd0:
+			begin
+				VGA_R = (centerRegion)? {start_out[23:19], 3'b000}:{8'd0};
+				VGA_G = (centerRegion)? {start_out[15:11], 3'b000}:{8'd0};
+				VGA_B = (centerRegion)? {start_out[7:3], 3'b000}:{8'd0};
+			end
+			3'd1:
+			begin
+				VGA_R = (centerRegion)? {waiting_out[23:19], 3'b000}:{8'd0};
+				VGA_G = (centerRegion)? {waiting_out[15:11], 3'b000}:{8'd0};
+				VGA_B = (centerRegion)? {waiting_out[7:3], 3'b000}:{8'd0};
+			end
+			3'd2:
+			begin
+				VGA_R = (centerRegion)? {start_out[23:19], 3'b000}:{8'd0};
+				VGA_G = (centerRegion)? {start_out[15:11], 3'b000}:{8'd0};
+				VGA_B = (centerRegion)? {start_out[7:3], 3'b000}:{8'd0};
+			end
+			3'd3:
+			begin
+				VGA_R = (sprite1 == 24'hff00d2)? {mapOne[23:19], 3'b000}:{sprite1[23:19], 3'b000};
+				VGA_G = (sprite1 == 24'hff00d2)? {mapOne[15:11], 3'b000}:{sprite1[15:11], 3'b000};
+				VGA_B = (sprite1 == 24'hff00d2)? {mapOne[7:3], 3'b000}:{sprite1[7:3], 3'b000};
+			end
+			3'd4:
+			begin
+				if (p1wins)
+				begin
+					VGA_R = (centerRegion)? {winner_out[23:19], 3'b000}:{8'd0};
+					VGA_G = (centerRegion)? {winner_out[15:11], 3'b000}:{8'd0};
+					VGA_B = (centerRegion)? {winner_out[7:3], 3'b000}:{8'd0};
+				end
+				else
+				begin
+					VGA_R = (centerRegion)? {loser_out[23:19], 3'b000}:{8'd0};
+					VGA_G = (centerRegion)? {loser_out[15:11], 3'b000}:{8'd0};
+					VGA_B = (centerRegion)? {loser_out[7:3], 3'b000}:{8'd0};
+				end
+			end
+		endcase
+	end
 
-	// Assign GPIO values for player 2
+	// Assign GPIO values for player 2 based on game state
 	// Set RGB signals to low during horizontal blanking interval
-	assign GPIO[9] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[23]:sprite2[23]):1'b0;
-	assign GPIO[7] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[22]:sprite2[22]):1'b0;
-	assign GPIO[5] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[21]:sprite2[21]):1'b0;
-	assign GPIO[3] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[20]:sprite2[20]):1'b0;
-	assign GPIO[1] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[19]:sprite2[19]):1'b0;
-	assign GPIO[14] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[15]:sprite2[15]):1'b0;
-	assign GPIO[12] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[14]:sprite2[14]):1'b0;
-	assign GPIO[10] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[13]:sprite2[13]):1'b0;
-	assign GPIO[6] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[12]:sprite2[12]):1'b0;
-	assign GPIO[0] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[11]:sprite2[11]):1'b0;
-	assign GPIO[19] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[7]:sprite2[7]):1'b0;
-	assign GPIO[17] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[6]:sprite2[6]):1'b0;
-	assign GPIO[15] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[5]:sprite2[5]):1'b0;
-	assign GPIO[13] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[4]:sprite2[4]):1'b0;
-	assign GPIO[11] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[3]:sprite2[3]):1'b0;
+	always_comb
+	begin
+		// Default values (unused)
+		GPIO[9] = 1'b0;
+		GPIO[7] = 1'b0;
+		GPIO[5] = 1'b0;
+		GPIO[3] = 1'b0;
+		GPIO[1] = 1'b0;
+		GPIO[14] = 1'b0;
+		GPIO[12] = 1'b0;
+		GPIO[10] = 1'b0;
+		GPIO[6] = 1'b0;
+		GPIO[0] = 1'b0;
+		GPIO[19] = 1'b0;
+		GPIO[17] = 1'b0;
+		GPIO[15] = 1'b0;
+		GPIO[13] = 1'b0;
+		GPIO[11] = 1'b0;
+		case (currState)
+			3'd0:
+			begin
+				GPIO[9] = blanking? ((centerRegion)? start_out[23]:1'b0):1'b0;
+				GPIO[7] = blanking? ((centerRegion)? start_out[22]:1'b0):1'b0;
+				GPIO[5] = blanking? ((centerRegion)? start_out[21]:1'b0):1'b0;
+				GPIO[3] = blanking? ((centerRegion)? start_out[20]:1'b0):1'b0;
+				GPIO[1] = blanking? ((centerRegion)? start_out[19]:1'b0):1'b0;
+				GPIO[14] = blanking? ((centerRegion)? start_out[15]:1'b0):1'b0;
+				GPIO[12] = blanking? ((centerRegion)? start_out[14]:1'b0):1'b0;
+				GPIO[10] = blanking? ((centerRegion)? start_out[13]:1'b0):1'b0;
+				GPIO[6] = blanking? ((centerRegion)? start_out[12]:1'b0):1'b0;
+				GPIO[0] = blanking? ((centerRegion)? start_out[11]:1'b0):1'b0;
+				GPIO[19] = blanking? ((centerRegion)? start_out[7]:1'b0):1'b0;
+				GPIO[17] = blanking? ((centerRegion)? start_out[6]:1'b0):1'b0;
+				GPIO[15] = blanking? ((centerRegion)? start_out[5]:1'b0):1'b0;
+				GPIO[13] = blanking? ((centerRegion)? start_out[4]:1'b0):1'b0;
+				GPIO[11] = blanking? ((centerRegion)? start_out[3]:1'b0):1'b0;
+			end
+			3'd1:
+			begin
+				GPIO[9] = blanking? ((centerRegion)? start_out[23]:1'b0):1'b0;
+				GPIO[7] = blanking? ((centerRegion)? start_out[22]:1'b0):1'b0;
+				GPIO[5] = blanking? ((centerRegion)? start_out[21]:1'b0):1'b0;
+				GPIO[3] = blanking? ((centerRegion)? start_out[20]:1'b0):1'b0;
+				GPIO[1] = blanking? ((centerRegion)? start_out[19]:1'b0):1'b0;
+				GPIO[14] = blanking? ((centerRegion)? start_out[15]:1'b0):1'b0;
+				GPIO[12] = blanking? ((centerRegion)? start_out[14]:1'b0):1'b0;
+				GPIO[10] = blanking? ((centerRegion)? start_out[13]:1'b0):1'b0;
+				GPIO[6] = blanking? ((centerRegion)? start_out[12]:1'b0):1'b0;
+				GPIO[0] = blanking? ((centerRegion)? start_out[11]:1'b0):1'b0;
+				GPIO[19] = blanking? ((centerRegion)? start_out[7]:1'b0):1'b0;
+				GPIO[17] = blanking? ((centerRegion)? start_out[6]:1'b0):1'b0;
+				GPIO[15] = blanking? ((centerRegion)? start_out[5]:1'b0):1'b0;
+				GPIO[13] = blanking? ((centerRegion)? start_out[4]:1'b0):1'b0;
+				GPIO[11] = blanking? ((centerRegion)? start_out[3]:1'b0):1'b0;
+			end
+			3'd2:
+			begin
+				GPIO[9] = blanking? ((centerRegion)? waiting_out[23]:1'b0):1'b0;
+				GPIO[7] = blanking? ((centerRegion)? waiting_out[22]:1'b0):1'b0;
+				GPIO[5] = blanking? ((centerRegion)? waiting_out[21]:1'b0):1'b0;
+				GPIO[3] = blanking? ((centerRegion)? waiting_out[20]:1'b0):1'b0;
+				GPIO[1] = blanking? ((centerRegion)? waiting_out[19]:1'b0):1'b0;
+				GPIO[14] = blanking? ((centerRegion)? waiting_out[15]:1'b0):1'b0;
+				GPIO[12] = blanking? ((centerRegion)? waiting_out[14]:1'b0):1'b0;
+				GPIO[10] = blanking? ((centerRegion)? waiting_out[13]:1'b0):1'b0;
+				GPIO[6] = blanking? ((centerRegion)? waiting_out[12]:1'b0):1'b0;
+				GPIO[0] = blanking? ((centerRegion)? waiting_out[11]:1'b0):1'b0;
+				GPIO[19] = blanking? ((centerRegion)? waiting_out[7]:1'b0):1'b0;
+				GPIO[17] = blanking? ((centerRegion)? waiting_out[6]:1'b0):1'b0;
+				GPIO[15] = blanking? ((centerRegion)? waiting_out[5]:1'b0):1'b0;
+				GPIO[13] = blanking? ((centerRegion)? waiting_out[4]:1'b0):1'b0;
+				GPIO[11] = blanking? ((centerRegion)? waiting_out[3]:1'b0):1'b0;
+			end
+			3'd3:
+			begin
+				GPIO[9] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[23]:sprite2[23]):1'b0;
+				GPIO[7] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[22]:sprite2[22]):1'b0;
+				GPIO[5] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[21]:sprite2[21]):1'b0;
+				GPIO[3] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[20]:sprite2[20]):1'b0;
+				GPIO[1] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[19]:sprite2[19]):1'b0;
+				GPIO[14] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[15]:sprite2[15]):1'b0;
+				GPIO[12] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[14]:sprite2[14]):1'b0;
+				GPIO[10] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[13]:sprite2[13]):1'b0;
+				GPIO[6] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[12]:sprite2[12]):1'b0;
+				GPIO[0] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[11]:sprite2[11]):1'b0;
+				GPIO[19] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[7]:sprite2[7]):1'b0;
+				GPIO[17] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[6]:sprite2[6]):1'b0;
+				GPIO[15] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[5]:sprite2[5]):1'b0;
+				GPIO[13] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[4]:sprite2[4]):1'b0;
+				GPIO[11] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[3]:sprite2[3]):1'b0;
+			end
+			3'd4:
+			begin
+				if (p1wins)
+				begin
+					GPIO[9] = blanking? ((centerRegion)? loser_out[23]:1'b0):1'b0;
+					GPIO[7] = blanking? ((centerRegion)? loser_out[22]:1'b0):1'b0;
+					GPIO[5] = blanking? ((centerRegion)? loser_out[21]:1'b0):1'b0;
+					GPIO[3] = blanking? ((centerRegion)? loser_out[20]:1'b0):1'b0;
+					GPIO[1] = blanking? ((centerRegion)? loser_out[19]:1'b0):1'b0;
+					GPIO[14] = blanking? ((centerRegion)? loser_out[15]:1'b0):1'b0;
+					GPIO[12] = blanking? ((centerRegion)? loser_out[14]:1'b0):1'b0;
+					GPIO[10] = blanking? ((centerRegion)? loser_out[13]:1'b0):1'b0;
+					GPIO[6] = blanking? ((centerRegion)? loser_out[12]:1'b0):1'b0;
+					GPIO[0] = blanking? ((centerRegion)? loser_out[11]:1'b0):1'b0;
+					GPIO[19] = blanking? ((centerRegion)? loser_out[7]:1'b0):1'b0;
+					GPIO[17] = blanking? ((centerRegion)? loser_out[6]:1'b0):1'b0;
+					GPIO[15] = blanking? ((centerRegion)? loser_out[5]:1'b0):1'b0;
+					GPIO[13] = blanking? ((centerRegion)? loser_out[4]:1'b0):1'b0;
+					GPIO[11] = blanking? ((centerRegion)? loser_out[3]:1'b0):1'b0;
+				end
+				else
+				begin
+					GPIO[9] = blanking? ((centerRegion)? winner_out[23]:1'b0):1'b0;
+					GPIO[7] = blanking? ((centerRegion)? winner_out[22]:1'b0):1'b0;
+					GPIO[5] = blanking? ((centerRegion)? winner_out[21]:1'b0):1'b0;
+					GPIO[3] = blanking? ((centerRegion)? winner_out[20]:1'b0):1'b0;
+					GPIO[1] = blanking? ((centerRegion)? winner_out[19]:1'b0):1'b0;
+					GPIO[14] = blanking? ((centerRegion)? winner_out[15]:1'b0):1'b0;
+					GPIO[12] = blanking? ((centerRegion)? winner_out[14]:1'b0):1'b0;
+					GPIO[10] = blanking? ((centerRegion)? winner_out[13]:1'b0):1'b0;
+					GPIO[6] = blanking? ((centerRegion)? winner_out[12]:1'b0):1'b0;
+					GPIO[0] = blanking? ((centerRegion)? winner_out[11]:1'b0):1'b0;
+					GPIO[19] = blanking? ((centerRegion)? winner_out[7]:1'b0):1'b0;
+					GPIO[17] = blanking? ((centerRegion)? winner_out[6]:1'b0):1'b0;
+					GPIO[15] = blanking? ((centerRegion)? winner_out[5]:1'b0):1'b0;
+					GPIO[13] = blanking? ((centerRegion)? winner_out[4]:1'b0):1'b0;
+					GPIO[11] = blanking? ((centerRegion)? winner_out[3]:1'b0):1'b0;
+				end
+			end
+		endcase
+	end
 	assign GPIO[2] = VGA_VS;
 	assign GPIO[4] = VGA_HS;
 
 	// On-chip memory
+	logic [16:0] start_in, waiting_in, winner_in, loser_in;
 	logic [9:0]	 grass_in, sand_in, water_in;
 	logic [12:0] player1North_in, player1South_in, player1West_in, player1East_in; 
 	logic [12:0] player2North_in, player2South_in, player2West_in, player2East_in;
 	logic [12:0] map_in; 
 	logic [4:0] bullet1a_in, bullet1b_in, bullet2a_in, bullet2b_in, bullet3a_in, bullet3b_in, bullet4a_in, bullet4b_in, bullet5a_in, bullet5b_in, bullet6a_in, bullet6b_in, bullet7a_in, bullet7b_in, bullet8a_in, bullet8b_in, bullet9a_in, bullet9b_in, bullet10a_in, bullet10b_in, bullet11a_in, bullet11b_in, bullet12a_in, bullet12b_in, bullet13a_in, bullet13b_in, bullet14a_in, bullet14b_in, bullet15a_in, bullet15b_in, bullet16a_in, bullet16b_in;
+	logic [23:0] start_out, waiting_out, winner_out, loser_out;
 	logic [23:0] grass_out, sand_out, water_out;
 	logic [23:0] player1North_out, player1South_out, player1West_out, player1East_out;
 	logic [23:0] player2North_out, player2South_out, player2West_out, player2East_out;
 	logic [1:0] map_out;
 	logic [23:0] bullet1a_out, bullet1b_out, bullet2a_out, bullet2b_out, bullet3a_out, bullet3b_out, bullet4a_out, bullet4b_out, bullet5a_out, bullet5b_out, bullet6a_out, bullet6b_out, bullet7a_out, bullet7b_out, bullet8a_out, bullet8b_out, bullet9a_out, bullet9b_out, bullet10a_out, bullet10b_out, bullet11a_out, bullet11b_out, bullet12a_out, bullet12b_out, bullet13a_out, bullet13b_out, bullet14a_out, bullet14b_out, bullet15a_out, bullet15b_out, bullet16a_out, bullet16b_out;
+	start startScreen(.clk(Clk), .d(0), .write_address(0), .read_address(start_in), .we(0), .q(start_out));
+	start waitingScreen(.clk(Clk), .d(0), .write_address(0), .read_address(waiting_in), .we(0), .q(waiting_out));
+	start winnerScreen(.clk(Clk), .d(0), .write_address(0), .read_address(winner_in), .we(0), .q(winner_out));
+	start loserScreen(.clk(Clk), .d(0), .write_address(0), .read_address(loser_in), .we(0), .q(loser_out));
 	grass grassTile(.clk(Clk), .d(0), .write_address(0), .read_address(grass_in), .we(0), .q(grass_out));
 	sand  sandTile (.clk(Clk), .d(0), .write_address(0), .read_address(sand_in), .we(0), .q(sand_out));
 	water waterTile(.clk(Clk), .d(0), .write_address(0), .read_address(water_in), .we(0), .q(water_out));
@@ -462,6 +683,23 @@ module draw_map (input logic Clk,
 	bulletmem bullet15b(.clk(Clk), .d(0), .write_address(0), .read_address(bullet15b_in), .we(0), .q(bullet15b_out));
 	bulletmem bullet16a(.clk(Clk), .d(0), .write_address(0), .read_address(bullet16a_in), .we(0), .q(bullet16a_out));
 	bulletmem bullet16b(.clk(Clk), .d(0), .write_address(0), .read_address(bullet16b_in), .we(0), .q(bullet16b_out));
+
+
+	//// HEALTH BAR LOGIC
+	logic hbBorderX, hbBorderY, hbBarX1, hbBarX2, hbBarX3, hbBarX4, hbBarX5, hbBarX6, hbBarX7, hbBarX8, hbBarY;
+	assign hbBorderX = ((DrXplus >= 10'd276) & (DrXplus <= 10'd278)) | ((DrXplus >= 10'd363) & (DrXplus <= 10'd365));
+	assign hbBorderY = ((DrYplus >= 10'd442) & (DrYplus <= 10'd444)) | ((DrYplus >= 10'd459) & (DrYplus <= 10'd461));
+	assign hbBarX1 = ((DrXplus >= 10'd281) & (DrXplus <= 10'd290));
+	assign hbBarX2 = ((DrXplus >= 10'd281) & (DrXplus <= 10'd300));
+	assign hbBarX3 = ((DrXplus >= 10'd281) & (DrXplus <= 10'd310));
+	assign hbBarX4 = ((DrXplus >= 10'd281) & (DrXplus <= 10'd320));
+	assign hbBarX5 = ((DrXplus >= 10'd281) & (DrXplus <= 10'd330));
+	assign hbBarX6 = ((DrXplus >= 10'd281) & (DrXplus <= 10'd340));
+	assign hbBarX7 = ((DrXplus >= 10'd281) & (DrXplus <= 10'd350));
+	assign hbBarX8 = ((DrXplus >= 10'd281) & (DrXplus <= 10'd360));
+	assign hbBarY = ((DrYplus >= 10'd447) & (DrYplus <= 10'd456));
+	////
+
 
 	//// BULLET LOGIC
 	logic b1on1, b1on2;
@@ -560,6 +798,7 @@ module draw_map (input logic Clk,
 	assign b16on2 = (((b16X > xTwo)? b16X - xTwo:xTwo - b16X) < 12'd330) & (((b16Y > yTwo)? b16Y - yTwo:yTwo - b16Y) < 12'd250);
 	assign b16on1offset = (DrYplus - ((b16Y - 12'd2) - (yOne - 12'd240)))*12'd5 + (DrXplus - ((b16X - 12'd2) - (xOne - 12'd320)));
 	assign b16on2offset = (DrYplus - ((b16Y - 12'd2) - (yTwo - 12'd240)))*12'd5 + (DrXplus - ((b16X - 12'd2) - (xTwo - 12'd320)));
+	////
 
 
 	//// OTHER PLAYER SPRITE LOGIC
@@ -568,6 +807,7 @@ module draw_map (input logic Clk,
 	// assign onscreen = (xOne + 320 > xTwo) & (xOne - 320 < xTwo) & (yOne + 240 > yTwo) & (yOne - 240 < yTwo);
 	assign player2offset = (DrYplus - ((yTwo - 12'd37) - (yOne - 12'd240)))*12'd75 + (DrXplus - ((xTwo - 12'd37) - (xOne - 12'd320)));
 	assign player1offset = (DrYplus - ((yOne - 12'd37) - (yTwo - 12'd240)))*12'd75 + (DrXplus - ((xOne - 12'd37) - (xTwo - 12'd320)));
+	////
 
 
 	//// CENTERED PLAYER SPRITE LOGIC
@@ -592,6 +832,13 @@ module draw_map (input logic Clk,
 	assign xTileTwoOffset = (xTwo - 12'd320 + DrXplus) & 12'b000000011111; // xMap - 32*xTileTwo
 	assign yTileTwoOffset = (yTwo - 12'd240 + DrYplus) & 12'b000000011111;
 	////
+
+
+	//// START/END SCREEN LOGIC
+	logic centerRegion;
+	logic [16:0] screenOffset;
+	assign centerRegion = (DrXplus >= 10'd161) & (DrXplus <= 10'd480) & (DrYplus >= 10'd121) & (DrYplus <= 10'd360);
+	assign screenOffset = (DrYplus - 10'd121)*10'd320 + (DrXplus - 10'd161);
 
 
 endmodule

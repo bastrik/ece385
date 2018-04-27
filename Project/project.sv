@@ -65,8 +65,12 @@ module project( input               CLOCK_50,
     logic [11:0] xOne, yOne, xTwo, yTwo; // Position of players
     logic [9:0] DrX, DrY; // VGA controller scanning position
     logic [1:0] p1dir, p2dir; // Direction each player is facing
+    // Bullet positions and whether each bullet is active
     logic [11:0] b1X, b1Y, b2X, b2Y, b3X, b3Y, b4X, b4Y, b5X, b5Y, b6X, b6Y, b7X, b7Y, b8X, b8Y, b9X, b9Y, b10X, b10Y, b11X, b11Y, b12X, b12Y, b13X, b13Y, b14X, b14Y, b15X, b15Y, b16X, b16Y;
     logic b1active, b2active, b3active, b4active, b5active, b6active, b7active, b8active, b9active, b10active, b11active, b12active, b13active, b14active, b15active, b16active;
+    logic [3:0] p1health, p2health; // Health of each player
+    logic p1wins; // Did player 1 win?
+    logic [2:0] currState; // What game state are we in?
 
     assign Clk = CLOCK_50;
     always_ff @ (posedge Clk) begin
@@ -182,14 +186,9 @@ module project( input               CLOCK_50,
     always_comb
     begin
 	    // For testing
-	    LEDG[0] = b9active;
-        LEDG[1] = b10active;
-        LEDG[2] = b11active;
-        LEDG[3] = b12active;
-        LEDG[4] = b13active;
-        LEDG[5] = b14active;
-        LEDG[6] = b15active;
-        LEDG[7] = b16active;
+	    LEDG[0] = currState[0];
+        LEDG[1] = currState[1];
+        LEDG[2] = currState[2];
     end
 
 endmodule

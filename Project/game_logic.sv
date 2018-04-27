@@ -10,8 +10,62 @@ module game_logic (input logic Clk, VGA_VS,
 				   output logic [11:0] yTwo,
 				   output logic [1:0] p1dir, // direction player is moving
 				   output logic [1:0] p2dir, // 0-> north, 1-> south, 2-> east, 3-> west
+				   // bullet positions and status
 				   output logic [11:0] b1X, b1Y, b2X, b2Y, b3X, b3Y, b4X, b4Y, b5X, b5Y, b6X, b6Y, b7X, b7Y, b8X, b8Y, b9X, b9Y, b10X, b10Y, b11X, b11Y, b12X, b12Y, b13X, b13Y, b14X, b14Y, b15X, b15Y, b16X, b16Y,
-				   output logic b1active, b2active, b3active, b4active, b5active, b6active, b7active, b8active, b9active, b10active, b11active, b12active, b13active, b14active, b15active, b16active);	
+				   output logic b1active, b2active, b3active, b4active, b5active, b6active, b7active, b8active, b9active, b10active, b11active, b12active, b13active, b14active, b15active, b16active,
+				   output logic [3:0] p1health, p2health, // health of each player
+				   output logic p1wins, // did player 1 win?
+				   output logic [2:0] currState // tells draw_map which screen to draw
+				   );	
+
+// Game state machine
+enum logic [2:0] {START, P1READY, P2READY, PLAY, RESTART} State, Next_state;
+
+always_ff @ (posedge VGA_VS)
+begin
+	State <= Next_state;
+end
+
+always_comb
+begin
+	// Default next state is current state
+	Next_state = State;
+
+	unique case (State)
+		START:
+			if (aOne == 8'h28 | bOne == 8'h28 | cOne == 8'h28 | dOne == 8'h28)
+				Next_state = P1READY;
+			else if (aTwo == 8'h5a | bTwo == 8'h5a | cTwo == 8'h5a | dTwo == 8'h5a)
+				Next_state = P2READY;
+		P1READY:
+			if (aTwo == 8'h5a | bTwo == 8'h5a | cTwo == 8'h5a | dTwo == 8'h5a)
+				Next_state = PLAY;
+		P2READY:
+			if (aOne == 8'h28 | bOne == 8'h28 | cOne == 8'h28 | dOne == 8'h28)
+				Next_state = PLAY;
+		PLAY:
+			if (gameOver == 1'b1)
+				Next_state = RESTART;
+		RESTART:
+			if (aOne == 8'h28 | bOne == 8'h28 | cOne == 8'h28 | dOne == 8'h28)
+				Next_state = P1READY;
+			else if (aTwo == 8'h5a | bTwo == 8'h5a | cTwo == 8'h5a | dTwo == 8'h5a)
+				Next_state = P2READY;
+	endcase
+
+	case (State)
+		START:
+			currState = 3'd0;
+		P1READY:
+			currState = 3'd1;
+		P2READY:
+			currState = 3'd2;
+		PLAY:
+			currState = 3'd3;
+		RESTART:
+			currState = 3'd4;
+	endcase
+end
 
 // Player motion
 logic [11:0] northOne, southOne, eastOne, westOne;
@@ -62,14 +116,32 @@ logic [7:0] aOne, bOne, cOne, dOne;
 logic [7:0] aTwo, bTwo, cTwo, dTwo;
 
 // USB keyboard for player 1, PS2 keyboard for player 2
-assign aOne = keycode[7:0];
-assign bOne = keycode[15:8];
-assign cOne = keycode[23:16];
-assign dOne = keycode[31:24];
-assign aTwo = PS2keycode[7:0];
-assign bTwo = PS2keycode[15:8];
-assign cTwo = PS2keycode[23:16];
-assign dTwo = PS2keycode[31:24];
+// Disable all keys except ENTER unless we are playing the game
+always_comb
+begin
+	if (currState == 3'd3)
+	begin
+		aOne = keycode[7:0];
+		bOne = keycode[15:8];
+		cOne = keycode[23:16];
+		dOne = keycode[31:24];
+		aTwo = PS2keycode[7:0];
+		bTwo = PS2keycode[15:8];
+		cTwo = PS2keycode[23:16];
+		dTwo = PS2keycode[31:24];
+	end
+	else
+	begin
+		aOne = (keycode[7:0] == 8'h28)? 8'h28:8'h00;
+		bOne = (keycode[15:8] == 8'h28)? 8'h28:8'h00;
+		cOne = (keycode[23:16] == 8'h28)? 8'h28:8'h00;
+		dOne = (keycode[31:24] == 8'h28)? 8'h28:8'h00;
+		aTwo = (PS2keycode[7:0] == 8'h5a)? 8'h5a:8'h00;
+		bTwo = (PS2keycode[15:8] == 8'h5a)? 8'h5a:8'h00;
+		cTwo = (PS2keycode[23:16] == 8'h5a)? 8'h5a:8'h00;
+		dTwo = (PS2keycode[31:24] == 8'h5a)? 8'h5a:8'h00;
+	end
+end
 
 
 //// SHOOTING
@@ -803,6 +875,36 @@ begin
 	end
 end
 
+// Player health
+logic gameOver;
+logic [3:0] _p1health = 4'd8;
+logic [3:0] _p2health = 4'd8;
+assign p1health = _p1health;
+assign p2health = _p2health;
+always_ff @ (posedge VGA_VS)
+begin
+	if ((b1active & b1h1) | (b2active & b2h1) | (b3active & b3h1) | (b4active & b4h1) | (b5active & b5h1) | (b6active & b6h1) | (b7active & b7h1) | (b8active & b8h1) | (b9active & b9h1) | (b10active & b10h1) | (b11active & b11h1) | (b12active & b12h1) | (b13active & b13h1) | (b14active & b14h1) | (b15active & b15h1) | (b16active & b16h1))
+		_p1health <= _p1health - 4'd1;
+	if ((b1active & b1h2) | (b2active & b2h2) | (b3active & b3h2) | (b4active & b4h2) | (b5active & b5h2) | (b6active & b6h2) | (b7active & b7h2) | (b8active & b8h2) | (b9active & b9h2) | (b10active & b10h2) | (b11active & b11h2) | (b12active & b12h2) | (b13active & b13h2) | (b14active & b14h2) | (b15active & b15h2) | (b16active & b16h2))
+		_p2health <= _p2health - 4'd1;
+	if (_p1health == 4'd0)
+	begin
+		gameOver <= 1'b1;
+		p1wins <= 1'b0;
+		_p1health <= 4'd8;
+		_p2health <= 4'd8;
+	end
+	else if (_p2health == 4'd0)
+	begin
+		gameOver <= 1'b1;
+		p1wins <= 1'b1;
+		_p1health <= 4'd8;
+		_p2health <= 4'd8;
+	end
+	else
+		gameOver <= 1'b0;
+end
+
 // Bullet modules
 logic b1set = 1'b0;
 logic b2set = 1'b0;
@@ -868,13 +970,13 @@ logic [11:0] _yTwo = 12'd1400;
 always_ff @ (posedge VGA_VS)
 begin
 	// Check if players are about to walk on top of each other
-	if (~((((xOne + eastOne - westOne > xTwo + eastTwo - westTwo)? (xOne + eastOne - westOne) - (xTwo + eastTwo - westTwo):(xTwo + eastTwo - westTwo) - (xOne + eastOne - westOne)) < 12'd37) & (((yOne + southOne - northOne > yTwo + southTwo - northTwo)? (yOne + southOne - northOne) - (yTwo + southTwo - northTwo):(yTwo + southTwo - northTwo) - (yOne + southOne - northOne)) < 12'd37)))
-	begin
-		_xOne <= ((_xOne + eastOne - westOne >= 12'd64) & (_xOne + eastOne - westOne <= 12'd3136))? _xOne + eastOne - westOne:_xOne;
-		_yOne <= ((_yOne + southOne - northOne >= 12'd64) & (_yOne + southOne - northOne <= 12'd2336))? _yOne + southOne - northOne:_yOne;
-		_xTwo <= ((_xTwo + eastTwo - westTwo >= 12'd64) & (_xTwo + eastTwo - westTwo <= 12'd3136))? _xTwo + eastTwo - westTwo:_xTwo;
-		_yTwo <= ((_yTwo + southTwo - northTwo >= 12'd64) & (_yTwo + southTwo - northTwo <= 12'd2336))? _yTwo + southTwo - northTwo:_yTwo;
-	end
+	//if (~((((xOne + eastOne - westOne > xTwo + eastTwo - westTwo)? (xOne + eastOne - westOne) - (xTwo + eastTwo - westTwo):(xTwo + eastTwo - westTwo) - (xOne + eastOne - westOne)) < 12'd37) & (((yOne + southOne - northOne > yTwo + southTwo - northTwo)? (yOne + southOne - northOne) - (yTwo + southTwo - northTwo):(yTwo + southTwo - northTwo) - (yOne + southOne - northOne)) < 12'd37)))
+	//begin
+		_xOne <= gameOver? 12'd700:((_xOne + eastOne - westOne >= 12'd64) & (_xOne + eastOne - westOne <= 12'd3136))? _xOne + eastOne - westOne:_xOne;
+		_yOne <= gameOver? 12'd700:((_yOne + southOne - northOne >= 12'd64) & (_yOne + southOne - northOne <= 12'd2336))? _yOne + southOne - northOne:_yOne;
+		_xTwo <= gameOver? 12'd1500:((_xTwo + eastTwo - westTwo >= 12'd64) & (_xTwo + eastTwo - westTwo <= 12'd3136))? _xTwo + eastTwo - westTwo:_xTwo;
+		_yTwo <= gameOver? 12'd1400:((_yTwo + southTwo - northTwo >= 12'd64) & (_yTwo + southTwo - northTwo <= 12'd2336))? _yTwo + southTwo - northTwo:_yTwo;
+	//end
 end
 
 always_ff @ (posedge VGA_VS)
