@@ -54,9 +54,12 @@ module project( input               CLOCK_50,
                                  DRAM_WE_N,    //SDRAM Write Enable
                                  DRAM_CS_N,    //SDRAM Chip Select
                                  DRAM_CLK,     //SDRAM Clock
-	     output logic [8:0]  LEDG	       //Directions
+	           output logic [8:0]  LEDG,	   //Directions
+               output logic AUD_DACDAT, AUD_XCK, I2C_SCLK,
+               inout wire AUD_BCLK, AUD_ADCLRCK, AUD_DACLRCK, I2C_SDAT // Audio signals
                     );
 
+    // Miscellaneous signals
     logic Reset_h, Clk;
     logic [31:0] keycode; // USB keycodes
     logic [7:0] PS2in; // PS2 keycode
@@ -72,6 +75,8 @@ module project( input               CLOCK_50,
     logic p1wins; // Did player 1 win?
     logic [2:0] currState; // What game state are we in?
     logic isAlt1, isAlt2; // which player sprite to draw (for animation)
+    logic set_bullet1, set_bullet2; // has a bullet been fired?
+    logic b1CD, b2CD;
 
     assign Clk = CLOCK_50;
     always_ff @ (posedge Clk) begin
@@ -134,6 +139,57 @@ module project( input               CLOCK_50,
                              .otg_hpi_reset_export(hpi_reset)
     );
 
+    // Audio interface
+    logic [31:0] LDATA, RDATA;
+    logic write_audio_out, audio_out_allowed;
+    Audio_Controller literal_cancer(.CLOCK_50(Clk), .reset(0), .clear_audio_in_memory(0),
+        .read_audio_in(0), .clear_audio_out_memory(0), .left_channel_audio_out(LDATA),
+        .right_channel_audio_out(RDATA), .write_audio_out(write_audio_out), .AUD_ADCDAT(AUD_ADCDAT),
+        .AUD_BCLK(AUD_BCLK), .AUD_ADCLRCK(AUD_ADCLRCK), .AUD_DACLRCK(AUD_DACLRCK),
+        .left_channel_audio_in(0), .right_channel_audio_in(0), .audio_in_available(0),
+        .audio_out_allowed(audio_out_allowed), .AUD_XCK(AUD_XCK), .AUD_DACDAT(AUD_DACDAT));
+
+    avconf death(.CLOCK_50(Clk), .reset(0), .I2C_SCLK(I2C_SCLK), .I2C_SDAT(I2C_SDAT));
+
+    // Toggle flag to set sound frequency
+    logic hiLo;
+    logic [18:0] sound_count;
+    logic [18:0] sound = 19'd56818;
+    always_ff @ (posedge Clk)
+    begin
+        if (sound_count == sound)
+        begin
+            sound_count <= 19'd0;
+            hiLo <= ~hiLo;
+        end
+        else
+            sound_count <= sound_count + 19'd1;
+    end
+
+    // Counter for the duration of the sound
+    logic [24:0] soundDuration = 25'd0;
+    logic playSound = 1'b0;
+    always_ff @ (posedge Clk)
+    begin
+        if ((set_bullet1 & ~b1CD) | (set_bullet2 & ~b2CD))
+        begin
+            soundDuration <= 25'd0;
+            playSound <= 1'b1;
+        end
+        else if (soundDuration >= 25'd3000000)
+        begin
+            soundDuration <= 25'd0;
+            playSound <= 1'b0;
+        end
+        else
+            soundDuration <= soundDuration + 25'd1;
+    end 
+
+    // Send sound to audio chip
+    assign LDATA = hiLo? 32'd20000000:32'd0; //(left_channel_audio_in + 32'd10000000) : (left_channel_audio_in - 32'd10000000);
+    assign RDATA = hiLo? 32'd20000000:32'd0; //(right_channel_audio_in + 32'd10000000) : (right_channel_audio_in - 32'd10000000);
+    assign write_audio_out = playSound & audio_out_allowed;
+
     // PS/2 keyboard driver
     keyboard PS2key(.Clk(Clk), .psClk(PS2_CLK), .psData(PS2_DAT), .reset(Reset_h), .keyCode(PS2in), .press(PS2press));
 	
@@ -155,40 +211,25 @@ module project( input               CLOCK_50,
 					.DrawY(DrY)
 				);
 
-    // logic cancerball;
-    
-  //   ball ball_instance(.Clk(Clk),
-		// 	.Reset(Reset_h),
-		// 	.frame_clk(VGA_VS),
-		// 	.keycode(keycode[31:0]),
-		// 	.DrawX(DrX),
-		// 	.DrawY(DrY),
-		// 	.is_ball(cancerball)
-		// );
-    
-  //   color_mapper color_instance(.is_ball(cancerball),
-  //   				.DrawX(DrX),
-		// 		.DrawY(DrY),
-		// 		.VGA_R(VGA_R),
-		// 		.VGA_G(VGA_G),
-		// 		.VGA_B(VGA_B)
-		// 	);
-    // Display keycode on hex display
+    // Hex displays
     HexDriver hex_inst_0 (PS2keycode[3:0], HEX0);
     HexDriver hex_inst_1 (PS2keycode[7:4], HEX1);
     HexDriver hex_inst_2 (PS2keycode[11:8], HEX2);
     HexDriver hex_inst_3 (PS2keycode[15:12], HEX3);
-    // HexDriver hex_inst_4 (xTileTwo[3:0], HEX4);
-    // HexDriver hex_inst_5 ({1'b0,xTileTwo[6:4]}, HEX5);
-    // HexDriver hex_inst_6 (yTileTwo[3:0], HEX6);
-    // HexDriver hex_inst_7 ({1'b0,yTileTwo[6:4]}, HEX7);
+    HexDriver hex_inst_4 (PS2keycode[19:16], HEX4);
+    HexDriver hex_inst_5 (PS2keycode[23:20], HEX5);
+    HexDriver hex_inst_6 (PS2in[3:0], HEX6);
+    HexDriver hex_inst_7 (PS2in[7:4], HEX7);
 
+    // Green LEDs
     always_comb
     begin
-	    // For testing
 	    LEDG[0] = currState[0];
         LEDG[1] = currState[1];
         LEDG[2] = currState[2];
+        LEDG[3] = write_audio_out;
+        LEDG[4] = audio_out_allowed;
+        LEDG[5] = PS2press;
     end
 
 endmodule

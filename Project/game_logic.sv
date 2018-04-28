@@ -16,7 +16,9 @@ module game_logic (input logic Clk, VGA_VS,
 				   output logic [3:0] p1health, p2health, // health of each player
 				   output logic p1wins, // did player 1 win?
 				   output logic [2:0] currState, // tells draw_map which screen to draw
-				   output logic isAlt1, isAlt2 // which player sprite to draw (for animation)
+				   output logic isAlt1, isAlt2, // which player sprite to draw (for animation)
+				   output logic set_bullet1, set_bullet2, // was a bullet fired?
+				   output logic b1CD, b2CD
 				   );	
 
 // Game state machine
@@ -185,8 +187,8 @@ end
 
 
 //// SHOOTING
-logic b1CD = 1'b0;
-logic b2CD = 1'b0;
+//logic b1CD = 1'b0;
+//logic b2CD = 1'b0;
 logic [3:0] BULLETSPEED = 4'd6;
 always_ff @ (posedge Clk)
 begin
@@ -973,7 +975,7 @@ logic [3:0] b1south, b2south, b3south, b4south, b5south, b6south, b7south, b8sou
 //logic b1active, b2active, b3active, b4active, b5active, b6active, b7active, b8active, b9active, b10active, b11active, b12active, b13active, b14active, b15active, b16active;
 logic b1h1, b2h1, b3h1, b4h1, b5h1, b6h1, b7h1, b8h1, b9h1, b10h1, b11h1, b12h1, b13h1, b14h1, b15h1, b16h1;
 logic b1h2, b2h2, b3h2, b4h2, b5h2, b6h2, b7h2, b8h2, b9h2, b10h2, b11h2, b12h2, b13h2, b14h2, b15h2, b16h2;
-logic set_bullet1, set_bullet2;
+//logic set_bullet1, set_bullet2;
 
 bullet b1 (.Clk(Clk), .frame_clk(VGA_VS), .set(b1set), .startX(b1sX), .startY(b1sY), .nspeedX(b1west), .pspeedX(b1east), .nspeedY(b1north), .pspeedY(b1south), .xOne(xOne), .yOne(yOne), .xTwo(xTwo), .yTwo(yTwo), .posX(b1X), .posY(b1Y), .active(b1active), .h1(b1h1), .h2(b1h2));
 bullet b2 (.Clk(Clk), .frame_clk(VGA_VS), .set(b2set), .startX(b2sX), .startY(b2sY), .nspeedX(b2west), .pspeedX(b2east), .nspeedY(b2north), .pspeedY(b2south), .xOne(xOne), .yOne(yOne), .xTwo(xTwo), .yTwo(yTwo), .posX(b2X), .posY(b2Y), .active(b2active), .h1(b2h1), .h2(b2h2));
