@@ -1,16 +1,16 @@
 // On-chip memory 
 
 module start(input logic clk,
-			 input logic [23:0] d,
-			 input logic [16:0] write_address, read_address,
+			 input logic d,
+			 input logic [15:0] write_address, read_address,
 			 input we,
-			 output logic [23:0] q);
+			 output logic q);
 
-	logic [23:0] mem [76800];
+	logic mem [48400];
 
 	initial
 	begin
-		$readmemh("start.txt", mem);
+		$readmemb("start.txt", mem);
 	end
 
 	always_ff @ (posedge clk)

@@ -18,11 +18,11 @@ module draw_map (input logic Clk,
 				 input logic [3:0] p1health, p2health, // player health
 				 input logic p1wins, // did player 1 win?
 				 input logic [2:0] currState, // current game state
+				 input logic isAlt1, isAlt2, // which player sprite to draw (for animation)
 				 output logic [7:0] VGA_R,
 				 output logic [7:0] VGA_G,
 				 output logic [7:0] VGA_B,
-				 output logic [35:0] GPIO,
-				 output logic [6:0] xTileTwo, yTileTwo);
+				 output logic [35:0] GPIO);
 
 	// Offset DrXplus and DrYplus to align logic and graphics
 	logic [9:0] DrXplus, DrYplus;
@@ -34,32 +34,32 @@ module draw_map (input logic Clk,
 	logic [6:0] yTileOne; 
 	logic [9:0] xTileOneOffset; // pixel being drawn on current tile
 	logic [9:0] yTileOneOffset;
-	logic [23:0] mapOne;
+	logic [15:0] mapOne;
 
 	// MAP FOR PLAYER TWO
-	// logic [6:0] xTileTwo; // tile in the 100 x 75 mapinfo
-	// logic [6:0] yTileTwo; 
+	logic [6:0] xTileTwo; // tile in the 100 x 75 mapinfo
+	logic [6:0] yTileTwo; 
 	logic [9:0] xTileTwoOffset; // pixel being drawn on current tile
 	logic [9:0] yTileTwoOffset;
-	logic [23:0] mapTwo;
+	logic [15:0] mapTwo;
 
 	// FOR PLAYER SPRITE
-	logic [23:0] player1, player2;
+	logic [15:0] player1, player2;
 	logic [12:0] playerOffset;
 
 	// FOR SPRITE OF OTHER PLAYER ON YOUR SCREEN
 	logic onscreen;
-	logic [23:0] p2onp1, p1onp2;
+	logic [15:0] p2onp1, p1onp2;
 	logic [12:0] player1offset, player2offset;
 
 	// FOR HEALTH BAR
-	logic [23:0] hbonp1, hbonp2;
+	logic [15:0] hbonp1, hbonp2;
 
 	// FOR SPRITE OF BULLETS ON MONITORS
-	logic [23:0] bullet1, bullet2;
+	logic [15:0] bullet1, bullet2;
 
 	// FOR DRAWING NON-MAP PIXELS
-	logic [23:0] sprite1, sprite2;
+	logic [15:0] sprite1, sprite2;
 
 	// Flags
 	logic inMapOne, inMapTwo; // flag to check if current pixel is in map
@@ -96,22 +96,22 @@ module draw_map (input logic Clk,
 			// Get map pixel
 			case (map_out)
 				2'b01:
-					mapOne <= inMapOne? grass_out : 24'h0000;
+					mapOne <= inMapOne? grass_out : 16'h0000;
 				2'b10:
-					mapOne <= inMapOne? water_out : 24'h0000;
+					mapOne <= inMapOne? water_out : 16'h0000;
 				2'b11:
-					mapOne <= inMapOne? sand_out : 24'h0000;
+					mapOne <= inMapOne? sand_out : 16'h0000;
 			endcase
 			// Get player sprite pixel
 			case (p1dir)
 				2'b00:
-					player1 <= inPlayer? player1North_out : 24'hff00d2;
+					player1 <= inPlayer? (isAlt1? player1NorthAlt_out:player1North_out) : 16'h7c1a;
 				2'b01:
-					player1 <= inPlayer? player1South_out : 24'hff00d2;
+					player1 <= inPlayer? (isAlt1? player1SouthAlt_out:player1South_out) : 16'h7c1a;
 				2'b10:
-					player1 <= inPlayer? player1East_out : 24'hff00d2;
+					player1 <= inPlayer? (isAlt1? player1EastAlt_out:player1East_out) : 16'h7c1a;
 				2'b11:
-					player1 <= inPlayer? player1West_out : 24'hff00d2;
+					player1 <= inPlayer? (isAlt1? player1WestAlt_out:player1West_out) : 16'h7c1a;
 			endcase
 			// Check if player 2 is onscreen
 			if (onscreen & player2offset >= 13'd0 & player2offset < 13'd5625)
@@ -120,36 +120,36 @@ module draw_map (input logic Clk,
 				begin
 					case (p2dir)
 						2'b00:
-							p2onp1 <= player2North_out;
+							p2onp1 <= isAlt2? player2NorthAlt_out:player2North_out;
 						2'b01:
-							p2onp1 <= player2South_out;
+							p2onp1 <= isAlt2? player2SouthAlt_out:player2South_out;
 						2'b10:
-							p2onp1 <= player2East_out;
+							p2onp1 <= isAlt2? player2EastAlt_out:player2East_out;
 						2'b11:
-							p2onp1 <= player2West_out;
+							p2onp1 <= isAlt2? player2WestAlt_out:player2West_out;
 					endcase 
 				end
 				else
-					p2onp1 <= 24'hff00d2;
+					p2onp1 <= 16'h7c1a;
 			end
 			else
-				p2onp1 <= 24'hff00d2;
+				p2onp1 <= 16'h7c1a;
 			// Check if the health bar should be drawn
 			// Draw border
 			if (hbBorderX & hbBorderY)
-				hbonp1 <= 24'ha0a0a0;
+				hbonp1 <= 16'h5294;
 			// Draw green bar
 			else if (((p1health == 4'd8) & hbBarX8 & hbBarY) | ((p1health == 4'd7) & hbBarX7 & hbBarY) | ((p1health == 4'd6) & hbBarX6 & hbBarY) | ((p1health == 4'd5) & hbBarX5 & hbBarY))
-				hbonp1 <= 24'h00ff00;
+				hbonp1 <= 16'h03e0;
 			// Draw orange bar
 			else if (((p1health == 4'd4) & hbBarX4 & hbBarY) | ((p1health == 4'd3) & hbBarX3 & hbBarY))
-				hbonp1 <= 24'hff8000;
+				hbonp1 <= 16'h7e00;
 			// Draw red bar
 			else if (((p1health == 4'd2) & hbBarX2 & hbBarY) | ((p1health == 4'd1) & hbBarX1 & hbBarY))
-				hbonp1 <= 24'hff0000;
+				hbonp1 <= 16'h7c00;
 			// Don't draw a bar (sentinel color)
 			else
-				hbonp1 <= 24'hff00d2;
+				hbonp1 <= 16'h7c1a;
 			// Check if bullets are onscreen
 			if (b1active & b1on1 & b1on1offset >= 5'd0 & b1on1offset < 5'd25 & (((xOne - 12'd320 + DrXplus > b1X)? xOne - 12'd320 + DrXplus - b1X:b1X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b1Y)? yOne - 12'd240 + DrYplus - b1Y:b1Y - (yOne - 12'd240 + DrYplus)) < 2))
 				bullet1 <= bullet1a_out;
@@ -184,7 +184,7 @@ module draw_map (input logic Clk,
 			else if (b16active & b16on1 & b16on1offset >= 5'd0 & b16on1offset < 5'd25 & (((xOne - 12'd320 + DrXplus > b16X)? xOne - 12'd320 + DrXplus - b16X:b16X - (xOne - 12'd320 + DrXplus)) < 2) & (((yOne - 12'd240 + DrYplus > b16Y)? yOne - 12'd240 + DrYplus - b16Y:b16Y - (yOne - 12'd240 + DrYplus)) < 2))
 				bullet1 <= bullet16a_out;
 			else
-				bullet1 <= 24'hff00d2;
+				bullet1 <= 16'h7c1a;
 		end
 
 		// Determine map and sprite pixels for player 2
@@ -193,22 +193,22 @@ module draw_map (input logic Clk,
 			// Get map pixel
 			case (map_out)
 				2'b01:
-					mapTwo <= inMapTwo? grass_out : 24'h0000;
+					mapTwo <= inMapTwo? grass_out : 16'h0000;
 				2'b10:
-					mapTwo <= inMapTwo? water_out : 24'h0000;
+					mapTwo <= inMapTwo? water_out : 16'h0000;
 				2'b11:
-					mapTwo <= inMapTwo? sand_out : 24'h0000;
+					mapTwo <= inMapTwo? sand_out : 16'h0000;
 			endcase
 			// Get player sprite pixel
 			case (p2dir)
 				2'b00:
-					player2 <= inPlayer? player2North_out : 24'hff00d2;
+					player2 <= inPlayer? (isAlt2? player2NorthAlt_out:player2North_out) : 16'h7c1a;
 				2'b01:
-					player2 <= inPlayer? player2South_out : 24'hff00d2;
+					player2 <= inPlayer? (isAlt2? player2SouthAlt_out:player2South_out) : 16'h7c1a;
 				2'b10:
-					player2 <= inPlayer? player2East_out : 24'hff00d2;
+					player2 <= inPlayer? (isAlt2? player2EastAlt_out:player2East_out) : 16'h7c1a;
 				2'b11:
-					player2 <= inPlayer? player2West_out : 24'hff00d2;
+					player2 <= inPlayer? (isAlt2? player2WestAlt_out:player2West_out) : 16'h7c1a;
 			endcase
 			// Check if player 1 is onscreen
 			if (onscreen & player1offset >= 13'd0 & player1offset < 13'd5625)
@@ -217,36 +217,36 @@ module draw_map (input logic Clk,
 				begin
 					case (p1dir)
 						2'b00:
-							p1onp2 <= player1North_out;
+							p1onp2 <= isAlt1? player1NorthAlt_out:player1North_out;
 						2'b01:
-							p1onp2 <= player1South_out;
+							p1onp2 <= isAlt1? player1SouthAlt_out:player1South_out;
 						2'b10:
-							p1onp2 <= player1East_out;
+							p1onp2 <= isAlt1? player1EastAlt_out:player1East_out;
 						2'b11:
-							p1onp2 <= player1West_out;
+							p1onp2 <= isAlt1? player1WestAlt_out:player1West_out;
 					endcase  
 				end
 				else
-					p1onp2 <= 24'hff00d2;
+					p1onp2 <= 16'h7c1a;
 			end
 			else
-				p1onp2 <= 24'hff00d2;
+				p1onp2 <= 16'h7c1a;
 			// Check if the health bar should be drawn
 			// Draw border
 			if (hbBorderX & hbBorderY)
-				hbonp2 <= 24'ha0a0a0;
+				hbonp2 <= 16'h5294;
 			// Draw green bar
 			else if (((p2health == 4'd8) & hbBarX8 & hbBarY) | ((p2health == 4'd7) & hbBarX7 & hbBarY) | ((p2health == 4'd6) & hbBarX6 & hbBarY) | ((p2health == 4'd5) & hbBarX5 & hbBarY))
-				hbonp2 <= 24'h00ff00;
+				hbonp2 <= 16'h03e0;
 			// Draw orange bar
 			else if (((p2health == 4'd4) & hbBarX4 & hbBarY) | ((p2health == 4'd3) & hbBarX3 & hbBarY))
-				hbonp2 <= 24'hff8000;
+				hbonp2 <= 16'h7e00;
 			// Draw red bar
 			else if (((p2health == 4'd2) & hbBarX2 & hbBarY) | ((p2health == 4'd1) & hbBarX1 & hbBarY))
-				hbonp2 <= 24'hff0000;
+				hbonp2 <= 16'h7c00;
 			// Don't draw a bar (sentinel color)
 			else
-				hbonp2 <= 24'hff00d2;
+				hbonp2 <= 16'h7c1a;
 			// Check if bullets are onscreen
 			if (b1active & b1on2 & b1on2offset >= 5'd0 & b1on2offset < 5'd25 & (((xTwo - 12'd320 + DrXplus > b1X)? xTwo - 12'd320 + DrXplus - b1X:b1X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b1Y)? yTwo - 12'd240 + DrYplus - b1Y:b1Y - (yTwo - 12'd240 + DrYplus)) < 2))
 				bullet2 <= bullet1b_out;
@@ -281,17 +281,17 @@ module draw_map (input logic Clk,
 			else if (b16active & b16on2 & b16on2offset >= 5'd0 & b16on2offset < 5'd25 & (((xTwo - 12'd320 + DrXplus > b16X)? xTwo - 12'd320 + DrXplus - b16X:b16X - (xTwo - 12'd320 + DrXplus)) < 2) & (((yTwo - 12'd240 + DrYplus > b16Y)? yTwo - 12'd240 + DrYplus - b16Y:b16Y - (yTwo - 12'd240 + DrYplus)) < 2))
 				bullet2 <= bullet16b_out;
 			else
-				bullet2 <= 24'hff00d2;
+				bullet2 <= 16'h7c1a;
 		end
 	end
 
 	always_comb
 	begin
 		// Get start/end screen pixel
-		start_in = screenOffset;
-		waiting_in = screenOffset;
-		winner_in = screenOffset;
-		loser_in = screenOffset;
+		start_in = startOffset;
+		waiting_in = waitingOffset;
+		winner_in = winnerOffset;
+		loser_in = loserOffset;
 		// Default values
 		grass_in = 10'd0;
 		water_in = 10'd0;
@@ -411,28 +411,28 @@ module draw_map (input logic Clk,
 	always_comb
 	begin
 		// For player 1's screen
-		if (hbonp1 != 24'hff00d2)
+		if (hbonp1 != 16'h7c1a)
 			sprite1 = hbonp1;
-		else if (player1 != 24'hff00d2)
+		else if (player1 != 16'h7c1a)
 			sprite1 = player1;
-		else if (p2onp1 != 24'hff00d2)
+		else if (p2onp1 != 16'h7c1a)
 			sprite1 = p2onp1;
-		else if (bullet1 != 24'hff00d2)
+		else if (bullet1 != 16'h7c1a)
 			sprite1 = bullet1;
 		else
-			sprite1 = 24'hff00d2;
+			sprite1 = 16'h7c1a;
 
 		// For player 2's screen
-		if (hbonp2 != 24'hff00d2)
+		if (hbonp2 != 16'h7c1a)
 			sprite2 = hbonp2;
-		else if (player2 != 24'hff00d2)
+		else if (player2 != 16'h7c1a)
 			sprite2 = player2;
-		else if (p1onp2 != 24'hff00d2)
+		else if (p1onp2 != 16'h7c1a)
 			sprite2 = p1onp2;
-		else if (bullet2 != 24'hff00d2)
+		else if (bullet2 != 16'h7c1a)
 			sprite2 = bullet2;
 		else
-			sprite2 = 24'hff00d2;
+			sprite2 = 16'h7c1a;
 	end
 
 	// Assign VGA values for player 1 based on game state
@@ -443,43 +443,71 @@ module draw_map (input logic Clk,
 		VGA_G = 8'd0;
 		VGA_B = 8'd0;
 		case (currState)
+			// START
 			3'd0:
 			begin
-				VGA_R = (centerRegion)? {start_out[23:19], 3'b000}:{8'd0};
-				VGA_G = (centerRegion)? {start_out[15:11], 3'b000}:{8'd0};
-				VGA_B = (centerRegion)? {start_out[7:3], 3'b000}:{8'd0};
+				VGA_R = (dispStart)? (start_out? 8'hff:8'h00):8'd0;
+				VGA_G = (dispStart)? (start_out? 8'hff:8'h00):8'd0;
+				VGA_B = (dispStart)? (start_out? 8'hff:8'h00):8'd0;
 			end
+			// P1READY
 			3'd1:
 			begin
-				VGA_R = (centerRegion)? {waiting_out[23:19], 3'b000}:{8'd0};
-				VGA_G = (centerRegion)? {waiting_out[15:11], 3'b000}:{8'd0};
-				VGA_B = (centerRegion)? {waiting_out[7:3], 3'b000}:{8'd0};
+				VGA_R = (dispWaiting)? (waiting_out? 8'hff:8'h00):8'd0;
+				VGA_G = (dispWaiting)? (waiting_out? 8'hff:8'h00):8'd0;
+				VGA_B = (dispWaiting)? (waiting_out? 8'hff:8'h00):8'd0;
 			end
+			// P2READY
 			3'd2:
 			begin
-				VGA_R = (centerRegion)? {start_out[23:19], 3'b000}:{8'd0};
-				VGA_G = (centerRegion)? {start_out[15:11], 3'b000}:{8'd0};
-				VGA_B = (centerRegion)? {start_out[7:3], 3'b000}:{8'd0};
+				VGA_R = (dispStart)? (start_out? 8'hff:8'h00):8'd0;
+				VGA_G = (dispStart)? (start_out? 8'hff:8'h00):8'd0;
+				VGA_B = (dispStart)? (start_out? 8'hff:8'h00):8'd0;
 			end
+			// PLAY
 			3'd3:
 			begin
-				VGA_R = (sprite1 == 24'hff00d2)? {mapOne[23:19], 3'b000}:{sprite1[23:19], 3'b000};
-				VGA_G = (sprite1 == 24'hff00d2)? {mapOne[15:11], 3'b000}:{sprite1[15:11], 3'b000};
-				VGA_B = (sprite1 == 24'hff00d2)? {mapOne[7:3], 3'b000}:{sprite1[7:3], 3'b000};
+				VGA_R = (sprite1 == 16'h7c1a)? {mapOne[14:10], 3'b000}:{sprite1[14:10], 3'b000};
+				VGA_G = (sprite1 == 16'h7c1a)? {mapOne[9:5], 3'b000}:{sprite1[9:5], 3'b000};
+				VGA_B = (sprite1 == 16'h7c1a)? {mapOne[4:0], 3'b000}:{sprite1[4:0], 3'b000};
 			end
+			// RESTART
 			3'd4:
 			begin
 				if (p1wins)
 				begin
-					VGA_R = (centerRegion)? {winner_out[23:19], 3'b000}:{8'd0};
-					VGA_G = (centerRegion)? {winner_out[15:11], 3'b000}:{8'd0};
-					VGA_B = (centerRegion)? {winner_out[7:3], 3'b000}:{8'd0};
+					VGA_R = (dispWinner)? (winner_out? 8'hff:8'h00):8'd0;
+					VGA_G = (dispWinner)? (winner_out? 8'hff:8'h00):8'd0;
+					VGA_B = (dispWinner)? (winner_out? 8'hff:8'h00):8'd0;
 				end
 				else
 				begin
-					VGA_R = (centerRegion)? {loser_out[23:19], 3'b000}:{8'd0};
-					VGA_G = (centerRegion)? {loser_out[15:11], 3'b000}:{8'd0};
-					VGA_B = (centerRegion)? {loser_out[7:3], 3'b000}:{8'd0};
+					VGA_R = (dispLoser)? (loser_out? 8'hff:8'h00):8'd0;
+					VGA_G = (dispLoser)? (loser_out? 8'hff:8'h00):8'd0;
+					VGA_B = (dispLoser)? (loser_out? 8'hff:8'h00):8'd0;
+				end
+			end
+			// P1RESTART
+			3'd5:
+			begin
+				VGA_R = (dispWaiting)? (waiting_out? 8'hff:8'h00):8'd0;
+				VGA_G = (dispWaiting)? (waiting_out? 8'hff:8'h00):8'd0;
+				VGA_B = (dispWaiting)? (waiting_out? 8'hff:8'h00):8'd0;
+			end
+			// P2RESTART
+			3'd6:
+			begin
+				if (p1wins)
+				begin
+					VGA_R = (dispWinner)? (winner_out? 8'hff:8'h00):8'd0;
+					VGA_G = (dispWinner)? (winner_out? 8'hff:8'h00):8'd0;
+					VGA_B = (dispWinner)? (winner_out? 8'hff:8'h00):8'd0;
+				end
+				else
+				begin
+					VGA_R = (dispLoser)? (loser_out? 8'hff:8'h00):8'd0;
+					VGA_G = (dispLoser)? (loser_out? 8'hff:8'h00):8'd0;
+					VGA_B = (dispLoser)? (loser_out? 8'hff:8'h00):8'd0;
 				end
 			end
 		endcase
@@ -506,116 +534,180 @@ module draw_map (input logic Clk,
 		GPIO[13] = 1'b0;
 		GPIO[11] = 1'b0;
 		case (currState)
+			// START
 			3'd0:
 			begin
-				GPIO[9] = blanking? ((centerRegion)? start_out[23]:1'b0):1'b0;
-				GPIO[7] = blanking? ((centerRegion)? start_out[22]:1'b0):1'b0;
-				GPIO[5] = blanking? ((centerRegion)? start_out[21]:1'b0):1'b0;
-				GPIO[3] = blanking? ((centerRegion)? start_out[20]:1'b0):1'b0;
-				GPIO[1] = blanking? ((centerRegion)? start_out[19]:1'b0):1'b0;
-				GPIO[14] = blanking? ((centerRegion)? start_out[15]:1'b0):1'b0;
-				GPIO[12] = blanking? ((centerRegion)? start_out[14]:1'b0):1'b0;
-				GPIO[10] = blanking? ((centerRegion)? start_out[13]:1'b0):1'b0;
-				GPIO[6] = blanking? ((centerRegion)? start_out[12]:1'b0):1'b0;
-				GPIO[0] = blanking? ((centerRegion)? start_out[11]:1'b0):1'b0;
-				GPIO[19] = blanking? ((centerRegion)? start_out[7]:1'b0):1'b0;
-				GPIO[17] = blanking? ((centerRegion)? start_out[6]:1'b0):1'b0;
-				GPIO[15] = blanking? ((centerRegion)? start_out[5]:1'b0):1'b0;
-				GPIO[13] = blanking? ((centerRegion)? start_out[4]:1'b0):1'b0;
-				GPIO[11] = blanking? ((centerRegion)? start_out[3]:1'b0):1'b0;
+				GPIO[9] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[7] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[5] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[3] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[1] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[14] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[12] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[10] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[6] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[0] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[19] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[17] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[15] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[13] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[11] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
 			end
+			// P1READY
 			3'd1:
 			begin
-				GPIO[9] = blanking? ((centerRegion)? start_out[23]:1'b0):1'b0;
-				GPIO[7] = blanking? ((centerRegion)? start_out[22]:1'b0):1'b0;
-				GPIO[5] = blanking? ((centerRegion)? start_out[21]:1'b0):1'b0;
-				GPIO[3] = blanking? ((centerRegion)? start_out[20]:1'b0):1'b0;
-				GPIO[1] = blanking? ((centerRegion)? start_out[19]:1'b0):1'b0;
-				GPIO[14] = blanking? ((centerRegion)? start_out[15]:1'b0):1'b0;
-				GPIO[12] = blanking? ((centerRegion)? start_out[14]:1'b0):1'b0;
-				GPIO[10] = blanking? ((centerRegion)? start_out[13]:1'b0):1'b0;
-				GPIO[6] = blanking? ((centerRegion)? start_out[12]:1'b0):1'b0;
-				GPIO[0] = blanking? ((centerRegion)? start_out[11]:1'b0):1'b0;
-				GPIO[19] = blanking? ((centerRegion)? start_out[7]:1'b0):1'b0;
-				GPIO[17] = blanking? ((centerRegion)? start_out[6]:1'b0):1'b0;
-				GPIO[15] = blanking? ((centerRegion)? start_out[5]:1'b0):1'b0;
-				GPIO[13] = blanking? ((centerRegion)? start_out[4]:1'b0):1'b0;
-				GPIO[11] = blanking? ((centerRegion)? start_out[3]:1'b0):1'b0;
+				GPIO[9] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[7] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[5] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[3] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[1] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[14] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[12] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[10] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[6] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[0] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[19] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[17] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[15] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[13] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[11] = blanking? ((dispStart)? (start_out? 1'b1:1'b0):1'b0):1'b0;
 			end
+			// P2READY
 			3'd2:
 			begin
-				GPIO[9] = blanking? ((centerRegion)? waiting_out[23]:1'b0):1'b0;
-				GPIO[7] = blanking? ((centerRegion)? waiting_out[22]:1'b0):1'b0;
-				GPIO[5] = blanking? ((centerRegion)? waiting_out[21]:1'b0):1'b0;
-				GPIO[3] = blanking? ((centerRegion)? waiting_out[20]:1'b0):1'b0;
-				GPIO[1] = blanking? ((centerRegion)? waiting_out[19]:1'b0):1'b0;
-				GPIO[14] = blanking? ((centerRegion)? waiting_out[15]:1'b0):1'b0;
-				GPIO[12] = blanking? ((centerRegion)? waiting_out[14]:1'b0):1'b0;
-				GPIO[10] = blanking? ((centerRegion)? waiting_out[13]:1'b0):1'b0;
-				GPIO[6] = blanking? ((centerRegion)? waiting_out[12]:1'b0):1'b0;
-				GPIO[0] = blanking? ((centerRegion)? waiting_out[11]:1'b0):1'b0;
-				GPIO[19] = blanking? ((centerRegion)? waiting_out[7]:1'b0):1'b0;
-				GPIO[17] = blanking? ((centerRegion)? waiting_out[6]:1'b0):1'b0;
-				GPIO[15] = blanking? ((centerRegion)? waiting_out[5]:1'b0):1'b0;
-				GPIO[13] = blanking? ((centerRegion)? waiting_out[4]:1'b0):1'b0;
-				GPIO[11] = blanking? ((centerRegion)? waiting_out[3]:1'b0):1'b0;
+				GPIO[9] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[7] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[5] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[3] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[1] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[14] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[12] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[10] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[6] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[0] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[19] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[17] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[15] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[13] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[11] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
 			end
+			// PLAY
 			3'd3:
 			begin
-				GPIO[9] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[23]:sprite2[23]):1'b0;
-				GPIO[7] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[22]:sprite2[22]):1'b0;
-				GPIO[5] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[21]:sprite2[21]):1'b0;
-				GPIO[3] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[20]:sprite2[20]):1'b0;
-				GPIO[1] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[19]:sprite2[19]):1'b0;
-				GPIO[14] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[15]:sprite2[15]):1'b0;
-				GPIO[12] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[14]:sprite2[14]):1'b0;
-				GPIO[10] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[13]:sprite2[13]):1'b0;
-				GPIO[6] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[12]:sprite2[12]):1'b0;
-				GPIO[0] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[11]:sprite2[11]):1'b0;
-				GPIO[19] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[7]:sprite2[7]):1'b0;
-				GPIO[17] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[6]:sprite2[6]):1'b0;
-				GPIO[15] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[5]:sprite2[5]):1'b0;
-				GPIO[13] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[4]:sprite2[4]):1'b0;
-				GPIO[11] = blanking? ((sprite2 == 24'hff00d2)? mapTwo[3]:sprite2[3]):1'b0;
+				GPIO[9] = blanking? ((sprite2 == 16'h7c1a)? mapTwo[14]:sprite2[14]):1'b0;
+				GPIO[7] = blanking? ((sprite2 == 16'h7c1a)? mapTwo[13]:sprite2[13]):1'b0;
+				GPIO[5] = blanking? ((sprite2 == 16'h7c1a)? mapTwo[12]:sprite2[12]):1'b0;
+				GPIO[3] = blanking? ((sprite2 == 16'h7c1a)? mapTwo[11]:sprite2[11]):1'b0;
+				GPIO[1] = blanking? ((sprite2 == 16'h7c1a)? mapTwo[10]:sprite2[10]):1'b0;
+				GPIO[14] = blanking? ((sprite2 == 16'h7c1a)? mapTwo[9]:sprite2[9]):1'b0;
+				GPIO[12] = blanking? ((sprite2 == 16'h7c1a)? mapTwo[8]:sprite2[8]):1'b0;
+				GPIO[10] = blanking? ((sprite2 == 16'h7c1a)? mapTwo[7]:sprite2[7]):1'b0;
+				GPIO[6] = blanking? ((sprite2 == 16'h7c1a)? mapTwo[6]:sprite2[6]):1'b0;
+				GPIO[0] = blanking? ((sprite2 == 16'h7c1a)? mapTwo[5]:sprite2[5]):1'b0;
+				GPIO[19] = blanking? ((sprite2 == 16'h7c1a)? mapTwo[4]:sprite2[4]):1'b0;
+				GPIO[17] = blanking? ((sprite2 == 16'h7c1a)? mapTwo[3]:sprite2[3]):1'b0;
+				GPIO[15] = blanking? ((sprite2 == 16'h7c1a)? mapTwo[2]:sprite2[2]):1'b0;
+				GPIO[13] = blanking? ((sprite2 == 16'h7c1a)? mapTwo[1]:sprite2[1]):1'b0;
+				GPIO[11] = blanking? ((sprite2 == 16'h7c1a)? mapTwo[0]:sprite2[0]):1'b0;
 			end
+			// RESTART
 			3'd4:
 			begin
 				if (p1wins)
 				begin
-					GPIO[9] = blanking? ((centerRegion)? loser_out[23]:1'b0):1'b0;
-					GPIO[7] = blanking? ((centerRegion)? loser_out[22]:1'b0):1'b0;
-					GPIO[5] = blanking? ((centerRegion)? loser_out[21]:1'b0):1'b0;
-					GPIO[3] = blanking? ((centerRegion)? loser_out[20]:1'b0):1'b0;
-					GPIO[1] = blanking? ((centerRegion)? loser_out[19]:1'b0):1'b0;
-					GPIO[14] = blanking? ((centerRegion)? loser_out[15]:1'b0):1'b0;
-					GPIO[12] = blanking? ((centerRegion)? loser_out[14]:1'b0):1'b0;
-					GPIO[10] = blanking? ((centerRegion)? loser_out[13]:1'b0):1'b0;
-					GPIO[6] = blanking? ((centerRegion)? loser_out[12]:1'b0):1'b0;
-					GPIO[0] = blanking? ((centerRegion)? loser_out[11]:1'b0):1'b0;
-					GPIO[19] = blanking? ((centerRegion)? loser_out[7]:1'b0):1'b0;
-					GPIO[17] = blanking? ((centerRegion)? loser_out[6]:1'b0):1'b0;
-					GPIO[15] = blanking? ((centerRegion)? loser_out[5]:1'b0):1'b0;
-					GPIO[13] = blanking? ((centerRegion)? loser_out[4]:1'b0):1'b0;
-					GPIO[11] = blanking? ((centerRegion)? loser_out[3]:1'b0):1'b0;
+					GPIO[9] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[7] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[5] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[3] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[1] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[14] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[12] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[10] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[6] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[0] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[19] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[17] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[15] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[13] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[11] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
 				end
 				else
 				begin
-					GPIO[9] = blanking? ((centerRegion)? winner_out[23]:1'b0):1'b0;
-					GPIO[7] = blanking? ((centerRegion)? winner_out[22]:1'b0):1'b0;
-					GPIO[5] = blanking? ((centerRegion)? winner_out[21]:1'b0):1'b0;
-					GPIO[3] = blanking? ((centerRegion)? winner_out[20]:1'b0):1'b0;
-					GPIO[1] = blanking? ((centerRegion)? winner_out[19]:1'b0):1'b0;
-					GPIO[14] = blanking? ((centerRegion)? winner_out[15]:1'b0):1'b0;
-					GPIO[12] = blanking? ((centerRegion)? winner_out[14]:1'b0):1'b0;
-					GPIO[10] = blanking? ((centerRegion)? winner_out[13]:1'b0):1'b0;
-					GPIO[6] = blanking? ((centerRegion)? winner_out[12]:1'b0):1'b0;
-					GPIO[0] = blanking? ((centerRegion)? winner_out[11]:1'b0):1'b0;
-					GPIO[19] = blanking? ((centerRegion)? winner_out[7]:1'b0):1'b0;
-					GPIO[17] = blanking? ((centerRegion)? winner_out[6]:1'b0):1'b0;
-					GPIO[15] = blanking? ((centerRegion)? winner_out[5]:1'b0):1'b0;
-					GPIO[13] = blanking? ((centerRegion)? winner_out[4]:1'b0):1'b0;
-					GPIO[11] = blanking? ((centerRegion)? winner_out[3]:1'b0):1'b0;
+					GPIO[9] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[7] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[5] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[3] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[1] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[14] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[12] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[10] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[6] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[0] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[19] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[17] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[15] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[13] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[11] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
 				end
+			end
+			// P1RESTART
+			3'd5:
+			begin
+				if (p1wins)
+				begin
+					GPIO[9] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[7] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[5] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[3] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[1] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[14] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[12] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[10] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[6] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[0] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[19] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[17] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[15] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[13] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[11] = blanking? ((dispLoser)? (loser_out? 1'b1:1'b0):1'b0):1'b0;
+				end
+				else
+				begin
+					GPIO[9] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[7] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[5] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[3] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[1] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[14] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[12] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[10] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[6] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[0] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[19] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[17] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[15] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[13] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+					GPIO[11] = blanking? ((dispWinner)? (winner_out? 1'b1:1'b0):1'b0):1'b0;
+				end
+			end
+			// P2RESTART
+			3'd6:
+			begin
+				GPIO[9] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[7] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[5] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[3] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[1] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[14] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[12] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[10] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[6] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[0] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[19] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[17] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[15] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[13] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+				GPIO[11] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
 			end
 		endcase
 	end
@@ -623,22 +715,24 @@ module draw_map (input logic Clk,
 	assign GPIO[4] = VGA_HS;
 
 	// On-chip memory
-	logic [16:0] start_in, waiting_in, winner_in, loser_in;
+	logic [15:0] start_in;
+	logic [12:0] waiting_in;
+	logic [14:0] winner_in, loser_in;
 	logic [9:0]	 grass_in, sand_in, water_in;
 	logic [12:0] player1North_in, player1South_in, player1West_in, player1East_in; 
 	logic [12:0] player2North_in, player2South_in, player2West_in, player2East_in;
 	logic [12:0] map_in; 
 	logic [4:0] bullet1a_in, bullet1b_in, bullet2a_in, bullet2b_in, bullet3a_in, bullet3b_in, bullet4a_in, bullet4b_in, bullet5a_in, bullet5b_in, bullet6a_in, bullet6b_in, bullet7a_in, bullet7b_in, bullet8a_in, bullet8b_in, bullet9a_in, bullet9b_in, bullet10a_in, bullet10b_in, bullet11a_in, bullet11b_in, bullet12a_in, bullet12b_in, bullet13a_in, bullet13b_in, bullet14a_in, bullet14b_in, bullet15a_in, bullet15b_in, bullet16a_in, bullet16b_in;
-	logic [23:0] start_out, waiting_out, winner_out, loser_out;
-	logic [23:0] grass_out, sand_out, water_out;
-	logic [23:0] player1North_out, player1South_out, player1West_out, player1East_out;
-	logic [23:0] player2North_out, player2South_out, player2West_out, player2East_out;
+	logic start_out, waiting_out, winner_out, loser_out;
+	logic [15:0] grass_out, sand_out, water_out;
+	logic [15:0] player1North_out, player1South_out, player1West_out, player1East_out, player1NorthAlt_out, player1SouthAlt_out, player1WestAlt_out, player1EastAlt_out;
+	logic [15:0] player2North_out, player2South_out, player2West_out, player2East_out, player2NorthAlt_out, player2SouthAlt_out, player2WestAlt_out, player2EastAlt_out;
 	logic [1:0] map_out;
-	logic [23:0] bullet1a_out, bullet1b_out, bullet2a_out, bullet2b_out, bullet3a_out, bullet3b_out, bullet4a_out, bullet4b_out, bullet5a_out, bullet5b_out, bullet6a_out, bullet6b_out, bullet7a_out, bullet7b_out, bullet8a_out, bullet8b_out, bullet9a_out, bullet9b_out, bullet10a_out, bullet10b_out, bullet11a_out, bullet11b_out, bullet12a_out, bullet12b_out, bullet13a_out, bullet13b_out, bullet14a_out, bullet14b_out, bullet15a_out, bullet15b_out, bullet16a_out, bullet16b_out;
+	logic [15:0] bullet1a_out, bullet1b_out, bullet2a_out, bullet2b_out, bullet3a_out, bullet3b_out, bullet4a_out, bullet4b_out, bullet5a_out, bullet5b_out, bullet6a_out, bullet6b_out, bullet7a_out, bullet7b_out, bullet8a_out, bullet8b_out, bullet9a_out, bullet9b_out, bullet10a_out, bullet10b_out, bullet11a_out, bullet11b_out, bullet12a_out, bullet12b_out, bullet13a_out, bullet13b_out, bullet14a_out, bullet14b_out, bullet15a_out, bullet15b_out, bullet16a_out, bullet16b_out;
 	start startScreen(.clk(Clk), .d(0), .write_address(0), .read_address(start_in), .we(0), .q(start_out));
-	start waitingScreen(.clk(Clk), .d(0), .write_address(0), .read_address(waiting_in), .we(0), .q(waiting_out));
-	start winnerScreen(.clk(Clk), .d(0), .write_address(0), .read_address(winner_in), .we(0), .q(winner_out));
-	start loserScreen(.clk(Clk), .d(0), .write_address(0), .read_address(loser_in), .we(0), .q(loser_out));
+	waiting waitingScreen(.clk(Clk), .d(0), .write_address(0), .read_address(waiting_in), .we(0), .q(waiting_out));
+	winner winnerScreen(.clk(Clk), .d(0), .write_address(0), .read_address(winner_in), .we(0), .q(winner_out));
+	loser loserScreen(.clk(Clk), .d(0), .write_address(0), .read_address(loser_in), .we(0), .q(loser_out));
 	grass grassTile(.clk(Clk), .d(0), .write_address(0), .read_address(grass_in), .we(0), .q(grass_out));
 	sand  sandTile (.clk(Clk), .d(0), .write_address(0), .read_address(sand_in), .we(0), .q(sand_out));
 	water waterTile(.clk(Clk), .d(0), .write_address(0), .read_address(water_in), .we(0), .q(water_out));
@@ -650,6 +744,14 @@ module draw_map (input logic Clk,
 	player2_2 playerSouthmem2(.clk(Clk), .d(0), .write_address(0), .read_address(player2East_in), .we(0), .q(player2East_out));
 	player2_3 playerEastmem2(.clk(Clk), .d(0), .write_address(0), .read_address(player2South_in), .we(0), .q(player2South_out));
 	player2_4 playerWestmem2(.clk(Clk), .d(0), .write_address(0), .read_address(player2West_in), .we(0), .q(player2West_out));
+	player2_1_alt playerNorthmem1alt(.clk(Clk), .d(0), .write_address(0), .read_address(player1North_in), .we(0), .q(player1NorthAlt_out));
+	player2_2_alt playerSouthmem1alt(.clk(Clk), .d(0), .write_address(0), .read_address(player1East_in), .we(0), .q(player1EastAlt_out));
+	player2_3_alt playerEastmem1alt(.clk(Clk), .d(0), .write_address(0), .read_address(player1South_in), .we(0), .q(player1SouthAlt_out));
+	player2_4_alt playerWestmem1alt(.clk(Clk), .d(0), .write_address(0), .read_address(player1West_in), .we(0), .q(player1WestAlt_out));
+	player2_1_alt playerNorthmem2alt(.clk(Clk), .d(0), .write_address(0), .read_address(player2North_in), .we(0), .q(player2NorthAlt_out));
+	player2_2_alt playerSouthmem2alt(.clk(Clk), .d(0), .write_address(0), .read_address(player2East_in), .we(0), .q(player2EastAlt_out));
+	player2_3_alt playerEastmem2alt(.clk(Clk), .d(0), .write_address(0), .read_address(player2South_in), .we(0), .q(player2SouthAlt_out));
+	player2_4_alt playerWestmem2alt(.clk(Clk), .d(0), .write_address(0), .read_address(player2West_in), .we(0), .q(player2WestAlt_out));
 	mapdata mapinfo(.clk(Clk), .d(0), .write_address(0), .read_address(map_in), .we(0), .q(map_out));
 	bulletmem bullet1a(.clk(Clk), .d(0), .write_address(0), .read_address(bullet1a_in), .we(0), .q(bullet1a_out));
 	bulletmem bullet1b(.clk(Clk), .d(0), .write_address(0), .read_address(bullet1b_in), .we(0), .q(bullet1b_out));
@@ -835,10 +937,19 @@ module draw_map (input logic Clk,
 
 
 	//// START/END SCREEN LOGIC
-	logic centerRegion;
-	logic [16:0] screenOffset;
-	assign centerRegion = (DrXplus >= 10'd161) & (DrXplus <= 10'd480) & (DrYplus >= 10'd121) & (DrYplus <= 10'd360);
-	assign screenOffset = (DrYplus - 10'd121)*10'd320 + (DrXplus - 10'd161);
+	logic dispStart, dispWaiting, dispWinner, dispLoser;
+	logic [15:0] startOffset;
+	logic [12:0] waitingOffset;
+	logic [14:0] winnerOffset, loserOffset;
+	assign dispStart = (DrXplus >= 10'd211) & (DrXplus <= 10'd430) & (DrYplus >= 10'd131) & (DrYplus <= 10'd350);
+	assign dispWaiting = (DrXplus >= 10'd196) & (DrXplus <= 10'd445) & (DrYplus >= 10'd226) & (DrYplus <= 10'd255);
+	assign dispWinner = (DrXplus >= 10'd191) & (DrXplus <= 10'd450) & (DrYplus >= 10'd191) & (DrYplus <= 10'd290);
+	assign dispLoser = (DrXplus >= 10'd221) & (DrXplus <= 10'd420) & (DrYplus >= 10'd191) & (DrYplus <= 10'd290);
+	assign startOffset = (DrYplus - 10'd131)*10'd220 + (DrXplus - 10'd211);
+	assign waitingOffset = (DrYplus - 10'd226)*10'd250 + (DrXplus - 10'd196);
+	assign winnerOffset = (DrYplus - 10'd191)*10'd260 + (DrXplus - 10'd191);
+	assign loserOffset = (DrYplus - 10'd191)*10'd200 + (DrXplus - 10'd221);
+	////
 
 
 endmodule

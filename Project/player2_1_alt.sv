@@ -1,16 +1,16 @@
 // On-chip memory 
 
-module sand(input logic clk,
+module player2_1_alt(input logic clk,
 			 input logic [15:0] d,
-			 input logic [9:0] write_address, read_address,
+			 input logic [12:0] write_address, read_address,
 			 input we,
 			 output logic [15:0] q);
 
-	logic [15:0] mem [1024];
+	logic [15:0] mem [5625];
 
 	initial
 	begin
-		$readmemh("sand.txt", mem);
+		$readmemh("player_n_alt.txt", mem);
 	end
 
 	always_ff @ (posedge clk)

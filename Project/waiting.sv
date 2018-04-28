@@ -1,16 +1,16 @@
 // On-chip memory 
 
 module waiting(input logic clk,
-			 input logic [23:0] d,
-			 input logic [16:0] write_address, read_address,
+			 input logic d,
+			 input logic [12:0] write_address, read_address,
 			 input we,
-			 output logic [23:0] q);
+			 output logic q);
 
-	logic [23:0] mem [76800];
+	logic mem [7500];
 
 	initial
 	begin
-		$readmemh("waiting.txt", mem);
+		$readmemb("waiting.txt", mem);
 	end
 
 	always_ff @ (posedge clk)

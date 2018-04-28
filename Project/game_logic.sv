@@ -15,11 +15,12 @@ module game_logic (input logic Clk, VGA_VS,
 				   output logic b1active, b2active, b3active, b4active, b5active, b6active, b7active, b8active, b9active, b10active, b11active, b12active, b13active, b14active, b15active, b16active,
 				   output logic [3:0] p1health, p2health, // health of each player
 				   output logic p1wins, // did player 1 win?
-				   output logic [2:0] currState // tells draw_map which screen to draw
+				   output logic [2:0] currState, // tells draw_map which screen to draw
+				   output logic isAlt1, isAlt2 // which player sprite to draw (for animation)
 				   );	
 
 // Game state machine
-enum logic [2:0] {START, P1READY, P2READY, PLAY, RESTART} State, Next_state;
+enum logic [2:0] {START, P1READY, P2READY, PLAY, RESTART, P1RESTART, P2RESTART} State, Next_state;
 
 always_ff @ (posedge VGA_VS)
 begin
@@ -48,9 +49,15 @@ begin
 				Next_state = RESTART;
 		RESTART:
 			if (aOne == 8'h28 | bOne == 8'h28 | cOne == 8'h28 | dOne == 8'h28)
-				Next_state = P1READY;
+				Next_state = P1RESTART;
 			else if (aTwo == 8'h5a | bTwo == 8'h5a | cTwo == 8'h5a | dTwo == 8'h5a)
-				Next_state = P2READY;
+				Next_state = P2RESTART;
+		P1RESTART:
+			if (aTwo == 8'h5a | bTwo == 8'h5a | cTwo == 8'h5a | dTwo == 8'h5a)
+				Next_state = PLAY;
+		P2RESTART:
+			if (aOne == 8'h28 | bOne == 8'h28 | cOne == 8'h28 | dOne == 8'h28)
+				Next_state = PLAY;
 	endcase
 
 	case (State)
@@ -64,6 +71,10 @@ begin
 			currState = 3'd3;
 		RESTART:
 			currState = 3'd4;
+		P1RESTART:
+			currState = 3'd5;
+		P2RESTART: 
+			currState = 3'd6;
 	endcase
 end
 
@@ -71,6 +82,35 @@ end
 logic [11:0] northOne, southOne, eastOne, westOne;
 logic [11:0] northTwo, southTwo, eastTwo, westTwo;
 logic [1:0] p1dir_comb, p2dir_comb;
+// logic isAlt1, isAlt2; // which player sprite to draw
+logic [4:0] altCounter1 = 5'd0; // count on the frame clock
+logic [4:0] altCounter2 = 5'd0; 
+logic toggled1 = 1'b0; // prevent player sprite from rapidly flipping back and forth
+logic toggled2 = 1'b0;
+
+always_ff @ (posedge VGA_VS)
+begin
+	if (aOne == 8'h1A | bOne == 8'h1A | cOne == 8'h1A | dOne == 8'h1A | aOne == 8'h04 | bOne == 8'h04 | cOne == 8'h04 | dOne == 8'h04 | aOne == 8'h16 | bOne == 8'h16 | cOne == 8'h16 | dOne == 8'h16 | aOne == 8'h07 | bOne == 8'h07 | cOne == 8'h07 | dOne == 8'h07)
+	begin
+		altCounter1 <= (altCounter1 + 5'd1 > 5'd30)? 5'd0:altCounter1 + 5'd1;
+		toggled1 <= 1'b0;
+	end
+	if (altCounter1 == 5'd30 & toggled1 == 1'b0)
+	begin
+		isAlt1 <= ~isAlt1;
+		toggled1 <= 1'b1;
+	end
+	if (aTwo == 8'h1D | bTwo == 8'h1D | cTwo == 8'h1D | dTwo == 8'h1D | aTwo == 8'h1C | bTwo == 8'h1C | cTwo == 8'h1C | dTwo == 8'h1C | aTwo == 8'h1B | bTwo == 8'h1B | cTwo == 8'h1B | dTwo == 8'h1B | aTwo == 8'h23 | bTwo == 8'h23 | cTwo == 8'h23 | dTwo == 8'h23)
+	begin
+		altCounter2 <= (altCounter2 + 5'd1 > 5'd30)? 5'd0:altCounter2 + 5'd1;
+		toggled2 <= 1'b0;
+	end
+	if (altCounter2 == 5'd30 & toggled2 == 1'b0)
+	begin
+		isAlt2 <= ~isAlt2;
+		toggled2 <= 1'b1;
+	end
+end
 
 // Direction in which player is shooting
 logic [1:0] p1fire, p2fire; // direction player is shooting
@@ -969,14 +1009,24 @@ logic [11:0] _yTwo = 12'd1400;
 // Prevent players from walking off the map or on top of each other 
 always_ff @ (posedge VGA_VS)
 begin
-	// Check if players are about to walk on top of each other
-	//if (~((((xOne + eastOne - westOne > xTwo + eastTwo - westTwo)? (xOne + eastOne - westOne) - (xTwo + eastTwo - westTwo):(xTwo + eastTwo - westTwo) - (xOne + eastOne - westOne)) < 12'd37) & (((yOne + southOne - northOne > yTwo + southTwo - northTwo)? (yOne + southOne - northOne) - (yTwo + southTwo - northTwo):(yTwo + southTwo - northTwo) - (yOne + southOne - northOne)) < 12'd37)))
-	//begin
+	// Players are not trying to walk into each other
+	// Don't let the player walk off the map
+	if (~((((xOne + eastOne - westOne > xTwo + eastTwo - westTwo)? (xOne + eastOne - westOne) - (xTwo + eastTwo - westTwo):(xTwo + eastTwo - westTwo) - (xOne + eastOne - westOne)) < 12'd37) & (((yOne + southOne - northOne > yTwo + southTwo - northTwo)? (yOne + southOne - northOne) - (yTwo + southTwo - northTwo):(yTwo + southTwo - northTwo) - (yOne + southOne - northOne)) < 12'd37)))
+	begin
 		_xOne <= gameOver? 12'd700:((_xOne + eastOne - westOne >= 12'd64) & (_xOne + eastOne - westOne <= 12'd3136))? _xOne + eastOne - westOne:_xOne;
 		_yOne <= gameOver? 12'd700:((_yOne + southOne - northOne >= 12'd64) & (_yOne + southOne - northOne <= 12'd2336))? _yOne + southOne - northOne:_yOne;
 		_xTwo <= gameOver? 12'd1500:((_xTwo + eastTwo - westTwo >= 12'd64) & (_xTwo + eastTwo - westTwo <= 12'd3136))? _xTwo + eastTwo - westTwo:_xTwo;
 		_yTwo <= gameOver? 12'd1400:((_yTwo + southTwo - northTwo >= 12'd64) & (_yTwo + southTwo - northTwo <= 12'd2336))? _yTwo + southTwo - northTwo:_yTwo;
-	//end
+	end
+	// Players are trying to walk into each other
+	// This condition needs to exist so that each player's starting position is set properly in this scenario
+	else
+	begin
+		_xOne <= gameOver? 12'd700:_xOne;
+		_yOne <= gameOver? 12'd700:_yOne;
+		_xTwo <= gameOver? 12'd1500:_xTwo;
+		_yTwo <= gameOver? 12'd1400:_yTwo;
+	end
 end
 
 always_ff @ (posedge VGA_VS)

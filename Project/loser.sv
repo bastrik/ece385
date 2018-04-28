@@ -1,16 +1,16 @@
 // On-chip memory 
 
 module loser(input logic clk,
-			 input logic [23:0] d,
-			 input logic [16:0] write_address, read_address,
+			 input logic d,
+			 input logic [14:0] write_address, read_address,
 			 input we,
-			 output logic [23:0] q);
+			 output logic q);
 
-	logic [23:0] mem [76800];
+	logic mem [20000];
 
 	initial
 	begin
-		$readmemh("loser.txt", mem);
+		$readmemb("loser.txt", mem);
 	end
 
 	always_ff @ (posedge clk)

@@ -1,12 +1,12 @@
 // On-chip memory 
 
 module grass(input logic clk,
-			 input logic [23:0] d,
+			 input logic [15:0] d,
 			 input logic [9:0] write_address, read_address,
 			 input we,
-			 output logic [23:0] q);
+			 output logic [15:0] q);
 
-	logic [23:0] mem [1024];
+	logic [15:0] mem [1024];
 
 	initial
 	begin
