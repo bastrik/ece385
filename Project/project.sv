@@ -1,21 +1,15 @@
 //-------------------------------------------------------------------------
-//      project.sv                                                          --
-//      Christine Chen                                                   --
-//      Fall 2014                                                        --
-//                                                                       --
-//      Modified by Po-Han Huang                                         --
-//      10/06/2017                                                       --
-//                                                                       --
-//      Fall 2017 Distribution                                           --
-//                                                                       --
-//      For use with ECE 385 Lab 8                                       --
-//      UIUC ECE Department                                              --
+//      TOP-LEVEL FILE FOR TWO-PLAYER SHOOTER                            --
+//      ECE 385 Final Project                                            --
+//      Justin Song and Mickey Zhang                                     --
+//      Spring 2018                                                      --
 //-------------------------------------------------------------------------
 
 
 module project( input               CLOCK_50,
              input        [3:0]  KEY,          //bit 0 is set up as Reset
-	     input logic PS2_CLK, PS2_DAT,
+             input        [17:0] SW,
+	         input logic PS2_CLK, PS2_DAT,
              output logic [6:0]  HEX0, HEX1, HEX2, HEX3, HEX4, HEX5, HEX6, HEX7,
              // VGA Interface 
              output logic [7:0]  VGA_R,        //VGA Red
@@ -26,7 +20,7 @@ module project( input               CLOCK_50,
                                  VGA_BLANK_N,  //VGA Blank signal
                                  VGA_VS,       //VGA virtical sync signal
                                  VGA_HS,       //VGA horizontal sync signal
-			output logic [35:0]		GPIO,
+			 output logic [35:0] GPIO,
              // CY7C67200 Interface
              inout  wire  [15:0] OTG_DATA,     //CY7C67200 Data bus 16 Bits
              output logic [1:0]  OTG_ADDR,     //CY7C67200 Address 2 Bits
@@ -54,9 +48,10 @@ module project( input               CLOCK_50,
                                  DRAM_WE_N,    //SDRAM Write Enable
                                  DRAM_CS_N,    //SDRAM Chip Select
                                  DRAM_CLK,     //SDRAM Clock
-	           output logic [8:0]  LEDG,	   //Directions
-               output logic AUD_DACDAT, AUD_XCK, I2C_SCLK,
-               inout wire AUD_BCLK, AUD_ADCLRCK, AUD_DACLRCK, I2C_SDAT // Audio signals
+	         output logic [8:0]  LEDG,	   //Directions
+             input logic         AUD_ADCDAT, // Audio signals
+             output logic        AUD_DACDAT, AUD_XCK, I2C_SCLK,
+             inout wire          AUD_BCLK, AUD_ADCLRCK, AUD_DACLRCK, I2C_SDAT 
                     );
 
     // Miscellaneous signals
@@ -141,20 +136,21 @@ module project( input               CLOCK_50,
 
     // Audio interface
     logic [31:0] LDATA, RDATA;
-    logic write_audio_out, audio_out_allowed;
-    Audio_Controller literal_cancer(.CLOCK_50(Clk), .reset(0), .clear_audio_in_memory(0),
-        .read_audio_in(0), .clear_audio_out_memory(0), .left_channel_audio_out(LDATA),
-        .right_channel_audio_out(RDATA), .write_audio_out(write_audio_out), .AUD_ADCDAT(AUD_ADCDAT),
-        .AUD_BCLK(AUD_BCLK), .AUD_ADCLRCK(AUD_ADCLRCK), .AUD_DACLRCK(AUD_DACLRCK),
-        .left_channel_audio_in(0), .right_channel_audio_in(0), .audio_in_available(0),
-        .audio_out_allowed(audio_out_allowed), .AUD_XCK(AUD_XCK), .AUD_DACDAT(AUD_DACDAT));
+    audio_interface literal_cancer(.LDATA(LDATA), .RDATA(RDATA), .clk(Clk),
+        .Reset(0), .INIT(INIT), .INIT_FINISH(INIT_FINISH), .adc_full(0),
+        .data_over(0), .AUD_XCK(AUD_XCK), .AUD_BCLK(AUD_BCLK),
+        .AUD_ADCDAT(AUD_ADCDAT), .AUD_DACDAT(AUD_DACDAT), 
+        .AUD_DACLRCK(AUD_DACLRCK), .AUD_ADCLRCK(AUD_ADCLRCK),
+        .I2C_SDAT(I2C_SDAT), .I2C_SCLK(I2C_SCLK), .ADCDATA(0));
 
-    avconf death(.CLOCK_50(Clk), .reset(0), .I2C_SCLK(I2C_SCLK), .I2C_SDAT(I2C_SDAT));
+    // Initialize the audio codec
+    logic INIT, INIT_FINISH;
+    assign INIT = ~INIT_FINISH;
 
     // Toggle flag to set sound frequency
     logic hiLo;
     logic [18:0] sound_count;
-    logic [18:0] sound = 19'd56818;
+    logic [18:0] sound = 19'd56818;  // Concert A (440 Hz)
     always_ff @ (posedge Clk)
     begin
         if (sound_count == sound)
@@ -186,9 +182,59 @@ module project( input               CLOCK_50,
     end 
 
     // Send sound to audio chip
-    assign LDATA = hiLo? 32'd20000000:32'd0; //(left_channel_audio_in + 32'd10000000) : (left_channel_audio_in - 32'd10000000);
-    assign RDATA = hiLo? 32'd20000000:32'd0; //(right_channel_audio_in + 32'd10000000) : (right_channel_audio_in - 32'd10000000);
-    assign write_audio_out = playSound & audio_out_allowed;
+    assign LDATA = playSound? (hiLo? 32'd20000000:32'd0):32'd0;
+    assign RDATA = playSound? (hiLo? 32'd20000000:32'd0):32'd0;
+
+    // // Audio interface
+    // logic [31:0] LDATA, RDATA;
+    // logic write_audio_out, audio_out_allowed;
+    // Audio_Controller literal_cancer(.CLOCK_50(Clk), .reset(0), .clear_audio_in_memory(0),
+    //     .read_audio_in(0), .clear_audio_out_memory(0), .left_channel_audio_out(LDATA),
+    //     .right_channel_audio_out(RDATA), .write_audio_out(write_audio_out), .AUD_ADCDAT(AUD_ADCDAT),
+    //     .AUD_BCLK(AUD_BCLK), .AUD_ADCLRCK(AUD_ADCLRCK), .AUD_DACLRCK(AUD_DACLRCK),
+    //     .left_channel_audio_in(0), .right_channel_audio_in(0), .audio_in_available(0),
+    //     .audio_out_allowed(audio_out_allowed), .AUD_XCK(AUD_XCK), .AUD_DACDAT(AUD_DACDAT));
+
+    // avconf death(.CLOCK_50(Clk), .reset(0), .I2C_SCLK(I2C_SCLK), .I2C_SDAT(I2C_SDAT));
+
+    // // Toggle flag to set sound frequency
+    // logic hiLo;
+    // logic [18:0] sound_count;
+    // logic [18:0] sound = 19'd56818;
+    // always_ff @ (posedge Clk)
+    // begin
+    //     if (sound_count == sound)
+    //     begin
+    //         sound_count <= 19'd0;
+    //         hiLo <= ~hiLo;
+    //     end
+    //     else
+    //         sound_count <= sound_count + 19'd1;
+    // end
+
+    // // Counter for the duration of the sound
+    // logic [24:0] soundDuration = 25'd0;
+    // logic playSound = 1'b0;
+    // always_ff @ (posedge Clk)
+    // begin
+    //     if ((set_bullet1 & ~b1CD) | (set_bullet2 & ~b2CD))
+    //     begin
+    //         soundDuration <= 25'd0;
+    //         playSound <= 1'b1;
+    //     end
+    //     else if (soundDuration >= 25'd3000000)
+    //     begin
+    //         soundDuration <= 25'd0;
+    //         playSound <= 1'b0;
+    //     end
+    //     else
+    //         soundDuration <= soundDuration + 25'd1;
+    // end 
+
+    // // Send sound to audio chip
+    // assign LDATA = hiLo? 32'd20000000:32'd0; //(left_channel_audio_in + 32'd10000000) : (left_channel_audio_in - 32'd10000000);
+    // assign RDATA = hiLo? 32'd20000000:32'd0; //(right_channel_audio_in + 32'd10000000) : (right_channel_audio_in - 32'd10000000);
+    // assign write_audio_out = playSound & audio_out_allowed;
 
     // PS/2 keyboard driver
     keyboard PS2key(.Clk(Clk), .psClk(PS2_CLK), .psData(PS2_DAT), .reset(Reset_h), .keyCode(PS2in), .press(PS2press));
@@ -227,8 +273,8 @@ module project( input               CLOCK_50,
 	    LEDG[0] = currState[0];
         LEDG[1] = currState[1];
         LEDG[2] = currState[2];
-        LEDG[3] = write_audio_out;
-        LEDG[4] = audio_out_allowed;
+        // LEDG[3] = write_audio_out;
+        // LEDG[4] = audio_out_allowed;
         LEDG[5] = PS2press;
     end
 

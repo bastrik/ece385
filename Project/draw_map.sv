@@ -510,6 +510,12 @@ module draw_map (input logic Clk,
 					VGA_B = (dispLoser)? (loser_out? 8'hff:8'h00):8'd0;
 				end
 			end
+			default:
+			begin
+				VGA_R = 8'd0;
+				VGA_G = 8'd0;
+				VGA_B = 8'd0;
+			end
 		endcase
 	end
 
@@ -708,6 +714,24 @@ module draw_map (input logic Clk,
 				GPIO[15] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
 				GPIO[13] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
 				GPIO[11] = blanking? ((dispWaiting)? (waiting_out? 1'b1:1'b0):1'b0):1'b0;
+			end
+			default:
+			begin
+				GPIO[9] = 1'b0;
+				GPIO[7] = 1'b0;
+				GPIO[5] = 1'b0;
+				GPIO[3] = 1'b0;
+				GPIO[1] = 1'b0;
+				GPIO[14] = 1'b0;
+				GPIO[12] = 1'b0;
+				GPIO[10] = 1'b0;
+				GPIO[6] = 1'b0;
+				GPIO[0] = 1'b0;
+				GPIO[19] = 1'b0;
+				GPIO[17] = 1'b0;
+				GPIO[15] = 1'b0;
+				GPIO[13] = 1'b0;
+				GPIO[11] = 1'b0;
 			end
 		endcase
 	end

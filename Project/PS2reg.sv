@@ -8,6 +8,7 @@ module PS2reg (input logic Clk, Reset,
 	
 	logic [7:0] _keycode;
 
+	// Only store keys that are used in this game
 	always_comb
 	begin
 		if (keycode == 8'h1D | keycode == 8'h1C | keycode == 8'h1B | keycode == 8'h23 | keycode == 8'h75 | keycode == 8'h72 | keycode == 8'h6B | keycode == 8'h74 | keycode == 8'h5a)
@@ -28,10 +29,12 @@ module PS2reg (input logic Clk, Reset,
 		Load2 = 1'b0;
 		Load3 = 1'b0;
 		Load4 = 1'b0;
-		Reset1 = 1'b0;
-		Reset2 = 1'b0;
-		Reset3 = 1'b0;
-		Reset4 = 1'b0;
+		// Clear registers if Shift is pressed
+		// Workaround for the PS2 keyboard being buggy when audio is enabled
+		Reset1 = (keycode == 8'h59)? 1'b1:1'b0;
+		Reset2 = (keycode == 8'h59)? 1'b1:1'b0;
+		Reset3 = (keycode == 8'h59)? 1'b1:1'b0;
+		Reset4 = (keycode == 8'h59)? 1'b1:1'b0;
 		if (press)
 		begin
 			if (_keycode == keycode1 | _keycode == keycode2 | _keycode == keycode3 | _keycode == keycode4) ;
