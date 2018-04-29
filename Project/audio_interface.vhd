@@ -4,13 +4,14 @@
 -- WM8731 Audio Codec. Setup of the codec requires the use of I2C
 -- to set parameters located in I2C registers. Setup options can
 -- be found in the SCI_REG_ROM and SCI_DAT_ROM. This entity is
--- capable of sampling at 48 kHz with 16 bit samples, one sample
+-- capable of sampling at 48 kHz with 32 bit samples, one sample
 -- for the left channel and one sample for the right channel.
 -- 
 -- Version 1.0
 --
 -- Designer: Koushik Roy
 -- April 23, 2010
+-- Modified by Justin Song in April 2018
 
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
@@ -85,7 +86,7 @@ constant SCI_DAT_ROM : rom_type := (
 	"11010000", -- Select DAC - R4
 	"00000101", -- Turn off de-emphasis,  Off with HPF, unmute; DAC Old: "00010110" - R5
 	"00000000", -- Device power on, ADC/DAC power on - R6
-	"01001101", -- Master, 16-bits, DSP mode; Old: "00001011" - R7
+	"01001101", -- Master, 32-bits, MSB mode (left-justified); Old: "00001011" - R7
 	"00000000", -- Normal, 8kHz - R8 old : "00001100"
 	"00000001" -- Reactivate - R9
 );
